@@ -1,0 +1,864 @@
+2024-08-09 11:23:13,477 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\my stuff
+2024-08-09 11:23:13,491 - backend.database - INFO - Initialized database.
+2024-08-09 11:23:13,492 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\my stuff
+2024-08-09 11:23:13,493 - backend.database - INFO - Checked if master password is set.
+2024-08-09 11:23:42,516 - backend.database - INFO - Master password set in the database.
+2024-08-09 11:23:42,516 - __main__ - INFO - Master password set successfully.
+2024-08-09 11:23:51,631 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 11:23:51,685 - __main__ - INFO - StrongBox application started.
+2024-08-09 11:24:02,904 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-09 11:24:02,906 - password_generation - INFO - Generated password with strength 3.
+2024-08-09 11:24:04,934 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-09 11:24:04,934 - password_generation - INFO - Generated password with strength 3.
+2024-08-09 11:24:06,179 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-09 11:24:06,179 - password_generation - INFO - Generated password with strength 3.
+2024-08-09 11:24:12,749 - backend.password_generator - INFO - Generated password with strength 1.
+2024-08-09 11:24:12,750 - password_generation - INFO - Generated password with strength 1.
+2024-08-09 11:25:35,628 - backend.database - INFO - Checked existing entry for service: www.google.com, username: Lucifer.
+2024-08-09 11:25:42,665 - backend.database - INFO - Stored password for service: www.google.com, username: Lucifer.
+2024-08-09 11:25:42,665 - password_management - INFO - Stored password for service: www.google.com, username: Lucifer.
+2024-08-09 11:25:46,858 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 11:26:15,016 - backend.database - INFO - Retrieved password for service: www.google.com.
+2024-08-09 11:26:37,382 - password_management - WARNING - Service field is required to retrieve a password.
+2024-08-09 11:27:11,065 - backend.database - INFO - Verified master password.
+2024-08-09 11:27:11,065 - backend.database - INFO - Retrieved password for service: www.google.com.
+2024-08-09 11:27:11,065 - password_management - INFO - Retrieved password for service: www.google.com.
+2024-08-09 11:27:21,394 - password_management - INFO - Master password verified for retrieving service: www.google.com.
+2024-08-09 12:19:37,630 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\my stuff
+2024-08-09 12:19:37,631 - backend.database - INFO - Initialized database.
+2024-08-09 12:19:37,631 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\my stuff
+2024-08-09 12:19:37,631 - backend.database - INFO - Checked if master password is set.
+2024-08-09 12:19:56,634 - backend.database - INFO - Verified master password.
+2024-08-09 12:19:56,634 - __main__ - INFO - Master password verified successfully.
+2024-08-09 12:20:02,156 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 12:20:02,160 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 12:20:02,193 - __main__ - INFO - StrongBox application started.
+2024-08-09 12:25:24,883 - backend.database - ERROR - Error decrypting data: 
+2024-08-09 12:25:24,884 - backend.database - INFO - Retrieved password for service: www.google.com.
+2024-08-09 12:25:29,151 - backend.database - ERROR - Error decrypting data: 
+2024-08-09 12:25:29,151 - backend.database - INFO - Retrieved password for service: www.google.com.
+2024-08-09 12:25:36,239 - backend.database - ERROR - Error decrypting data: 
+2024-08-09 12:25:36,240 - backend.database - INFO - Retrieved password for service: www.google.com.
+2024-08-09 12:26:09,698 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\my stuff
+2024-08-09 12:26:09,699 - backend.database - INFO - Initialized database.
+2024-08-09 12:26:09,699 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\my stuff
+2024-08-09 12:26:09,700 - backend.database - INFO - Checked if master password is set.
+2024-08-09 12:26:20,139 - backend.database - INFO - Verified master password.
+2024-08-09 12:26:20,141 - __main__ - INFO - Master password verified successfully.
+2024-08-09 12:26:21,190 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 12:26:21,193 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 12:26:21,234 - __main__ - INFO - StrongBox application started.
+2024-08-09 12:26:34,264 - backend.database - ERROR - Error decrypting data: 
+2024-08-09 12:26:34,264 - backend.database - INFO - Retrieved password for service: www.google.com.
+2024-08-09 12:26:41,255 - backend.database - ERROR - Error decrypting data: 
+2024-08-09 12:26:41,256 - backend.database - INFO - Retrieved password for service: www.google.com.
+2024-08-09 12:27:17,406 - backend.database - ERROR - Error decrypting data: 
+2024-08-09 12:27:17,406 - backend.database - INFO - Retrieved password for service: www.google.com.
+2024-08-09 12:27:51,304 - backend.password_generator - INFO - Generated password with strength 1.
+2024-08-09 12:27:51,304 - password_generation - INFO - Generated password with strength 1.
+2024-08-09 12:27:54,911 - backend.password_generator - INFO - Generated password with strength 1.
+2024-08-09 12:27:54,912 - password_generation - INFO - Generated password with strength 1.
+2024-08-09 12:27:55,998 - backend.password_generator - INFO - Generated password with strength 1.
+2024-08-09 12:27:55,999 - password_generation - INFO - Generated password with strength 1.
+2024-08-09 12:27:57,026 - backend.password_generator - INFO - Generated password with strength 1.
+2024-08-09 12:27:57,027 - password_generation - INFO - Generated password with strength 1.
+2024-08-09 12:27:57,979 - backend.password_generator - INFO - Generated password with strength 1.
+2024-08-09 12:27:57,980 - password_generation - INFO - Generated password with strength 1.
+2024-08-09 12:27:58,797 - backend.password_generator - INFO - Generated password with strength 1.
+2024-08-09 12:27:58,797 - password_generation - INFO - Generated password with strength 1.
+2024-08-09 12:27:59,473 - backend.password_generator - INFO - Generated password with strength 1.
+2024-08-09 12:27:59,473 - password_generation - INFO - Generated password with strength 1.
+2024-08-09 12:28:01,752 - backend.database - ERROR - Error decrypting data: 
+2024-08-09 12:28:01,752 - backend.database - INFO - Retrieved password for service: www.google.com.
+2024-08-09 12:33:11,910 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\my stuff
+2024-08-09 12:33:11,912 - backend.database - INFO - Initialized database.
+2024-08-09 12:33:11,912 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\my stuff
+2024-08-09 12:33:11,912 - backend.database - INFO - Checked if master password is set.
+2024-08-09 12:33:33,605 - backend.master_password - ERROR - Error verifying password: Keys do not match.
+2024-08-09 12:33:33,606 - backend.database - INFO - Verified master password.
+2024-08-09 12:33:33,606 - __main__ - WARNING - Incorrect master password.
+2024-08-09 12:33:45,440 - backend.database - INFO - Verified master password.
+2024-08-09 12:33:45,441 - __main__ - INFO - Master password verified successfully.
+2024-08-09 12:33:49,415 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 12:33:49,418 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 12:33:49,447 - __main__ - INFO - StrongBox application started.
+2024-08-09 12:33:52,108 - backend.database - ERROR - Error decrypting data: 
+2024-08-09 12:33:52,109 - backend.database - INFO - Retrieved password for service: www.google.com.
+2024-08-09 12:33:59,155 - backend.database - ERROR - Error decrypting data: 
+2024-08-09 12:33:59,156 - backend.database - INFO - Retrieved password for service: www.google.com.
+2024-08-09 12:34:22,270 - backend.database - ERROR - Error decrypting data: 
+2024-08-09 12:34:22,271 - backend.database - INFO - Retrieved password for service: www.google.com.
+2024-08-09 12:34:37,698 - backend.database - ERROR - Error decrypting data: 
+2024-08-09 12:34:37,699 - backend.database - INFO - Retrieved password for service: www.google.com.
+2024-08-09 12:34:45,767 - password_management - WARNING - Service field is required to retrieve a password.
+2024-08-09 12:34:57,228 - backend.database - ERROR - Error decrypting data: 
+2024-08-09 12:34:57,228 - backend.database - INFO - Retrieved password for service: www.google.com.
+2024-08-09 12:38:40,234 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\my stuff
+2024-08-09 12:38:40,236 - backend.database - INFO - Initialized database.
+2024-08-09 12:38:40,236 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\my stuff
+2024-08-09 12:38:40,237 - backend.database - INFO - Checked if master password is set.
+2024-08-09 12:38:48,385 - backend.database - INFO - Verified master password.
+2024-08-09 12:38:48,386 - __main__ - INFO - Master password verified successfully.
+2024-08-09 12:38:49,246 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 12:38:49,250 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 12:38:49,288 - __main__ - INFO - StrongBox application started.
+2024-08-09 12:38:52,414 - backend.database - DEBUG - Service: www.google.com, Retrieved Row: ('Lucifer', 'gAAAAABmtZpGvmyEj33FOu45NyK79VXGQYiIRxz7V70fF-g97zxZqVO3AgJnkZnnh-aq9NJ0S6FasYJxhdFHaYY095uZQ6suWDoT78lxiUl8V32fpr8ZSz0=')
+2024-08-09 12:38:52,415 - backend.database - ERROR - Error decrypting data: 
+2024-08-09 12:38:52,415 - backend.database - DEBUG - Decrypted password: None
+2024-08-09 12:38:52,415 - backend.database - INFO - Retrieved password for service: www.google.com.
+2024-08-09 12:39:08,328 - backend.database - DEBUG - Service: www.google.com, Retrieved Row: ('Lucifer', 'gAAAAABmtZpGvmyEj33FOu45NyK79VXGQYiIRxz7V70fF-g97zxZqVO3AgJnkZnnh-aq9NJ0S6FasYJxhdFHaYY095uZQ6suWDoT78lxiUl8V32fpr8ZSz0=')
+2024-08-09 12:39:08,329 - backend.database - ERROR - Error decrypting data: 
+2024-08-09 12:39:08,329 - backend.database - DEBUG - Decrypted password: None
+2024-08-09 12:39:08,330 - backend.database - INFO - Retrieved password for service: www.google.com.
+2024-08-09 12:39:43,824 - backend.database - DEBUG - Service: www.google.com, Retrieved Row: ('Lucifer', 'gAAAAABmtZpGvmyEj33FOu45NyK79VXGQYiIRxz7V70fF-g97zxZqVO3AgJnkZnnh-aq9NJ0S6FasYJxhdFHaYY095uZQ6suWDoT78lxiUl8V32fpr8ZSz0=')
+2024-08-09 12:39:43,824 - backend.database - ERROR - Error decrypting data: 
+2024-08-09 12:39:43,824 - backend.database - DEBUG - Decrypted password: None
+2024-08-09 12:39:43,825 - backend.database - INFO - Retrieved password for service: www.google.com.
+2024-08-09 13:06:35,078 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\my stuff
+2024-08-09 13:06:35,080 - backend.database - INFO - Initialized database.
+2024-08-09 13:06:35,080 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\my stuff
+2024-08-09 13:06:35,081 - backend.database - INFO - Checked if master password is set.
+2024-08-09 13:06:45,885 - backend.master_password - ERROR - Error verifying password: Keys do not match.
+2024-08-09 13:06:45,885 - backend.database - INFO - Verified master password.
+2024-08-09 13:06:45,885 - __main__ - WARNING - Incorrect master password.
+2024-08-09 13:06:58,241 - backend.database - INFO - Verified master password.
+2024-08-09 13:06:58,241 - __main__ - INFO - Master password verified successfully.
+2024-08-09 13:06:59,580 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 13:06:59,583 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 13:06:59,645 - __main__ - INFO - StrongBox application started.
+2024-08-09 13:07:01,960 - backend.database - DEBUG - Service: www.google.com, Retrieved Row: ('Lucifer', 'gAAAAABmtZpGvmyEj33FOu45NyK79VXGQYiIRxz7V70fF-g97zxZqVO3AgJnkZnnh-aq9NJ0S6FasYJxhdFHaYY095uZQ6suWDoT78lxiUl8V32fpr8ZSz0=')
+2024-08-09 13:07:01,961 - backend.database - ERROR - Error decrypting data: 
+2024-08-09 13:07:01,961 - backend.database - DEBUG - Decrypted password: None
+2024-08-09 13:07:01,962 - backend.database - INFO - Retrieved password for service: www.google.com.
+2024-08-09 13:07:53,050 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\random shit
+2024-08-09 13:07:53,055 - backend.database - INFO - Initialized database.
+2024-08-09 13:07:53,056 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\random shit
+2024-08-09 13:07:53,056 - backend.database - INFO - Checked if master password is set.
+2024-08-09 13:08:13,216 - backend.database - INFO - Master password set in the database.
+2024-08-09 13:08:13,216 - __main__ - INFO - Master password set successfully.
+2024-08-09 13:08:14,736 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 13:08:14,740 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 13:08:14,791 - __main__ - INFO - StrongBox application started.
+2024-08-09 13:08:48,496 - backend.database - INFO - Checked existing entry for service: www.google.com, username: Lucifer.
+2024-08-09 13:08:54,568 - backend.database - INFO - Stored password for service: www.google.com, username: Lucifer.
+2024-08-09 13:08:54,568 - password_management - INFO - Stored password for service: www.google.com, username: Lucifer.
+2024-08-09 13:08:57,602 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 13:09:10,786 - backend.database - DEBUG - Service: www.google.com, Retrieved Row: ('Lucifer', 'gAAAAABmtbJ2R1MJ_nCkPaht2BF3QfLXqWf0r3nBwAFCmCuvg2ab0JWbAqoGzq2a1tZHXGUakAjnvwnZwC90OGU1dblJbLLkeQ==')
+2024-08-09 13:09:10,787 - backend.database - DEBUG - Decrypted password: TheDevil666$$$
+2024-08-09 13:09:10,787 - backend.database - INFO - Retrieved password for service: www.google.com.
+2024-08-09 13:09:58,564 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\random shit
+2024-08-09 13:09:58,565 - backend.database - INFO - Initialized database.
+2024-08-09 13:09:58,565 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\random shit
+2024-08-09 13:09:58,566 - backend.database - INFO - Checked if master password is set.
+2024-08-09 13:10:07,580 - backend.master_password - ERROR - Error verifying password: Keys do not match.
+2024-08-09 13:10:07,581 - backend.database - INFO - Verified master password.
+2024-08-09 13:10:07,581 - __main__ - WARNING - Incorrect master password.
+2024-08-09 13:10:15,364 - backend.database - INFO - Verified master password.
+2024-08-09 13:10:15,364 - __main__ - INFO - Master password verified successfully.
+2024-08-09 13:10:17,124 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 13:10:17,126 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 13:10:17,165 - __main__ - INFO - StrongBox application started.
+2024-08-09 13:10:20,634 - backend.database - DEBUG - Service: www.google.com, Retrieved Row: ('Lucifer', 'gAAAAABmtbJ2R1MJ_nCkPaht2BF3QfLXqWf0r3nBwAFCmCuvg2ab0JWbAqoGzq2a1tZHXGUakAjnvwnZwC90OGU1dblJbLLkeQ==')
+2024-08-09 13:10:20,635 - backend.database - ERROR - Error decrypting data: 
+2024-08-09 13:10:20,635 - backend.database - DEBUG - Decrypted password: None
+2024-08-09 13:10:20,636 - backend.database - INFO - Retrieved password for service: www.google.com.
+2024-08-09 13:11:24,407 - backend.database - DEBUG - Service: www.google.com, Retrieved Row: ('Lucifer', 'gAAAAABmtbJ2R1MJ_nCkPaht2BF3QfLXqWf0r3nBwAFCmCuvg2ab0JWbAqoGzq2a1tZHXGUakAjnvwnZwC90OGU1dblJbLLkeQ==')
+2024-08-09 13:11:24,407 - backend.database - ERROR - Error decrypting data: 
+2024-08-09 13:11:24,407 - backend.database - DEBUG - Decrypted password: None
+2024-08-09 13:11:24,408 - backend.database - INFO - Retrieved password for service: www.google.com.
+2024-08-09 13:48:27,992 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\random shit
+2024-08-09 13:48:27,993 - backend.database - INFO - Initialized database.
+2024-08-09 13:48:27,993 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\random shit
+2024-08-09 13:48:27,993 - backend.database - INFO - Checked if master password is set.
+2024-08-09 13:48:34,889 - backend.database - INFO - Verified master password.
+2024-08-09 13:48:34,889 - __main__ - INFO - Master password verified successfully.
+2024-08-09 13:48:36,574 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 13:48:36,579 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 13:48:36,619 - __main__ - INFO - StrongBox application started.
+2024-08-09 13:48:54,219 - backend.database - DEBUG - Service: www.google.com, Retrieved Row: ('Lucifer', 'gAAAAABmtbJ2R1MJ_nCkPaht2BF3QfLXqWf0r3nBwAFCmCuvg2ab0JWbAqoGzq2a1tZHXGUakAjnvwnZwC90OGU1dblJbLLkeQ==')
+2024-08-09 13:48:54,219 - backend.database - ERROR - Error decrypting data: 
+2024-08-09 13:48:54,220 - backend.database - DEBUG - Decrypted password: None
+2024-08-09 13:48:54,220 - backend.database - INFO - Retrieved password for service: www.google.com.
+2024-08-09 13:49:11,130 - backend.database - DEBUG - Service: www.google.com, Retrieved Row: ('Lucifer', 'gAAAAABmtbJ2R1MJ_nCkPaht2BF3QfLXqWf0r3nBwAFCmCuvg2ab0JWbAqoGzq2a1tZHXGUakAjnvwnZwC90OGU1dblJbLLkeQ==')
+2024-08-09 13:49:11,130 - backend.database - ERROR - Error decrypting data: 
+2024-08-09 13:49:11,131 - backend.database - DEBUG - Decrypted password: None
+2024-08-09 13:49:11,131 - backend.database - INFO - Retrieved password for service: www.google.com.
+2024-08-09 13:59:30,319 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test
+2024-08-09 13:59:30,327 - backend.database - INFO - Initialized database.
+2024-08-09 13:59:30,327 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test
+2024-08-09 13:59:30,328 - backend.database - INFO - Checked if master password is set.
+2024-08-09 13:59:36,085 - backend.database - INFO - Master password set in the database.
+2024-08-09 13:59:36,085 - __main__ - INFO - Master password set successfully.
+2024-08-09 13:59:40,579 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 13:59:40,585 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 13:59:40,626 - __main__ - INFO - StrongBox application started.
+2024-08-09 14:00:03,949 - backend.database - INFO - Checked existing entry for service: www.google.com, username: Jesus.
+2024-08-09 14:00:07,695 - backend.database - INFO - Stored password for service: www.google.com, username: Jesus.
+2024-08-09 14:00:07,695 - password_management - INFO - Stored password for service: www.google.com, username: Jesus.
+2024-08-09 14:00:09,006 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 14:00:14,269 - backend.database - DEBUG - Service: www.google.com, Retrieved Row: ('Jesus', 'gAAAAABmtb53ZIZ5UchhagFa0GD42tOrMLnOGkMXbFefU0pppEaj9SYi4A5XIH93knKb9CRrGb__iW2qMpI9voCtZ6w5g9sU3Q==')
+2024-08-09 14:00:14,269 - backend.database - DEBUG - Decrypted password: sonofgod
+2024-08-09 14:00:14,270 - backend.database - INFO - Retrieved password for service: www.google.com.
+2024-08-09 14:00:28,384 - backend.database - DEBUG - Service: www.google.com, Retrieved Row: ('Jesus', 'gAAAAABmtb53ZIZ5UchhagFa0GD42tOrMLnOGkMXbFefU0pppEaj9SYi4A5XIH93knKb9CRrGb__iW2qMpI9voCtZ6w5g9sU3Q==')
+2024-08-09 14:00:28,385 - backend.database - DEBUG - Decrypted password: sonofgod
+2024-08-09 14:00:28,385 - backend.database - INFO - Retrieved password for service: www.google.com.
+2024-08-09 14:00:56,153 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test
+2024-08-09 14:00:56,155 - backend.database - INFO - Initialized database.
+2024-08-09 14:00:56,155 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test
+2024-08-09 14:00:56,156 - backend.database - INFO - Checked if master password is set.
+2024-08-09 14:00:58,005 - backend.database - INFO - Verified master password.
+2024-08-09 14:00:58,005 - __main__ - INFO - Master password verified successfully.
+2024-08-09 14:00:58,942 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 14:00:58,949 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 14:00:58,980 - __main__ - INFO - StrongBox application started.
+2024-08-09 14:01:01,752 - backend.database - DEBUG - Service: www.google.com, Retrieved Row: ('Jesus', 'gAAAAABmtb53ZIZ5UchhagFa0GD42tOrMLnOGkMXbFefU0pppEaj9SYi4A5XIH93knKb9CRrGb__iW2qMpI9voCtZ6w5g9sU3Q==')
+2024-08-09 14:01:01,754 - backend.database - DEBUG - Decrypted password: sonofgod
+2024-08-09 14:01:01,755 - backend.database - INFO - Retrieved password for service: www.google.com.
+2024-08-09 14:01:05,209 - backend.database - DEBUG - Service: www.google.com, Retrieved Row: ('Jesus', 'gAAAAABmtb53ZIZ5UchhagFa0GD42tOrMLnOGkMXbFefU0pppEaj9SYi4A5XIH93knKb9CRrGb__iW2qMpI9voCtZ6w5g9sU3Q==')
+2024-08-09 14:01:05,210 - backend.database - DEBUG - Decrypted password: sonofgod
+2024-08-09 14:01:05,210 - backend.database - INFO - Retrieved password for service: www.google.com.
+2024-08-09 14:01:48,745 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test
+2024-08-09 14:01:48,746 - backend.database - INFO - Initialized database.
+2024-08-09 14:01:48,746 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test
+2024-08-09 14:01:48,747 - backend.database - INFO - Checked if master password is set.
+2024-08-09 14:01:51,357 - backend.database - INFO - Verified master password.
+2024-08-09 14:01:51,358 - __main__ - INFO - Master password verified successfully.
+2024-08-09 14:01:52,359 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 14:01:52,364 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 14:01:52,396 - __main__ - INFO - StrongBox application started.
+2024-08-09 14:01:57,140 - backend.database - DEBUG - Service: www.google.com, Retrieved Row: ('Jesus', 'gAAAAABmtb53ZIZ5UchhagFa0GD42tOrMLnOGkMXbFefU0pppEaj9SYi4A5XIH93knKb9CRrGb__iW2qMpI9voCtZ6w5g9sU3Q==')
+2024-08-09 14:01:57,143 - backend.database - DEBUG - Decrypted password: sonofgod
+2024-08-09 14:01:57,143 - backend.database - INFO - Retrieved password for service: www.google.com.
+2024-08-09 14:02:06,806 - password_management - WARNING - Service field is required to retrieve a password.
+2024-08-09 14:02:26,200 - backend.database - INFO - Verified master password.
+2024-08-09 14:02:26,201 - backend.database - DEBUG - Service: www.google.com, Retrieved Row: ('Jesus', 'gAAAAABmtb53ZIZ5UchhagFa0GD42tOrMLnOGkMXbFefU0pppEaj9SYi4A5XIH93knKb9CRrGb__iW2qMpI9voCtZ6w5g9sU3Q==')
+2024-08-09 14:02:26,202 - backend.database - DEBUG - Decrypted password: sonofgod
+2024-08-09 14:02:26,202 - backend.database - INFO - Retrieved password for service: www.google.com.
+2024-08-09 14:02:26,203 - password_management - INFO - Retrieved password for service: www.google.com.
+2024-08-09 14:02:37,473 - password_management - INFO - Master password verified for retrieving service: www.google.com.
+2024-08-09 14:03:15,147 - backend.database - DEBUG - Service: www.google.com, Retrieved Row: ('Jesus', 'gAAAAABmtb53ZIZ5UchhagFa0GD42tOrMLnOGkMXbFefU0pppEaj9SYi4A5XIH93knKb9CRrGb__iW2qMpI9voCtZ6w5g9sU3Q==')
+2024-08-09 14:03:15,147 - backend.database - DEBUG - Decrypted password: sonofgod
+2024-08-09 14:03:15,148 - backend.database - INFO - Retrieved password for service: www.google.com.
+2024-08-09 14:15:47,880 - __main__ - INFO - StrongBox application started.
+2024-08-09 14:16:01,832 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test
+2024-08-09 14:16:01,833 - backend.database - INFO - Initialized database.
+2024-08-09 14:16:01,834 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test
+2024-08-09 14:16:01,834 - backend.database - INFO - Checked if master password is set.
+2024-08-09 14:16:04,273 - backend.database - INFO - Verified master password.
+2024-08-09 14:16:04,273 - __main__ - INFO - Master password verified successfully.
+2024-08-09 14:16:05,161 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 14:16:05,167 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 14:16:05,224 - __main__ - INFO - StrongBox application started.
+2024-08-09 14:16:08,296 - backend.database - DEBUG - Service: www.google.com, Retrieved Row: ('Jesus', 'gAAAAABmtb53ZIZ5UchhagFa0GD42tOrMLnOGkMXbFefU0pppEaj9SYi4A5XIH93knKb9CRrGb__iW2qMpI9voCtZ6w5g9sU3Q==')
+2024-08-09 14:16:08,298 - backend.database - DEBUG - Decrypted password: sonofgod
+2024-08-09 14:16:08,298 - backend.database - INFO - Retrieved password for service: www.google.com.
+2024-08-09 14:22:50,106 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test2
+2024-08-09 14:22:50,113 - backend.database - INFO - Initialized database.
+2024-08-09 14:22:50,113 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test2
+2024-08-09 14:22:50,114 - backend.database - INFO - Checked if master password is set.
+2024-08-09 14:22:57,613 - backend.database - INFO - Master password set in the database.
+2024-08-09 14:22:57,614 - __main__ - INFO - Master password set successfully.
+2024-08-09 14:22:58,856 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 14:22:58,861 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 14:22:58,915 - __main__ - INFO - StrongBox application started.
+2024-08-09 14:48:32,824 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test3
+2024-08-09 14:58:19,189 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test3
+2024-08-09 14:58:19,200 - backend.database - INFO - Initialized database with key_id.
+2024-08-09 14:58:19,201 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test3 with key_id: 7f15bd68-1ae8-4a15-9777-15219a43f08c
+2024-08-09 14:58:19,201 - backend.database - INFO - Checked if master password is set.
+2024-08-09 14:58:24,334 - backend.database - INFO - Master password set in the database.
+2024-08-09 14:58:24,334 - __main__ - INFO - Master password set successfully.
+2024-08-09 14:58:25,702 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 14:58:25,707 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 14:58:25,759 - __main__ - INFO - StrongBox application started.
+2024-08-09 14:59:49,429 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test
+2024-08-09 14:59:49,440 - backend.database - INFO - Initialized database with key_id.
+2024-08-09 14:59:49,440 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test with key_id: a3acfbd8-4f31-4646-b183-0f755cc37ad8
+2024-08-09 14:59:49,441 - backend.database - INFO - Checked if master password is set.
+2024-08-09 15:00:03,079 - backend.database - INFO - Master password set in the database.
+2024-08-09 15:00:03,080 - __main__ - INFO - Master password set successfully.
+2024-08-09 15:00:04,421 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 15:00:04,426 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 15:00:04,476 - __main__ - INFO - StrongBox application started.
+2024-08-09 15:00:23,651 - backend.database - INFO - Checked existing entry for service: www.google.com, username: Lucifer.
+2024-08-09 15:00:26,768 - backend.database - INFO - Stored password for service: www.google.com, username: Lucifer.
+2024-08-09 15:00:26,768 - password_management - INFO - Stored password for service: www.google.com, username: Lucifer.
+2024-08-09 15:00:28,586 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 15:00:33,769 - backend.database - DEBUG - Service: www.google.com, Retrieved Row: ('Lucifer', 'gAAAAABmtcyalpLcIfnSHXt6ujEcAcrn-B1ok84kBYoyu6GA0ClVtPrkAJCoNcCaSIz3wE5sKzGKFnyamZR_QkECAkOwZNOZ_A==')
+2024-08-09 15:00:33,770 - backend.database - DEBUG - Decrypted password: TheDevil666
+2024-08-09 15:00:33,770 - backend.database - INFO - Retrieved password for service: www.google.com.
+2024-08-09 15:00:46,807 - backend.database - INFO - Verified master password.
+2024-08-09 15:00:46,808 - backend.database - DEBUG - Service: www.google.com, Retrieved Row: ('Lucifer', 'gAAAAABmtcyalpLcIfnSHXt6ujEcAcrn-B1ok84kBYoyu6GA0ClVtPrkAJCoNcCaSIz3wE5sKzGKFnyamZR_QkECAkOwZNOZ_A==')
+2024-08-09 15:00:46,808 - backend.database - DEBUG - Decrypted password: TheDevil666
+2024-08-09 15:00:46,809 - backend.database - INFO - Retrieved password for service: www.google.com.
+2024-08-09 15:00:46,809 - password_management - INFO - Retrieved password for service: www.google.com.
+2024-08-09 15:00:52,382 - password_management - INFO - Master password verified for retrieving service: www.google.com.
+2024-08-09 15:01:11,793 - password_management - WARNING - Master password is required to retrieve the service password.
+2024-08-09 15:01:25,470 - backend.database - INFO - Verified master password.
+2024-08-09 15:01:25,471 - backend.database - DEBUG - Service: google, Retrieved Row: None
+2024-08-09 15:01:25,471 - backend.database - INFO - No password found for service: google.
+2024-08-09 15:01:25,472 - password_management - INFO - Retrieved password for service: google.
+2024-08-09 15:01:27,493 - password_management - INFO - Master password verified for retrieving service: google.
+2024-08-09 15:01:35,363 - backend.database - INFO - Verified master password.
+2024-08-09 15:01:35,365 - backend.database - DEBUG - Service: google, Retrieved Row: None
+2024-08-09 15:01:35,365 - backend.database - INFO - No password found for service: google.
+2024-08-09 15:01:35,365 - password_management - INFO - Retrieved password for service: google.
+2024-08-09 15:01:36,844 - password_management - INFO - Master password verified for retrieving service: google.
+2024-08-09 15:03:05,070 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test
+2024-08-09 15:03:05,075 - backend.database - INFO - Initialized database with key_id.
+2024-08-09 15:03:05,075 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test with key_id: 85a771ee-c4cb-44ed-a29e-3c3aa6bfb6ab
+2024-08-09 15:03:05,076 - backend.database - INFO - Checked if master password is set.
+2024-08-09 15:03:08,325 - backend.database - INFO - Verified master password.
+2024-08-09 15:03:08,325 - __main__ - INFO - Master password verified successfully.
+2024-08-09 15:03:10,132 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 15:03:10,138 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 15:03:10,188 - __main__ - INFO - StrongBox application started.
+2024-08-09 15:03:23,420 - backend.database - DEBUG - Service: www.google.com, Retrieved Row: ('Lucifer', 'gAAAAABmtcyalpLcIfnSHXt6ujEcAcrn-B1ok84kBYoyu6GA0ClVtPrkAJCoNcCaSIz3wE5sKzGKFnyamZR_QkECAkOwZNOZ_A==')
+2024-08-09 15:03:23,422 - backend.database - DEBUG - Decrypted password: TheDevil666
+2024-08-09 15:03:23,422 - backend.database - INFO - Retrieved password for service: www.google.com.
+2024-08-09 15:03:47,915 - backend.database - DEBUG - Service: www.google.com, Retrieved Row: ('Lucifer', 'gAAAAABmtcyalpLcIfnSHXt6ujEcAcrn-B1ok84kBYoyu6GA0ClVtPrkAJCoNcCaSIz3wE5sKzGKFnyamZR_QkECAkOwZNOZ_A==')
+2024-08-09 15:03:47,916 - backend.database - DEBUG - Decrypted password: TheDevil666
+2024-08-09 15:03:47,916 - backend.database - INFO - Retrieved password for service: www.google.com.
+2024-08-09 15:06:29,117 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test
+2024-08-09 15:06:29,123 - backend.database - INFO - Initialized database with key_id.
+2024-08-09 15:06:29,123 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test with key_id: 4af4bdc0-8f48-4bb9-aa7c-3107f3640d0a
+2024-08-09 15:06:29,124 - backend.database - INFO - Checked if master password is set.
+2024-08-09 15:06:35,269 - backend.database - INFO - Verified master password.
+2024-08-09 15:06:35,270 - __main__ - INFO - Master password verified successfully.
+2024-08-09 15:06:36,230 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 15:06:36,237 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 15:06:36,292 - __main__ - INFO - StrongBox application started.
+2024-08-09 15:06:39,851 - backend.database - DEBUG - Service: www.google.com, Retrieved Row: ('Lucifer', 'gAAAAABmtcyalpLcIfnSHXt6ujEcAcrn-B1ok84kBYoyu6GA0ClVtPrkAJCoNcCaSIz3wE5sKzGKFnyamZR_QkECAkOwZNOZ_A==')
+2024-08-09 15:06:39,852 - backend.database - DEBUG - Decrypted password: TheDevil666
+2024-08-09 15:06:39,852 - backend.database - INFO - Retrieved password for service: www.google.com.
+2024-08-09 15:06:43,391 - backend.database - DEBUG - Service: www.google.com, Retrieved Row: ('Lucifer', 'gAAAAABmtcyalpLcIfnSHXt6ujEcAcrn-B1ok84kBYoyu6GA0ClVtPrkAJCoNcCaSIz3wE5sKzGKFnyamZR_QkECAkOwZNOZ_A==')
+2024-08-09 15:06:43,391 - backend.database - DEBUG - Decrypted password: TheDevil666
+2024-08-09 15:06:43,392 - backend.database - INFO - Retrieved password for service: www.google.com.
+2024-08-09 15:09:09,607 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test2
+2024-08-09 15:09:09,626 - backend.database - INFO - Initialized database with key_id.
+2024-08-09 15:09:09,626 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test2 with key_id: 2c1738e4-adbe-4366-9175-b800b11aa494
+2024-08-09 15:09:09,627 - backend.database - INFO - Checked if master password is set.
+2024-08-09 15:09:14,899 - backend.database - INFO - Master password set in the database.
+2024-08-09 15:09:14,899 - __main__ - INFO - Master password set successfully.
+2024-08-09 15:09:15,713 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 15:09:15,719 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 15:09:15,779 - __main__ - INFO - StrongBox application started.
+2024-08-09 15:09:39,970 - backend.database - INFO - Checked existing entry for service: www.microsoft.com, username: Lucifer.
+2024-08-09 15:09:41,894 - backend.database - INFO - Stored password for service: www.microsoft.com, username: Lucifer.
+2024-08-09 15:09:41,895 - password_management - INFO - Stored password for service: www.microsoft.com, username: Lucifer.
+2024-08-09 15:09:43,164 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 15:09:44,560 - backend.database - DEBUG - Service: www.microsoft.com, Retrieved Row: ('Lucifer', 'gAAAAABmtc7Fb_GeXHQCHGpPnbvNOr6eR6GmObWwsjAXYZpUfV16AIqS5HRbsHET63pk_CUsMk34c2sJZdIH3gV75jZn5Irrig==')
+2024-08-09 15:09:44,561 - backend.database - DEBUG - Decrypted password: FallenOne666
+2024-08-09 15:09:44,561 - backend.database - INFO - Retrieved password for service: www.microsoft.com.
+2024-08-09 15:09:56,543 - backend.database - INFO - Verified master password.
+2024-08-09 15:09:56,544 - backend.database - DEBUG - Service: www.microsoft.com, Retrieved Row: ('Lucifer', 'gAAAAABmtc7Fb_GeXHQCHGpPnbvNOr6eR6GmObWwsjAXYZpUfV16AIqS5HRbsHET63pk_CUsMk34c2sJZdIH3gV75jZn5Irrig==')
+2024-08-09 15:09:56,545 - backend.database - DEBUG - Decrypted password: FallenOne666
+2024-08-09 15:09:56,545 - backend.database - INFO - Retrieved password for service: www.microsoft.com.
+2024-08-09 15:09:56,546 - password_management - INFO - Retrieved password for service: www.microsoft.com.
+2024-08-09 15:09:57,608 - password_management - INFO - Master password verified for retrieving service: www.microsoft.com.
+2024-08-09 15:10:05,959 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test
+2024-08-09 15:10:05,964 - backend.database - INFO - Initialized database with key_id.
+2024-08-09 15:10:05,964 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test with key_id: fb93e368-8707-44d4-8aff-ce1b486c84ed
+2024-08-09 15:10:05,964 - backend.database - INFO - Checked if master password is set.
+2024-08-09 15:10:07,872 - backend.database - INFO - Verified master password.
+2024-08-09 15:10:07,872 - __main__ - INFO - Master password verified successfully.
+2024-08-09 15:10:08,722 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 15:10:08,728 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 15:10:08,781 - __main__ - INFO - StrongBox application started.
+2024-08-09 15:10:11,755 - backend.database - DEBUG - Service: www.google.com, Retrieved Row: ('Lucifer', 'gAAAAABmtcyalpLcIfnSHXt6ujEcAcrn-B1ok84kBYoyu6GA0ClVtPrkAJCoNcCaSIz3wE5sKzGKFnyamZR_QkECAkOwZNOZ_A==')
+2024-08-09 15:10:11,757 - backend.database - DEBUG - Decrypted password: TheDevil666
+2024-08-09 15:10:11,758 - backend.database - INFO - Retrieved password for service: www.google.com.
+2024-08-09 15:10:14,463 - backend.database - DEBUG - Service: www.google.com, Retrieved Row: ('Lucifer', 'gAAAAABmtcyalpLcIfnSHXt6ujEcAcrn-B1ok84kBYoyu6GA0ClVtPrkAJCoNcCaSIz3wE5sKzGKFnyamZR_QkECAkOwZNOZ_A==')
+2024-08-09 15:10:14,463 - backend.database - DEBUG - Decrypted password: TheDevil666
+2024-08-09 15:10:14,464 - backend.database - INFO - Retrieved password for service: www.google.com.
+2024-08-09 22:22:35,979 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test2
+2024-08-09 22:22:35,985 - backend.database - INFO - Initialized database with key_id.
+2024-08-09 22:22:35,986 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test2 with key_id: 08f9f21c-9a48-4234-b12f-b277daad92b0
+2024-08-09 22:22:35,986 - backend.database - INFO - Checked if master password is set.
+2024-08-09 22:22:39,314 - backend.database - INFO - Verified master password.
+2024-08-09 22:22:39,315 - __main__ - INFO - Master password verified successfully.
+2024-08-09 22:22:40,292 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 22:22:40,294 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 22:22:40,324 - __main__ - INFO - StrongBox application started.
+2024-08-09 22:22:44,935 - backend.database - DEBUG - Service: www.microsoft.com, Retrieved Row: ('Lucifer', 'gAAAAABmtc7Fb_GeXHQCHGpPnbvNOr6eR6GmObWwsjAXYZpUfV16AIqS5HRbsHET63pk_CUsMk34c2sJZdIH3gV75jZn5Irrig==')
+2024-08-09 22:22:44,936 - backend.database - ERROR - Error decrypting data: 
+2024-08-09 22:22:44,936 - backend.database - DEBUG - Decrypted password: None
+2024-08-09 22:22:44,936 - backend.database - INFO - Retrieved password for service: www.microsoft.com.
+2024-08-09 22:22:51,472 - backend.database - DEBUG - Service: www.microsoft.com, Retrieved Row: ('Lucifer', 'gAAAAABmtc7Fb_GeXHQCHGpPnbvNOr6eR6GmObWwsjAXYZpUfV16AIqS5HRbsHET63pk_CUsMk34c2sJZdIH3gV75jZn5Irrig==')
+2024-08-09 22:22:51,472 - backend.database - ERROR - Error decrypting data: 
+2024-08-09 22:22:51,473 - backend.database - DEBUG - Decrypted password: None
+2024-08-09 22:22:51,473 - backend.database - INFO - Retrieved password for service: www.microsoft.com.
+2024-08-09 22:23:35,369 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test3
+2024-08-09 22:23:35,385 - backend.database - INFO - Initialized database with key_id.
+2024-08-09 22:23:35,385 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test3 with key_id: d59b6c10-1eba-4e1c-8177-cfbb03c4843b
+2024-08-09 22:23:35,386 - backend.database - INFO - Checked if master password is set.
+2024-08-09 22:23:43,964 - backend.database - INFO - Master password set in the database.
+2024-08-09 22:23:43,965 - __main__ - INFO - Master password set successfully.
+2024-08-09 22:23:44,824 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 22:23:44,830 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 22:23:44,872 - __main__ - INFO - StrongBox application started.
+2024-08-09 22:24:16,186 - backend.database - INFO - Checked existing entry for service: www.google.com, username: you.
+2024-08-09 22:24:20,419 - backend.database - INFO - Stored password for service: www.google.com, username: you.
+2024-08-09 22:24:20,419 - password_management - INFO - Stored password for service: www.google.com, username: you.
+2024-08-09 22:24:22,592 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 22:25:08,332 - backend.database - DEBUG - Service: www.google.com, Retrieved Row: ('you', 'gAAAAABmtjSkE5UXvEpvHuNTnpEfvh4tiBG0OtEMpWVhFV8MaTxr8RgRBzoJlgrWYtWAPcJyekjBoQwH59x57dlnTuGgT5X_ag==')
+2024-08-09 22:25:08,332 - backend.database - DEBUG - Decrypted password: TheDevil666
+2024-08-09 22:25:08,333 - backend.database - INFO - Retrieved password for service: www.google.com.
+2024-08-09 22:36:23,052 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test4
+2024-08-09 22:36:23,063 - backend.database - INFO - Initialized database with key_id.
+2024-08-09 22:36:23,063 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test4 with key_id: a2de093a-4e9c-40a1-9ddd-10af7969a178
+2024-08-09 22:36:23,064 - backend.database - INFO - Checked if master password is set.
+2024-08-09 22:36:35,633 - backend.database - INFO - Master password set in the database.
+2024-08-09 22:36:35,633 - __main__ - INFO - Master password set successfully.
+2024-08-09 22:37:04,030 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 22:37:04,037 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 22:37:04,083 - __main__ - INFO - StrongBox application started.
+2024-08-09 22:39:35,308 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test5
+2024-08-09 22:39:35,322 - backend.database - INFO - Initialized database with key_id.
+2024-08-09 22:39:35,323 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test5 with key_id: 29beaf5d-adf3-4677-96ed-7f22ffb43f88
+2024-08-09 22:39:35,323 - backend.database - INFO - Checked if master password is set.
+2024-08-09 22:39:48,478 - backend.database - INFO - Master password set in the database.
+2024-08-09 22:39:48,478 - __main__ - INFO - Master password set successfully.
+2024-08-09 22:39:49,764 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 22:39:49,771 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 22:39:49,814 - __main__ - INFO - StrongBox application started.
+2024-08-09 22:40:14,966 - backend.database - INFO - Checked existing entry for service: www.google.com, username: Lucifer.
+2024-08-09 22:40:17,438 - backend.database - INFO - Stored password for service: www.google.com, username: Lucifer.
+2024-08-09 22:40:17,439 - password_management - INFO - Stored password for service: www.google.com, username: Lucifer.
+2024-08-09 22:40:20,938 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 22:40:25,623 - backend.database - DEBUG - Service: www.google.com, Retrieved Row: ('Lucifer', 'gAAAAABmtjhhcwjeT198rDuwR8b4gFWfKIz8XoLefMVMEro-mf9xVy5k4JNqHjMrWynUcC7jzgNFjdhXWkWf166BheJrtjJCEg==')
+2024-08-09 22:40:25,624 - backend.database - DEBUG - Decrypted password: TheDevil666
+2024-08-09 22:40:25,625 - backend.database - INFO - Retrieved password for service: www.google.com.
+2024-08-09 22:43:58,747 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test6
+2024-08-09 22:43:58,776 - backend.database - INFO - Initialized database with key_id.
+2024-08-09 22:43:58,776 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test6 with key_id: 765db51a-7696-4942-b5be-a7627da0a184
+2024-08-09 22:43:58,781 - backend.database - INFO - Checked if master password is set.
+2024-08-09 22:44:08,170 - backend.database - INFO - Master password set in the database.
+2024-08-09 22:44:08,170 - __main__ - INFO - Master password set successfully.
+2024-08-09 22:44:09,055 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 22:44:09,061 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 22:44:09,102 - __main__ - INFO - StrongBox application started.
+2024-08-09 22:48:36,921 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test7
+2024-08-09 22:48:36,935 - backend.database - INFO - Initialized database with key_id.
+2024-08-09 22:48:36,935 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test7 with key_id: a8742f38-49d1-4246-b3be-cd5e5091b44a
+2024-08-09 22:48:36,936 - backend.database - INFO - Checked if master password is set.
+2024-08-09 22:48:43,629 - backend.database - INFO - Master password set in the database.
+2024-08-09 22:48:43,631 - __main__ - INFO - Master password set successfully.
+2024-08-09 22:48:47,155 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 22:48:47,159 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 22:48:47,211 - __main__ - INFO - StrongBox application started.
+2024-08-09 22:49:11,477 - backend.database - INFO - Checked existing entry for service: www.google.com, username: Lucifer.
+2024-08-09 22:49:15,043 - backend.database - INFO - Stored password for service: www.google.com, username: Lucifer.
+2024-08-09 22:49:15,043 - password_management - INFO - Stored password for service: www.google.com, username: Lucifer.
+2024-08-09 22:49:17,415 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 22:50:25,674 - backend.database - DEBUG - Service: www.google.com, Retrieved Row: ('Lucifer', 'gAAAAABmtjp766QViw0ykSrlsLxLHMgkRM2WYuBMgZTRDPXDIelM5kXOe8RPqy_YCk-GQvqttHjsqRNoeF1fqR199HV1LFwC4Q==')
+2024-08-09 22:50:25,675 - backend.database - DEBUG - Decrypted password: TheDevil666
+2024-08-09 22:50:25,675 - backend.database - INFO - Retrieved password for service: www.google.com.
+2024-08-09 22:51:12,168 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test7
+2024-08-09 22:51:12,173 - backend.database - INFO - Initialized database with key_id.
+2024-08-09 22:51:12,173 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test7 with key_id: 955075d4-e597-4958-bc41-b2fae8d0b222
+2024-08-09 22:51:12,174 - backend.database - INFO - Checked if master password is set.
+2024-08-09 22:51:15,454 - backend.database - INFO - Verified master password.
+2024-08-09 22:51:15,454 - __main__ - INFO - Master password verified successfully.
+2024-08-09 22:51:16,647 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 22:51:16,651 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 22:51:16,697 - __main__ - INFO - StrongBox application started.
+2024-08-09 22:51:20,064 - backend.database - DEBUG - Service: www.google.com, Retrieved Row: ('Lucifer', 'gAAAAABmtjp766QViw0ykSrlsLxLHMgkRM2WYuBMgZTRDPXDIelM5kXOe8RPqy_YCk-GQvqttHjsqRNoeF1fqR199HV1LFwC4Q==')
+2024-08-09 22:51:20,066 - backend.database - DEBUG - Decrypted password: TheDevil666
+2024-08-09 22:51:20,067 - backend.database - INFO - Retrieved password for service: www.google.com.
+2024-08-09 22:51:23,530 - backend.database - DEBUG - Service: www.google.com, Retrieved Row: ('Lucifer', 'gAAAAABmtjp766QViw0ykSrlsLxLHMgkRM2WYuBMgZTRDPXDIelM5kXOe8RPqy_YCk-GQvqttHjsqRNoeF1fqR199HV1LFwC4Q==')
+2024-08-09 22:51:23,531 - backend.database - DEBUG - Decrypted password: TheDevil666
+2024-08-09 22:51:23,531 - backend.database - INFO - Retrieved password for service: www.google.com.
+2024-08-09 22:51:58,691 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test1
+2024-08-09 22:51:58,703 - backend.database - INFO - Initialized database with key_id.
+2024-08-09 22:51:58,703 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test1 with key_id: 1da4c295-af3c-4e67-8c92-99417444aa85
+2024-08-09 22:51:58,704 - backend.database - INFO - Checked if master password is set.
+2024-08-09 22:52:08,616 - backend.database - INFO - Master password set in the database.
+2024-08-09 22:52:08,616 - __main__ - INFO - Master password set successfully.
+2024-08-09 22:52:09,606 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 22:52:09,610 - backend.database - INFO - Retrieved all passwords.
+2024-08-09 22:52:09,652 - __main__ - INFO - StrongBox application started.
+2024-08-09 22:52:31,478 - backend.database - INFO - Checked existing entry for service: www.heaven.com, username: God.
+2024-08-09 22:52:33,278 - backend.database - INFO - Stored password for service: www.heaven.com, username: God.
+2024-08-09 22:52:33,279 - password_management - INFO - Stored password for service: www.heaven.com, username: God.
+2024-08-09 22:52:34,316 - backend.database - INFO - Retrieved all passwords.
+2024-08-10 18:48:43,954 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-10 18:48:43,954 - backend.database - DEBUG - ENCRYPTION_KEY_TEST1 not found in .env file. Generating a new key.
+2024-08-10 18:48:43,954 - backend.database - INFO - New encryption key for test1 generated and saved to .env file.
+2024-08-10 18:48:43,954 - backend.database - DEBUG - ENCRYPTION_KEY_TEST1: mK6T6... (truncated for security)
+2024-08-10 18:48:43,962 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test1.db
+2024-08-10 18:48:43,980 - backend.database - INFO - Initialized database with key_id.
+2024-08-10 18:48:43,981 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test1.db with key_id: 2ace03f5-16dd-4ef4-ba45-4d045841ebf7
+2024-08-10 18:48:43,981 - backend.database - INFO - Checked if master password is set.
+2024-08-10 18:48:55,933 - backend.database - INFO - Master password set in the database.
+2024-08-10 18:48:55,933 - __main__ - INFO - Master password set successfully.
+2024-08-10 18:48:57,733 - backend.database - INFO - Retrieved all passwords.
+2024-08-10 18:48:57,740 - backend.database - INFO - Retrieved all passwords.
+2024-08-10 18:48:57,789 - __main__ - INFO - StrongBox application started.
+2024-08-10 18:49:30,242 - backend.database - INFO - Checked existing entry for service: www.google.com, username: Chris.
+2024-08-10 18:49:33,557 - password_management - ERROR - Failed to store password: store_password() missing 1 required positional argument: 'cipher_suite'
+2024-08-10 19:23:00,147 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-10 19:23:00,148 - backend.database - INFO - Encryption key for test1 loaded from .env file.
+2024-08-10 19:23:00,148 - backend.database - DEBUG - ENCRYPTION_KEY_TEST1: mK6T6... (truncated for security)
+2024-08-10 19:23:00,149 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test1.db
+2024-08-10 19:23:00,153 - backend.database - INFO - Initialized database with key_id.
+2024-08-10 19:23:00,154 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test1.db with key_id: 75e2ad0d-fa7e-4d33-94da-3f674f351658
+2024-08-10 19:23:00,154 - backend.database - INFO - Checked if master password is set.
+2024-08-10 19:23:34,560 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-10 19:23:34,561 - backend.database - INFO - Encryption key for test1 loaded from .env file.
+2024-08-10 19:23:34,561 - backend.database - DEBUG - ENCRYPTION_KEY_TEST1: mK6T6... (truncated for security)
+2024-08-10 19:23:34,562 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test1.db
+2024-08-10 19:23:34,567 - backend.database - INFO - Initialized database with key_id.
+2024-08-10 19:23:34,568 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test1.db with key_id: 2ae80c28-7897-4fc8-9efb-f26c523c1611
+2024-08-10 19:23:34,568 - backend.database - INFO - Checked if master password is set.
+2024-08-10 19:29:40,474 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-10 19:29:40,475 - backend.database - INFO - Encryption key for test1 loaded from .env file.
+2024-08-10 19:29:40,475 - backend.database - DEBUG - ENCRYPTION_KEY_TEST1: mK6T6... (truncated for security)
+2024-08-10 19:29:40,476 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test1.db
+2024-08-10 19:29:40,479 - backend.database - INFO - Initialized database with key_id.
+2024-08-10 19:29:40,479 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test1.db with key_id: 1dc6dc59-a436-4a1e-88be-a8e0b86fd7bd
+2024-08-10 19:29:40,480 - backend.database - INFO - Checked if master password is set.
+2024-08-10 19:29:44,166 - backend.database - INFO - Verified master password.
+2024-08-10 19:29:44,167 - __main__ - INFO - Master password verified successfully.
+2024-08-10 19:38:31,558 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-10 19:38:31,558 - backend.database - INFO - Encryption key for test1 loaded from .env file.
+2024-08-10 19:38:31,559 - backend.database - DEBUG - ENCRYPTION_KEY_TEST1: mK6T6... (truncated for security)
+2024-08-10 19:38:31,559 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test1.db
+2024-08-10 19:38:31,564 - backend.database - INFO - Initialized database with key_id.
+2024-08-10 19:38:31,564 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test1.db with key_id: 5c1dc4c8-2f99-4d2f-85ec-4710e4f6d61a
+2024-08-10 19:38:31,564 - backend.database - INFO - Checked if master password is set.
+2024-08-10 19:38:34,360 - backend.database - INFO - Verified master password.
+2024-08-10 19:38:34,360 - __main__ - INFO - Master password verified successfully.
+2024-08-10 19:53:18,876 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-10 19:53:18,877 - backend.database - INFO - Encryption key for test1 loaded from .env file.
+2024-08-10 19:53:18,877 - backend.database - DEBUG - ENCRYPTION_KEY_TEST1: mK6T6... (truncated for security)
+2024-08-10 19:53:18,878 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test1.db
+2024-08-10 19:53:18,883 - backend.database - INFO - Initialized database with key_id.
+2024-08-10 19:53:18,883 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test1.db with key_id: 6329185a-75b2-4777-b519-ccfbf397313e
+2024-08-10 19:53:18,884 - backend.database - INFO - Checked if master password is set.
+2024-08-10 19:53:22,023 - backend.database - INFO - Verified master password.
+2024-08-10 19:53:22,024 - __main__ - INFO - Master password verified successfully.
+2024-08-10 19:53:24,257 - backend.database - INFO - Retrieved all passwords.
+2024-08-10 19:53:24,260 - backend.database - INFO - Retrieved all passwords.
+2024-08-10 19:53:24,296 - __main__ - INFO - StrongBox application started.
+2024-08-10 19:55:13,210 - backend.database - INFO - Checked existing entry for service: www.google.com, username: Chris.
+2024-08-10 19:55:15,548 - password_management - ERROR - Failed to store password: store_password() missing 1 required positional argument: 'cipher_suite'
+2024-08-10 20:08:28,703 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-10 20:08:28,703 - backend.database - INFO - Encryption key for test1 loaded from .env file.
+2024-08-10 20:08:28,703 - backend.database - DEBUG - ENCRYPTION_KEY_TEST1: mK6T6... (truncated for security)
+2024-08-10 20:08:28,704 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test1.db
+2024-08-10 20:08:28,708 - backend.database - INFO - Initialized database with key_id.
+2024-08-10 20:08:28,708 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test1.db with key_id: de05cd1b-43ec-4413-bd45-ce104a93bcd8
+2024-08-10 20:08:28,709 - backend.database - INFO - Checked if master password is set.
+2024-08-10 20:08:35,048 - backend.database - INFO - Verified master password.
+2024-08-10 20:08:35,048 - __main__ - INFO - Master password verified successfully.
+2024-08-10 20:08:35,914 - backend.database - INFO - Retrieved all passwords.
+2024-08-10 20:08:35,917 - backend.database - INFO - Retrieved all passwords.
+2024-08-10 20:08:35,965 - __main__ - INFO - StrongBox application started.
+2024-08-10 20:08:48,263 - backend.database - INFO - Checked existing entry for service: www.google.com, username: chris.
+2024-08-10 20:08:52,389 - backend.database - INFO - Stored password for service: www.google.com, username: chris.
+2024-08-10 20:08:52,390 - password_management - INFO - Stored password for service: www.google.com, username: chris.
+2024-08-10 20:08:56,646 - backend.database - INFO - Retrieved all passwords.
+2024-08-10 20:15:07,980 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-10 20:15:07,981 - backend.database - INFO - Encryption key for test1 loaded from .env file.
+2024-08-10 20:15:07,982 - backend.database - DEBUG - ENCRYPTION_KEY_TEST1: mK6T6... (truncated for security)
+2024-08-10 20:15:07,982 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test1.db
+2024-08-10 20:15:07,986 - backend.database - INFO - Initialized database with key_id.
+2024-08-10 20:15:07,986 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test1.db with key_id: 59af1b98-fa83-4a05-a930-e780b33cd609
+2024-08-10 20:15:07,987 - backend.database - INFO - Checked if master password is set.
+2024-08-10 20:15:11,556 - backend.database - INFO - Verified master password.
+2024-08-10 20:15:11,556 - __main__ - INFO - Master password verified successfully.
+2024-08-10 20:15:12,654 - backend.database - INFO - Retrieved all passwords.
+2024-08-10 20:15:12,661 - backend.database - INFO - Retrieved all passwords.
+2024-08-10 20:15:12,705 - __main__ - INFO - StrongBox application started.
+2024-08-10 20:15:16,318 - backend.database - INFO - Retrieved encrypted password for service: www.google.com.
+2024-08-10 20:15:21,875 - backend.database - INFO - Retrieved encrypted password for service: www.google.com.
+2024-08-10 20:15:44,127 - backend.database - INFO - Retrieved encrypted password for service: www.google.com.
+2024-08-10 20:16:01,901 - backend.database - INFO - Retrieved encrypted password for service: www.google.com.
+2024-08-10 20:19:46,308 - backend.database - INFO - Retrieved encrypted password for service: www.google.com.
+2024-08-10 20:26:27,508 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-10 20:26:27,508 - backend.database - INFO - Encryption key for test1 loaded from .env file.
+2024-08-10 20:26:27,509 - backend.database - DEBUG - ENCRYPTION_KEY_TEST1: mK6T6... (truncated for security)
+2024-08-10 20:26:27,509 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test1.db
+2024-08-10 20:26:27,512 - backend.database - INFO - Initialized database with key_id.
+2024-08-10 20:26:27,513 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test1.db with key_id: 27b3da67-6c6c-48e6-b81c-587a28833589
+2024-08-10 20:26:27,513 - backend.database - INFO - Checked if master password is set.
+2024-08-10 20:26:30,985 - backend.database - INFO - Verified master password.
+2024-08-10 20:26:30,986 - __main__ - INFO - Master password verified successfully.
+2024-08-10 20:26:31,697 - backend.database - INFO - Retrieved all passwords.
+2024-08-10 20:26:31,703 - backend.database - INFO - Retrieved all passwords.
+2024-08-10 20:26:31,731 - __main__ - INFO - StrongBox application started.
+2024-08-10 20:26:34,990 - backend.database - INFO - Retrieved encrypted password for service: www.google.com.
+2024-08-10 20:26:38,830 - backend.database - INFO - Retrieved encrypted password for service: www.google.com.
+2024-08-10 20:26:52,374 - backend.database - INFO - Retrieved encrypted password for service: www.google.com.
+2024-08-10 20:27:21,415 - backend.database - INFO - Checked existing entry for service: microsoft.com, username: Chris.
+2024-08-10 20:27:23,245 - backend.database - INFO - Stored password for service: microsoft.com, username: Chris.
+2024-08-10 20:27:23,245 - password_management - INFO - Stored password for service: microsoft.com, username: Chris.
+2024-08-10 20:27:24,294 - backend.database - INFO - Retrieved all passwords.
+2024-08-10 20:27:26,041 - backend.database - INFO - Retrieved encrypted password for service: microsoft.com.
+2024-08-10 20:27:34,513 - backend.database - INFO - Verified master password.
+2024-08-10 20:27:34,514 - password_management - ERROR - Failed to retrieve password: retrieve_password() missing 1 required positional argument: 'cipher_suite'
+2024-08-10 20:27:42,278 - password_management - INFO - Master password verified for retrieving service: microsoft.com.
+2024-08-10 20:37:12,199 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-10 20:37:12,200 - backend.database - INFO - Encryption key for test1 loaded from .env file.
+2024-08-10 20:37:12,200 - backend.database - DEBUG - ENCRYPTION_KEY_TEST1: mK6T6... (truncated for security)
+2024-08-10 20:37:12,201 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test1.db
+2024-08-10 20:37:12,204 - backend.database - INFO - Initialized database with key_id.
+2024-08-10 20:37:12,204 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test1.db with key_id: 39879dd1-8276-4a47-baab-287dddbf8ce2
+2024-08-10 20:37:12,205 - backend.database - INFO - Checked if master password is set.
+2024-08-10 20:37:15,462 - backend.database - INFO - Verified master password.
+2024-08-10 20:37:15,462 - __main__ - INFO - Master password verified successfully.
+2024-08-10 20:37:17,134 - backend.database - INFO - Retrieved all passwords.
+2024-08-10 20:37:17,142 - backend.database - INFO - Retrieved all passwords.
+2024-08-10 20:37:17,176 - __main__ - INFO - StrongBox application started.
+2024-08-10 20:37:20,414 - backend.database - INFO - Retrieved encrypted password for service: www.google.com.
+2024-08-10 20:37:23,121 - backend.database - INFO - Retrieved encrypted password for service: microsoft.com.
+2024-08-10 20:37:30,741 - password_management - WARNING - Service field is required to retrieve a password.
+2024-08-10 20:37:50,848 - backend.database - INFO - Verified master password.
+2024-08-10 20:37:50,848 - backend.database - INFO - Retrieved encrypted password for service: microsoft.com.
+2024-08-10 20:37:50,849 - password_management - INFO - Retrieved password for service: microsoft.com.
+2024-08-10 20:37:55,615 - password_management - INFO - Master password verified for retrieving service: microsoft.com.
+2024-08-10 20:37:59,820 - backend.database - INFO - Retrieved encrypted password for service: microsoft.com.
+2024-08-10 20:38:24,009 - backend.database - INFO - Retrieved encrypted password for service: microsoft.com.
+2024-08-10 20:39:24,798 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-10 20:39:24,799 - backend.database - DEBUG - ENCRYPTION_KEY_TEST2 not found in .env file. Generating a new key.
+2024-08-10 20:39:24,799 - backend.database - INFO - New encryption key for test2 generated and saved to .env file.
+2024-08-10 20:39:24,799 - backend.database - DEBUG - ENCRYPTION_KEY_TEST2: th6BU... (truncated for security)
+2024-08-10 20:39:24,800 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test2.db
+2024-08-10 20:39:24,814 - backend.database - INFO - Initialized database with key_id.
+2024-08-10 20:39:24,814 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test2.db with key_id: b2d918a8-7f97-4b54-881d-093ad6216b10
+2024-08-10 20:39:24,815 - backend.database - INFO - Checked if master password is set.
+2024-08-10 20:39:30,802 - backend.database - INFO - Master password set in the database.
+2024-08-10 20:39:30,802 - __main__ - INFO - Master password set successfully.
+2024-08-10 20:39:32,011 - backend.database - INFO - Retrieved all passwords.
+2024-08-10 20:39:32,015 - backend.database - INFO - Retrieved all passwords.
+2024-08-10 20:39:32,058 - __main__ - INFO - StrongBox application started.
+2024-08-10 20:39:57,801 - backend.database - INFO - Checked existing entry for service: www.grab.com, username: Chris.
+2024-08-10 20:40:00,404 - backend.database - INFO - Stored password for service: www.grab.com, username: Chris.
+2024-08-10 20:40:00,405 - password_management - INFO - Stored password for service: www.grab.com, username: Chris.
+2024-08-10 20:40:02,129 - backend.database - INFO - Retrieved all passwords.
+2024-08-10 20:40:18,277 - backend.database - INFO - Retrieved encrypted password for service: www.grab.com.
+2024-08-10 20:40:54,289 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-10 20:40:54,289 - backend.database - DEBUG - ENCRYPTION_KEY_SATAN'S CUNT not found in .env file. Generating a new key.
+2024-08-10 20:40:54,290 - backend.database - INFO - New encryption key for Satan's Cunt generated and saved to .env file.
+2024-08-10 20:40:54,291 - backend.database - DEBUG - ENCRYPTION_KEY_SATAN'S CUNT: ifCvQ... (truncated for security)
+2024-08-10 20:40:54,292 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\Satan's Cunt.db
+2024-08-10 20:40:54,305 - backend.database - INFO - Initialized database with key_id.
+2024-08-10 20:40:54,305 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\Satan's Cunt.db with key_id: 9c81c398-1f11-4b7f-9f04-cb1e313de246
+2024-08-10 20:40:54,306 - backend.database - INFO - Checked if master password is set.
+2024-08-10 20:41:17,666 - backend.database - INFO - Master password set in the database.
+2024-08-10 20:41:17,666 - __main__ - INFO - Master password set successfully.
+2024-08-10 20:41:20,736 - backend.database - INFO - Retrieved all passwords.
+2024-08-10 20:41:20,740 - backend.database - INFO - Retrieved all passwords.
+2024-08-10 20:41:20,787 - __main__ - INFO - StrongBox application started.
+2024-08-10 20:41:41,978 - backend.database - INFO - Checked existing entry for service: www.hell.com, username: Lucifer.
+2024-08-10 20:41:44,543 - backend.database - INFO - Stored password for service: www.hell.com, username: Lucifer.
+2024-08-10 20:41:44,543 - password_management - INFO - Stored password for service: www.hell.com, username: Lucifer.
+2024-08-10 20:41:47,421 - backend.database - INFO - Retrieved all passwords.
+2024-08-10 20:41:49,212 - backend.database - INFO - Retrieved encrypted password for service: www.hell.com.
+2024-08-10 20:42:33,823 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-10 20:42:33,825 - password_generation - INFO - Generated password with strength 3.
+2024-08-10 20:42:57,208 - backend.database - INFO - Checked existing entry for service: www.hell.com, username: Lucifer.
+2024-08-10 20:42:57,209 - password_management - INFO - Password for service: www.hell.com already exists.
+2024-08-10 20:43:20,230 - backend.database - INFO - Verified master password.
+2024-08-10 20:43:20,230 - backend.database - INFO - Retrieved encrypted password for service: www.hell.com.
+2024-08-10 20:43:20,231 - password_management - INFO - Retrieved password for service: www.hell.com.
+2024-08-10 20:43:21,806 - password_management - INFO - Master password verified for retrieving service: www.hell.com.
+2024-08-10 20:44:02,227 - backend.database - INFO - Checked existing entry for service: www.heaven.com, username: Lucifer.
+2024-08-10 20:44:04,794 - backend.database - INFO - Stored password for service: www.heaven.com, username: Lucifer.
+2024-08-10 20:44:04,794 - password_management - INFO - Stored password for service: www.heaven.com, username: Lucifer.
+2024-08-10 20:44:06,260 - backend.database - INFO - Retrieved all passwords.
+2024-08-10 20:44:21,545 - backend.password_generator - INFO - Generated password with strength 1.
+2024-08-10 20:44:21,548 - password_generation - INFO - Generated password with strength 1.
+2024-08-10 20:44:30,095 - backend.database - INFO - Checked existing entry for service: www.purgatory.com, username: Lucifer.
+2024-08-10 20:44:31,431 - backend.database - INFO - Stored password for service: www.purgatory.com, username: Lucifer.
+2024-08-10 20:44:31,432 - password_management - INFO - Stored password for service: www.purgatory.com, username: Lucifer.
+2024-08-10 20:44:33,486 - backend.database - INFO - Retrieved all passwords.
+2024-08-10 20:45:05,757 - backend.password_generator - INFO - Generated password with strength 2.
+2024-08-10 20:45:05,758 - password_generation - INFO - Generated password with strength 2.
+2024-08-10 20:45:18,035 - backend.database - INFO - Checked existing entry for service: www.earth.com, username: Lucifer.
+2024-08-10 20:45:19,535 - backend.database - INFO - Stored password for service: www.earth.com, username: Lucifer.
+2024-08-10 20:45:19,536 - password_management - INFO - Stored password for service: www.earth.com, username: Lucifer.
+2024-08-10 20:45:21,603 - backend.database - INFO - Retrieved all passwords.
+2024-08-10 20:45:43,152 - backend.database - INFO - Checked existing entry for service: www.space.com, username: Lucifer.
+2024-08-10 20:45:45,054 - backend.database - INFO - Stored password for service: www.space.com, username: Lucifer.
+2024-08-10 20:45:45,055 - password_management - INFO - Stored password for service: www.space.com, username: Lucifer.
+2024-08-10 20:45:46,422 - backend.database - INFO - Retrieved all passwords.
+2024-08-10 20:47:03,871 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-10 20:47:03,872 - backend.database - DEBUG - ENCRYPTION_KEY_SATAN'S CUNT not found in .env file. Generating a new key.
+2024-08-10 20:47:03,872 - backend.database - INFO - New encryption key for satan's cunt generated and saved to .env file.
+2024-08-10 20:47:03,873 - backend.database - DEBUG - ENCRYPTION_KEY_SATAN'S CUNT: 4rgv9... (truncated for security)
+2024-08-10 20:47:03,873 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\satan's cunt.db
+2024-08-10 20:47:03,878 - backend.database - INFO - Initialized database with key_id.
+2024-08-10 20:47:03,878 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\satan's cunt.db with key_id: 320a6cee-9d85-4cb3-8cf0-97e1da124fe2
+2024-08-10 20:47:03,879 - backend.database - INFO - Checked if master password is set.
+2024-08-10 20:47:14,202 - backend.database - INFO - Verified master password.
+2024-08-10 20:47:14,203 - __main__ - INFO - Master password verified successfully.
+2024-08-10 20:47:15,791 - backend.database - INFO - Retrieved all passwords.
+2024-08-10 20:48:50,806 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-10 20:48:50,806 - backend.database - DEBUG - ENCRYPTION_KEY_SATAN'S CUNT not found in .env file. Generating a new key.
+2024-08-10 20:48:50,807 - backend.database - INFO - New encryption key for Satan's Cunt generated and saved to .env file.
+2024-08-10 20:48:50,807 - backend.database - DEBUG - ENCRYPTION_KEY_SATAN'S CUNT: 2FDgu... (truncated for security)
+2024-08-10 20:48:50,807 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\Satan's Cunt.db
+2024-08-10 20:48:50,810 - backend.database - INFO - Initialized database with key_id.
+2024-08-10 20:48:50,810 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\Satan's Cunt.db with key_id: 6d6cdb11-6c9a-4837-a006-003534e9a639
+2024-08-10 20:48:50,811 - backend.database - INFO - Checked if master password is set.
+2024-08-10 20:49:06,434 - backend.database - INFO - Verified master password.
+2024-08-10 20:49:06,434 - __main__ - INFO - Master password verified successfully.
+2024-08-10 20:49:08,155 - backend.database - INFO - Retrieved all passwords.
+2024-08-11 13:32:49,836 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-11 13:32:49,836 - backend.database - DEBUG - ENCRYPTION_KEY_JESUS_S_WHEEL_S_ARE_ not found in .env file. Generating a new key.
+2024-08-11 13:32:49,837 - backend.database - INFO - New encryption key for Jesus's Wheel's Are $$$ generated and saved to .env file.
+2024-08-11 13:32:49,837 - backend.database - DEBUG - ENCRYPTION_KEY_JESUS_S_WHEEL_S_ARE_: lgwod... (truncated for security)
+2024-08-11 13:32:49,838 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\Jesus's Wheel's Are $$$.db
+2024-08-11 13:32:49,848 - backend.database - INFO - Initialized database with key_id.
+2024-08-11 13:32:49,848 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\Jesus's Wheel's Are $$$.db with key_id: 6c189b81-69d9-4a80-8448-0bf6f5ef2efc
+2024-08-11 13:32:49,850 - backend.database - INFO - Checked if master password is set.
+2024-08-11 13:33:09,112 - backend.database - INFO - Master password set in the database.
+2024-08-11 13:33:09,113 - __main__ - INFO - Master password set successfully.
+2024-08-11 13:33:10,131 - backend.database - INFO - Retrieved all passwords.
+2024-08-11 13:33:10,135 - backend.database - INFO - Retrieved all passwords.
+2024-08-11 13:33:10,197 - __main__ - INFO - StrongBox application started.
+2024-08-11 13:35:57,170 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-11 13:35:57,171 - backend.database - DEBUG - ENCRYPTION_KEY_MONEY_S not found in .env file. Generating a new key.
+2024-08-11 13:35:57,171 - backend.database - INFO - New encryption key for Money's $$$ generated and saved to .env file.
+2024-08-11 13:35:57,172 - backend.database - DEBUG - ENCRYPTION_KEY_MONEY_S: IjYnA... (truncated for security)
+2024-08-11 13:35:57,174 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\Money's $$$.db
+2024-08-11 13:35:57,186 - backend.database - INFO - Initialized database with key_id.
+2024-08-11 13:35:57,186 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\Money's $$$.db with key_id: 8cf8e908-0d9a-469a-9996-ef4018d4d057
+2024-08-11 13:35:57,187 - backend.database - INFO - Checked if master password is set.
+2024-08-11 13:36:14,705 - backend.database - INFO - Master password set in the database.
+2024-08-11 13:36:14,705 - __main__ - INFO - Master password set successfully.
+2024-08-11 13:36:16,006 - backend.database - INFO - Retrieved all passwords.
+2024-08-11 13:36:16,009 - backend.database - INFO - Retrieved all passwords.
+2024-08-11 13:36:16,056 - __main__ - INFO - StrongBox application started.
+2024-08-11 13:43:38,586 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-11 13:43:38,587 - backend.database - DEBUG - ENCRYPTION_KEY_TEST_DATABASE not found in .env file. Generating a new key.
+2024-08-11 13:43:38,588 - backend.database - INFO - New encryption key for Test Database generated and saved to .env file.
+2024-08-11 13:43:38,588 - backend.database - DEBUG - ENCRYPTION_KEY_TEST_DATABASE: j6WbF... (truncated for security)
+2024-08-11 13:43:38,590 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\Test Database.db
+2024-08-11 13:43:38,601 - backend.database - INFO - Initialized database with key_id.
+2024-08-11 13:43:38,601 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\Test Database.db with key_id: 92b9a39a-419d-40f0-aa16-16b6bdea8923
+2024-08-11 13:43:38,602 - backend.database - INFO - Checked if master password is set.
+2024-08-11 13:43:46,974 - backend.database - INFO - Master password set in the database.
+2024-08-11 13:43:46,975 - __main__ - INFO - Master password set successfully.
+2024-08-11 13:43:48,735 - backend.database - INFO - Retrieved all passwords.
+2024-08-11 13:43:48,739 - backend.database - INFO - Retrieved all passwords.
+2024-08-11 13:43:48,773 - __main__ - INFO - StrongBox application started.
+2024-08-11 13:44:27,229 - backend.database - INFO - Checked existing entry for service: www.google.com, username: Lucifer.
+2024-08-11 13:44:29,128 - backend.database - INFO - Stored password for service: www.google.com, username: Lucifer.
+2024-08-11 13:44:29,128 - password_management - INFO - Stored password for service: www.google.com, username: Lucifer.
+2024-08-11 13:44:30,873 - backend.database - INFO - Retrieved all passwords.
+2024-08-11 13:44:35,215 - backend.database - INFO - Retrieved encrypted password for service: www.google.com.
+2024-08-11 13:44:56,717 - backend.database - INFO - Retrieved encrypted password for service: www.google.com.
+2024-08-11 13:45:52,930 - backend.database - INFO - Verified master password.
+2024-08-11 13:45:52,930 - backend.database - INFO - Retrieved encrypted password for service: www.google.com.
+2024-08-11 13:45:52,931 - password_management - INFO - Retrieved password for service: www.google.com.
+2024-08-11 13:45:58,450 - password_management - INFO - Master password verified for retrieving service: www.google.com.
+2024-08-11 13:59:16,298 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-11 13:59:16,298 - backend.database - INFO - Encryption key for Test Database loaded from .env file.
+2024-08-11 13:59:16,299 - backend.database - DEBUG - ENCRYPTION_KEY_TEST_DATABASE: j6WbF... (truncated for security)
+2024-08-11 13:59:16,299 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\Test Database.db
+2024-08-11 13:59:16,304 - backend.database - INFO - Initialized database with key_id.
+2024-08-11 13:59:16,304 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\Test Database.db with key_id: aa4bfaf1-b3f9-4bf1-88fc-1fb54ab29be7
+2024-08-11 13:59:16,305 - backend.database - INFO - Checked if master password is set.
+2024-08-11 13:59:18,426 - backend.database - INFO - Verified master password.
+2024-08-11 13:59:18,427 - __main__ - INFO - Master password verified successfully.
+2024-08-11 13:59:20,510 - backend.database - INFO - Retrieved all passwords.
+2024-08-11 13:59:20,517 - backend.database - INFO - Retrieved all passwords.
+2024-08-11 13:59:20,560 - __main__ - INFO - StrongBox application started.
+2024-08-11 13:59:24,508 - backend.database - INFO - Retrieved encrypted password for service: www.google.com.
+2024-08-11 13:59:42,708 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-11 13:59:42,710 - backend.database - DEBUG - ENCRYPTION_KEY_TEST_DB2 not found in .env file. Generating a new key.
+2024-08-11 13:59:42,710 - backend.database - INFO - New encryption key for Test DB2 generated and saved to .env file.
+2024-08-11 13:59:42,710 - backend.database - DEBUG - ENCRYPTION_KEY_TEST_DB2: 2YPtx... (truncated for security)
+2024-08-11 13:59:42,712 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\Test DB2.db
+2024-08-11 13:59:42,725 - backend.database - INFO - Initialized database with key_id.
+2024-08-11 13:59:42,725 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\Test DB2.db with key_id: 7e385786-0ece-4934-8d61-765c3217b5f7
+2024-08-11 13:59:42,726 - backend.database - INFO - Checked if master password is set.
+2024-08-11 13:59:50,899 - backend.database - INFO - Master password set in the database.
+2024-08-11 13:59:50,900 - __main__ - INFO - Master password set successfully.
+2024-08-11 13:59:52,662 - backend.database - INFO - Retrieved all passwords.
+2024-08-11 13:59:52,665 - backend.database - INFO - Retrieved all passwords.
+2024-08-11 13:59:52,714 - __main__ - INFO - StrongBox application started.
+2024-08-11 14:14:54,488 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-11 14:14:54,488 - backend.database - DEBUG - ENCRYPTION_KEY_TEST3 not found in .env file. Generating a new key.
+2024-08-11 14:14:54,489 - backend.database - INFO - New encryption key for Test3 generated and saved to .env file.
+2024-08-11 14:14:54,489 - backend.database - DEBUG - ENCRYPTION_KEY_TEST3: eO0e6... (truncated for security)
+2024-08-11 14:14:54,490 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\Test3.db
+2024-08-11 14:14:54,502 - backend.database - INFO - Initialized database with key_id.
+2024-08-11 14:14:54,502 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\Test3.db with key_id: 3579e3f7-7def-4dae-9144-28d0bb3d7f36
+2024-08-11 14:14:54,503 - backend.database - INFO - Checked if master password is set.
+2024-08-11 14:15:08,604 - backend.database - INFO - Master password set in the database.
+2024-08-11 14:15:08,605 - __main__ - INFO - Master password set successfully.
+2024-08-11 14:15:11,229 - backend.database - INFO - Retrieved all passwords.
+2024-08-11 14:15:11,232 - backend.database - INFO - Retrieved all passwords.
+2024-08-11 14:15:11,256 - __main__ - INFO - StrongBox application started.
+2024-08-11 14:33:18,612 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-11 14:33:18,612 - backend.database - DEBUG - ENCRYPTION_KEY_TEST_DATABASE4 not found in .env file. Generating a new key.
+2024-08-11 14:33:18,613 - backend.database - INFO - New encryption key for test database4 generated and saved to .env file.
+2024-08-11 14:33:18,613 - backend.database - DEBUG - ENCRYPTION_KEY_TEST_DATABASE4: OYdbL... (truncated for security)
+2024-08-11 14:33:18,614 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test database4.db
+2024-08-11 14:33:18,623 - backend.database - INFO - Initialized database with key_id.
+2024-08-11 14:33:18,624 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\test database4.db with key_id: 07ab03ca-7de4-4bed-89ec-030e35f7d8a5
+2024-08-11 14:33:18,625 - backend.database - INFO - Checked if master password is set.
+2024-08-11 14:33:25,048 - backend.master_password - ERROR - Password must be at least 8 characters long.
+2024-08-11 14:33:25,048 - backend.database - ERROR - Master password validation failed.
+2024-08-11 14:40:14,343 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-11 14:40:14,344 - backend.database - DEBUG - ENCRYPTION_KEY_TEST_S_FOR_TEST_S_DATABASE4 not found in .env file. Generating a new key.
+2024-08-11 14:40:14,344 - backend.database - INFO - New encryption key for Test's for Test's Database4 generated and saved to .env file.
+2024-08-11 14:40:14,345 - backend.database - DEBUG - ENCRYPTION_KEY_TEST_S_FOR_TEST_S_DATABASE4: 3by1y... (truncated for security)
+2024-08-11 14:40:14,346 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\Test's for Test's Database4.db
+2024-08-11 14:40:14,358 - backend.database - INFO - Initialized database with key_id.
+2024-08-11 14:40:14,358 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\Test's for Test's Database4.db with key_id: cc0f3771-c521-4d38-859d-26c63ce23211
+2024-08-11 14:40:14,359 - backend.database - INFO - Checked if master password is set.
+2024-08-11 14:40:36,026 - backend.master_password - ERROR - Password must be at least 8 characters long.
+2024-08-11 14:40:36,026 - backend.database - ERROR - Master password validation failed.
+2024-08-11 14:40:36,026 - __main__ - WARNING - Password validation failed: Master password does not meet security requirements.
+2024-08-11 14:40:45,174 - backend.master_password - ERROR - Password must be at least 8 characters long.
+2024-08-11 14:40:45,175 - backend.database - ERROR - Master password validation failed.
+2024-08-11 14:40:45,175 - __main__ - WARNING - Password validation failed: Master password does not meet security requirements.
+2024-08-11 14:41:09,879 - backend.database - INFO - Master password set in the database.
+2024-08-11 14:41:09,879 - __main__ - INFO - Master password set successfully.
+2024-08-11 14:41:11,495 - backend.database - INFO - Retrieved all passwords.
+2024-08-11 14:41:11,498 - backend.database - INFO - Retrieved all passwords.
+2024-08-11 14:41:11,546 - __main__ - INFO - StrongBox application started.
+2024-08-11 15:31:02,155 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-11 15:31:02,155 - backend.database - INFO - Encryption key for Test3 loaded from .env file.
+2024-08-11 15:31:02,156 - backend.database - DEBUG - ENCRYPTION_KEY_TEST3: eO0e6... (truncated for security)
+2024-08-11 15:31:02,156 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\Test3.db
+2024-08-11 15:31:02,160 - backend.database - INFO - Initialized database with key_id.
+2024-08-11 15:31:02,161 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\Test3.db with key_id: 85bc33f2-ddf1-40f1-b8eb-92e02e5e75d4
+2024-08-11 15:31:02,162 - backend.database - INFO - Checked if master password is set.
+2024-08-11 15:31:04,710 - backend.master_password - ERROR - Error verifying password: Keys do not match.
+2024-08-11 15:31:04,711 - backend.database - INFO - Verified master password.
+2024-08-11 15:31:04,711 - __main__ - WARNING - Incorrect master password.
+2024-08-11 15:31:08,152 - backend.database - INFO - Verified master password.
+2024-08-11 15:31:08,152 - __main__ - INFO - Master password verified successfully.
+2024-08-11 15:31:09,584 - backend.database - INFO - Retrieved all passwords.
+2024-08-11 15:31:09,586 - backend.database - INFO - Retrieved all passwords.
+2024-08-11 15:31:09,633 - __main__ - INFO - StrongBox application started.
+2024-08-11 15:57:24,989 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-11 15:57:24,990 - backend.database - DEBUG - ENCRYPTION_KEY_CHICKENS_N_STUFF not found in .env file. Generating a new key.
+2024-08-11 15:57:24,990 - backend.database - INFO - New encryption key for Chickens N'Stuff generated and saved to .env file.
+2024-08-11 15:57:24,990 - backend.database - DEBUG - ENCRYPTION_KEY_CHICKENS_N_STUFF: WeKiC... (truncated for security)
+2024-08-11 15:57:24,991 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\Chickens N'Stuff.db
+2024-08-11 15:57:25,004 - backend.database - INFO - Initialized database with key_id.
+2024-08-11 15:57:25,004 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\Chickens N'Stuff.db with key_id: 895cc59d-53ca-4596-8663-6bcac8710af0
+2024-08-11 15:57:25,004 - backend.database - INFO - Checked if master password is set.
+2024-08-11 15:57:48,567 - backend.database - INFO - Master password set in the database.
+2024-08-11 15:57:48,567 - __main__ - INFO - Master password set successfully.
+2024-08-11 15:57:49,425 - backend.database - INFO - Retrieved all passwords.
+2024-08-11 15:57:49,427 - backend.database - INFO - Retrieved all passwords.
+2024-08-11 15:57:49,466 - __main__ - INFO - StrongBox application started.
+2024-08-11 15:59:05,503 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-11 15:59:05,504 - password_generation - INFO - Generated password with strength 3.
+2024-08-11 15:59:13,311 - backend.database - INFO - Checked existing entry for service: www.chicken.com, username: Donald Duck.
+2024-08-11 15:59:17,522 - backend.database - INFO - Stored password for service: www.chicken.com, username: Donald Duck.
+2024-08-11 15:59:17,523 - password_management - INFO - Stored password for service: www.chicken.com, username: Donald Duck.
+2024-08-11 15:59:18,770 - backend.database - INFO - Retrieved all passwords.
+2024-08-11 15:59:41,467 - backend.database - INFO - Retrieved encrypted password for service: www.chicken.com.
+2024-08-11 16:04:30,421 - backend.database - INFO - Verified master password.
+2024-08-11 16:04:30,422 - backend.database - INFO - Retrieved encrypted password for service: www.chicken.com.
+2024-08-11 16:04:30,422 - password_management - INFO - Retrieved password for service: www.chicken.com.
+2024-08-11 16:04:32,241 - password_management - INFO - Master password verified for retrieving service: www.chicken.com.
