@@ -222,7 +222,8 @@ def retrieve_password(conn: sqlite3.Connection, service: str, cipher_suite: Fern
             "SELECT username, password FROM passwords WHERE service = ?", (service,)
         )
         row = cursor.fetchone()
-        if row:
+
+        if row and len(row) == 2:
             username, encrypted_password = row
             logger.info(f"Retrieved encrypted password for service: {service}.")
             return username, encrypted_password
