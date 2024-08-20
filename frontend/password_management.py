@@ -1,12 +1,10 @@
-import hashlib
 import logging
 
-from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
+    QApplication,
     QDialog,
-    QFrame,
     QHBoxLayout,
-    QInputDialog,
+    QHeaderView,
     QLabel,
     QLineEdit,
     QListWidget,
@@ -19,10 +17,14 @@ from PySide6.QtWidgets import (
 )
 
 from backend.database import (
-    check_existing_entry,
     get_all_passwords,
     retrieve_password,
-    store_password,
+    store_password,  # Import store_password function from database
+)
+from backend.utils import (  # Import utility functions
+    create_button,
+    create_horizontal_line,
+    create_input,
 )
 
 logger = logging.getLogger(__name__)
@@ -44,30 +46,28 @@ class PasswordManagementTab(QWidget):
         )
         self.layout.addWidget(title_label)
 
-        self.layout.addWidget(self.create_horizontal_line())
+        # Add horizontal line using utility function
+        self.layout.addWidget(create_horizontal_line())
 
-        # Create input fields
-        self.service_input = self.create_input(
-            "Service:", "Enter or copy/paste service name"
+        # Use utility functions to create input fields
+        self.service_input = create_input(
+            "Service:", "Enter or copy/paste service name", self.layout
         )
-        self.username_input = self.create_input("Username:", "Enter username")
-        self.password_input = self.create_input(
-            "Password:", "Enter password", QLineEdit.Password
+        self.username_input = create_input("Username:", "Enter username", self.layout)
+        self.password_input = create_input(
+            "Password:", "Enter password", self.layout, QLineEdit.Password
         )
 
-        # Create buttons
+        # Create buttons using utility function
         btn_layout = QHBoxLayout()
         self.layout.addLayout(btn_layout)
-        self.store_btn = self.create_button(
+        self.store_btn = create_button(
             "Store Password", "icons/store.png", self.store_password
         )
         btn_layout.addWidget(self.store_btn)
-        self.retrieve_btn = self.create_button(
-            "Retrieve Password", "icons/retrieve.png", self.verify_and_retrieve_password
-        )
-        btn_layout.addWidget(self.retrieve_btn)
 
-        self.layout.addWidget(self.create_horizontal_line())
+        # Add another horizontal line
+        self.layout.addWidget(create_horizontal_line())
 
         # Create table for displaying stored passwords
         self.layout.addWidget(QLabel("Stored Passwords"))
@@ -76,34 +76,17 @@ class PasswordManagementTab(QWidget):
 
         self.load_passwords()
 
-    def create_input(self, label_text, placeholder, echo_mode=QLineEdit.Normal):
-        label = QLabel(label_text)
-        self.layout.addWidget(label)
-        input_field = QLineEdit()
-        input_field.setPlaceholderText(placeholder)
-        input_field.setEchoMode(echo_mode)
-        self.layout.addWidget(input_field)
-        return input_field
-
-    def create_button(self, text, icon_path, callback):
-        button = QPushButton(text)
-        button.setIcon(QIcon(icon_path))
-        button.setStyleSheet("padding: 5px 10px; font-size: 14px;")
-        button.clicked.connect(callback)
-        return button
-
     def create_password_table(self):
         table = QTableWidget()
         table.setColumnCount(4)
         table.setHorizontalHeaderLabels(["Service", "Username", "Password", "Action"])
         table.setStyleSheet("font-size: 12px;")
-        return table
 
-    def create_horizontal_line(self):
-        line = QFrame()
-        line.setFrameShape(QFrame.HLine)
-        line.setFrameShadow(QFrame.Sunken)
-        return line
+        # Make the columns responsive to the width of the main window
+        header = table.horizontalHeader()
+        header.setSectionResizeMode(QHeaderView.Stretch)
+
+        return table
 
     def load_passwords(self):
         self.password_table.setRowCount(0)
@@ -113,49 +96,64 @@ class PasswordManagementTab(QWidget):
             self.password_table.setItem(row_num, 0, QTableWidgetItem(service))
             self.password_table.setItem(row_num, 1, QTableWidgetItem(username))
 
-            password = self.cipher_suite.decrypt(encrypted_password.encode()).decode()
-            hashed_password = hashlib.sha256(password.encode()).hexdigest()
-            self.password_table.setItem(row_num, 2, QTableWidgetItem(hashed_password))
+            # Display masked password instead of hashed or encrypted password
+            masked_password = "******"
+            self.password_table.setItem(row_num, 2, QTableWidgetItem(masked_password))
 
-            show_btn = self.create_button(
+            show_btn = create_button(
                 "Show", "", lambda ch, r=row_num: self.show_password(r)
             )
             self.password_table.setCellWidget(row_num, 3, show_btn)
 
     def show_password(self, row):
-        # Access the main window, which should be an instance of PasswordManager
         main_window = self.window()
 
-        # Ensure the master password is verified before showing the password
         if not main_window.verify_master_password():
             logger.debug("Master password verification failed.")
-            return  # Exit if the master password verification fails
+            return
 
         service = self.password_table.item(row, 0).text()
         logger.debug(f"Service selected: {service}")
 
         try:
-            # Retrieve the username and encrypted password for the selected service
+            cursor = self.conn.execute(
+                "SELECT username FROM passwords WHERE service = ?", (service,)
+            )
+            usernames = [username[0] for username in cursor.fetchall()]
+
+            if not usernames:
+                logger.warning(f"No usernames found for service: {service}")
+                QMessageBox.warning(
+                    self, "Error", f"No usernames found for service: {service}"
+                )
+                return
+
+            if len(usernames) > 1:
+                dialog = UsernameSelectionDialog(usernames)
+                if dialog.exec():
+                    selected_username = dialog.selected_username
+                else:
+                    logger.info("Username selection canceled.")
+                    return
+            else:
+                selected_username = usernames[0]
+
             username, encrypted_password = retrieve_password(
-                self.conn, service, self.cipher_suite
+                self.conn, service, selected_username, self.cipher_suite
             )
             logger.debug(
                 f"Retrieved Username: {username}, Encrypted Password: {encrypted_password}"
             )
 
             if username and encrypted_password:
-                # Decrypt the password using the cipher suite
                 decrypted_password = self.cipher_suite.decrypt(
                     encrypted_password.encode()
                 ).decode()
                 logger.debug(f"Decrypted Password: {decrypted_password}")
 
-                # Display the decrypted password in a message box
-                QMessageBox.information(
-                    self,
-                    "Password Details",
-                    f"Service: {service}\nUsername: {username}\nPassword: {decrypted_password}",
-                )
+                # Create a custom dialog for showing the password details with copy buttons
+                self.show_password_details_dialog(service, username, decrypted_password)
+
             else:
                 logger.warning("Failed to retrieve password details.")
                 QMessageBox.warning(
@@ -165,96 +163,70 @@ class PasswordManagementTab(QWidget):
             logger.error(f"Error during password retrieval: {e}")
             QMessageBox.critical(self, "Error", f"Failed to retrieve password: {e}")
 
+    def show_password_details_dialog(self, service, username, decrypted_password):
+        details_dialog = QDialog(self)
+        details_dialog.setWindowTitle("Password Details")
+
+        # Set a fixed width for the dialog to ensure it looks neat
+        details_dialog.setFixedWidth(500)  # Adjust this value as needed
+
+        layout = QVBoxLayout(details_dialog)
+
+        service_label = QLabel(f"Service: {service}")
+        layout.addWidget(service_label)
+
+        username_layout = QHBoxLayout()
+        username_label = QLabel(f"Username: {username}")
+        copy_username_btn = QPushButton("Copy Username")
+        copy_username_btn.clicked.connect(lambda: self.copy_to_clipboard(username))
+        username_layout.addWidget(username_label)
+        username_layout.addWidget(copy_username_btn)
+        layout.addLayout(username_layout)
+
+        password_layout = QHBoxLayout()
+        password_label = QLabel(f"Password: {decrypted_password}")
+        copy_password_btn = QPushButton("Copy Password")
+        copy_password_btn.clicked.connect(
+            lambda: self.copy_to_clipboard(decrypted_password)
+        )
+        password_layout.addWidget(password_label)
+        password_layout.addWidget(copy_password_btn)
+        layout.addLayout(password_layout)
+
+        close_button = QPushButton("Close")
+        close_button.clicked.connect(details_dialog.accept)
+        layout.addWidget(close_button)
+
+        details_dialog.setLayout(layout)
+        details_dialog.exec()
+
+    def copy_to_clipboard(self, text):
+        clipboard = QApplication.clipboard()
+        clipboard.setText(text)
+        QMessageBox.information(self, "Copied", "Text copied to clipboard!")
+
     def store_password(self):
         service = self.service_input.text()
         username = self.username_input.text()
         password = self.password_input.text()
 
         if not service or not username or not password:
-            self.show_warning("All fields are required to store a password.")
+            QMessageBox.warning(
+                self, "Warning", "All fields must be filled out to store a password."
+            )
             return
 
-        if not check_existing_entry(self.conn, service, username):
-            if self.confirm_action(
-                f"Do you want to add the service: {service}, username: {username}, password: {password} to StrongBox?"
-            ):
-                self.execute_store_password(service, username, password)
-        else:
-            self.show_info(f"Password for service: {service} already exists.")
-
-    def execute_store_password(self, service, username, password):
         try:
+            # Call the store_password function with the plain text password
             store_password(self.conn, service, username, password, self.cipher_suite)
-            logger.info(
-                f"Stored password for service: {service}, username: {username}."
+            logger.info(f"Password for {service} stored successfully.")
+            QMessageBox.information(
+                self, "Success", f"Password for {service} stored successfully."
             )
-            self.show_info(f"Password for {service} stored successfully!")
             self.load_passwords()
         except Exception as e:
             logger.error(f"Failed to store password: {e}")
             QMessageBox.critical(self, "Error", f"Failed to store password: {e}")
-
-    def verify_and_retrieve_password(self):
-        service = self.service_input.text()
-
-        if not service:
-            self.show_warning("Service field is required to retrieve a password.")
-            return
-
-        password, ok = QInputDialog.getText(
-            self,
-            "Master Password",
-            "Enter master password to retrieve the service password:",
-            QLineEdit.Password,
-        )
-        if ok and password:
-            from backend.database import verify_master_password
-
-            if verify_master_password(self.conn, password):
-                self.retrieve_password(service)
-                logger.info(
-                    f"Master password verified for retrieving service: {service}."
-                )
-            else:
-                self.show_warning("Incorrect master password. Please try again.")
-        else:
-            self.show_warning(
-                "Master password is required to retrieve the service password."
-            )
-
-    def retrieve_password(self, service):
-        try:
-            username, encrypted_password = retrieve_password(
-                self.conn, service, self.cipher_suite
-            )
-            if username and encrypted_password:
-                password = self.cipher_suite.decrypt(
-                    encrypted_password.encode()
-                ).decode()
-                self.show_info(f"Username: {username}\nPassword: {password}")
-            else:
-                self.show_info(f"No password found for {service}.")
-        except Exception as e:
-            logger.error(f"Failed to retrieve password: {e}")
-            QMessageBox.critical(self, "Error", f"Failed to retrieve password: {e}")
-
-    def show_info(self, message):
-        QMessageBox.information(self, "Info", message)
-
-    def show_warning(self, message):
-        QMessageBox.warning(self, "Warning", message)
-
-    def confirm_action(self, message):
-        return (
-            QMessageBox.question(
-                self,
-                "Add Entry",
-                message,
-                QMessageBox.Yes | QMessageBox.No,
-                QMessageBox.No,
-            )
-            == QMessageBox.Yes
-        )
 
 
 class UsernameSelectionDialog(QDialog):

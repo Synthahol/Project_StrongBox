@@ -5,17 +5,22 @@ import sys
 # Add the backend directory to sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from backend.password_generator import generate_password
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
+    QApplication,
     QComboBox,
     QHBoxLayout,
     QLabel,
     QLineEdit,
     QMessageBox,
     QPushButton,
+    QSizePolicy,
+    QSpacerItem,
     QVBoxLayout,
     QWidget,
 )
+
+from backend.password_generator import generate_password
 
 logger = logging.getLogger(__name__)
 
@@ -27,8 +32,17 @@ class PasswordGenerationTab(QWidget):
         self.create_ui()
 
     def create_ui(self):
-        self.layout.addWidget(QLabel("Password Generator"))
+        # Add the title at the top
+        title_label = QLabel("Password Generator")
+        title_label.setAlignment(Qt.AlignCenter)  # Center the title
+        self.layout.addWidget(title_label)
 
+        # Add some space between the title and the content
+        self.layout.addSpacerItem(
+            QSpacerItem(20, 10, QSizePolicy.Minimum, QSizePolicy.Fixed)
+        )
+
+        # Create the layout for the strength selection and button
         strength_layout = QHBoxLayout()
         self.layout.addLayout(strength_layout)
 
@@ -45,9 +59,19 @@ class PasswordGenerationTab(QWidget):
         self.generate_btn.clicked.connect(self.generate_password)
         strength_layout.addWidget(self.generate_btn)
 
+        # Add the generated password display
+        password_layout = QHBoxLayout()
         self.generated_password = QLineEdit()
         self.generated_password.setReadOnly(True)
-        self.layout.addWidget(self.generated_password)
+        password_layout.addWidget(self.generated_password)
+
+        self.copy_btn = QPushButton("Copy Password")
+        self.copy_btn.clicked.connect(self.copy_to_clipboard)
+        password_layout.addWidget(self.copy_btn)
+
+        self.layout.addLayout(password_layout)
+
+        self.layout.addStretch(1)
 
     def generate_password(self):
         try:
@@ -58,3 +82,8 @@ class PasswordGenerationTab(QWidget):
         except Exception as e:
             logger.error(f"Failed to generate password: {e}")
             QMessageBox.critical(self, "Error", f"Failed to generate password: {e}")
+
+    def copy_to_clipboard(self):
+        clipboard = QApplication.clipboard()
+        clipboard.setText(self.generated_password.text())
+        QMessageBox.information(self, "Copied", "Password copied to clipboard!")

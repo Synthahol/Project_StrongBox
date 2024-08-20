@@ -5,17 +5,20 @@ import uuid
 
 from password_generation import PasswordGenerationTab
 from password_management import PasswordManagementTab
+from PySide6.QtGui import QIcon  # Import QIcon for setting custom icons
 from PySide6.QtWidgets import (
     QApplication,
     QDialog,
+    QHBoxLayout,
     QInputDialog,
     QLabel,
     QLineEdit,
     QMainWindow,
     QMessageBox,
     QPushButton,
-    QTabWidget,
+    QStackedWidget,
     QVBoxLayout,
+    QWidget,
 )
 
 # Add the root directory to sys.path
@@ -56,15 +59,50 @@ class WelcomeDialog(QDialog):
 class PasswordManager(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.conn = None  # Initialize conn
+        self.cipher_suite = None  # Initialize cipher_suite
+
         self.setWindowTitle("StrongBox - Password Manager")
-        self.setGeometry(300, 300, 600, 400)  # Increased size for table view
+        self.setGeometry(300, 300, 800, 600)  # Adjusted size
 
-        self.central_widget = QTabWidget()
-        self.setCentralWidget(self.central_widget)
+        # Main layout for the window
+        main_layout = QHBoxLayout()
 
-        self.conn = None
-        self.is_master_password_verified = False  # Flag to track verification state
-        self.cipher_suite = None
+        # Left side - column with buttons
+        left_column = QVBoxLayout()
+        left_column.setContentsMargins(10, 10, 10, 10)
+
+        # Password Generator button with custom icon
+        self.generator_button = QPushButton("Password Generator")
+        self.generator_button.setIcon(
+            QIcon("frontend\icons\magic-wand.png")
+        )  # Set your custom icon path
+        self.generator_button.clicked.connect(self.show_password_generator)
+        left_column.addWidget(self.generator_button)
+
+        # Manage Passwords button with custom icon
+        self.manage_button = QPushButton("Manage Passwords")
+        self.manage_button.setIcon(
+            QIcon("frontend\icons\safe-box_64x64.png")
+        )  # Set your custom icon path
+        self.manage_button.clicked.connect(self.show_manage_passwords)
+        left_column.addWidget(self.manage_button)
+
+        # Adding a spacer to push the buttons to the top
+        left_column.addStretch()
+
+        # Right side - stacked widget
+        self.stacked_widget = QStackedWidget()
+
+        # Adding left column and stacked widget to the main layout
+        main_layout.addLayout(left_column)
+        main_layout.addWidget(self.stacked_widget)
+
+        # Setting the main layout to the central widget
+        container = QWidget()
+        container.setLayout(main_layout)
+        self.setCentralWidget(container)
+
         self.initialize_app()
 
     def initialize_app(self):
@@ -100,21 +138,30 @@ class PasswordManager(QMainWindow):
             if not is_master_password_set(self.conn):
                 self.set_master_password()
             else:
-                self.verify_master_password()
+                if not self.verify_master_password():
+                    self.show_error("Master password verification failed.")
+                    return
 
-            self.create_tabs()
+            # Create the Password Generation page and Manage Passwords page after connection is established
+            self.password_generation_tab = PasswordGenerationTab()
+            self.password_management_tab = PasswordManagementTab(
+                self.conn, self.cipher_suite
+            )
+
+            self.stacked_widget.addWidget(self.password_generation_tab)
+            self.stacked_widget.addWidget(self.password_management_tab)
+
+            self.show_password_generator()  # Show the Password Generator by default
         else:
             self.show_error("Failed to connect to the database.")
             logger.error("Failed to connect to the database.")
             return
 
-    def create_tabs(self):
-        self.password_management_tab = PasswordManagementTab(
-            self.conn, self.cipher_suite
-        )
-        self.password_generation_tab = PasswordGenerationTab()
-        self.central_widget.addTab(self.password_generation_tab, "Password Generator")
-        self.central_widget.addTab(self.password_management_tab, "Manage Passwords")
+    def show_password_generator(self):
+        self.stacked_widget.setCurrentWidget(self.password_generation_tab)
+
+    def show_manage_passwords(self):
+        self.stacked_widget.setCurrentWidget(self.password_management_tab)
 
     def set_master_password(self):
         while True:
@@ -159,7 +206,7 @@ class PasswordManager(QMainWindow):
                 QMessageBox.warning(
                     self, "Error", "Master password is required to proceed."
                 )
-                return False  # Add this line to return False if the user cancels
+                return False  # Return False if the user cancels
 
     def prompt_user_input(self, title, label, echo_mode=QLineEdit.Normal):
         return QInputDialog.getText(self, title, label, echo_mode)
@@ -184,8 +231,14 @@ class PasswordManager(QMainWindow):
         QMessageBox.critical(self, "Error", message)
 
 
-if __name__ == "__main__":
+def main():
     app = QApplication(sys.argv)
+
+    # Load stylesheet
+    stylesheet_path = os.path.join(os.path.dirname(__file__), "styles", "style.qss")
+    with open(stylesheet_path, "r") as file:
+        app.setStyleSheet(file.read())
+
     welcome_dialog = WelcomeDialog()
     welcome_dialog.exec()
 
@@ -193,3 +246,7 @@ if __name__ == "__main__":
     window.show()
     logger.info("StrongBox application started.")
     sys.exit(app.exec())
+
+
+if __name__ == "__main__":
+    main()

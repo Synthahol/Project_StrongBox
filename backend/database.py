@@ -216,19 +216,26 @@ def store_password(
             logger.error(f"Error storing password: {e}")
 
 
-def retrieve_password(conn: sqlite3.Connection, service: str, cipher_suite: Fernet):
+def retrieve_password(
+    conn: sqlite3.Connection, service: str, username: str, cipher_suite: Fernet
+):
     try:
         cursor = conn.execute(
-            "SELECT username, password FROM passwords WHERE service = ?", (service,)
+            "SELECT username, password FROM passwords WHERE service = ? AND username = ?",
+            (service, username),
         )
         row = cursor.fetchone()
 
         if row and len(row) == 2:
             username, encrypted_password = row
-            logger.info(f"Retrieved encrypted password for service: {service}.")
+            logger.info(
+                f"Retrieved encrypted password for service: {service}, username: {username}."
+            )
             return username, encrypted_password
         else:
-            logger.info(f"No password found for service: {service}.")
+            logger.info(
+                f"No password found for service: {service} and username: {username}."
+            )
             return None, None
     except sqlite3.Error as e:
         logger.error(f"Error retrieving password: {e}")

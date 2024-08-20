@@ -1,0 +1,207 @@
+/*-----QWidget-----*/
+QWidget
+{
+	background-color: #232430;
+	color: #c1c1c1; /* Changed text color to light gray for better visibility */
+	border-color: #000000;
+}
+
+/*-----QLabel-----*/
+QLabel
+{
+	background-color: #232430;
+	color: #c1c1c1; /* Light gray text color for labels */
+	border-color: #000000;
+}
+
+/*-----QPushButton-----*/
+QPushButton
+{
+	background-color: transparent; /* Transparent background */
+	color: #c1c1c1; /* Text color matching border */
+	font-weight: bold;
+	border: 2px solid #00A36C; /* Colored border */
+	padding: 8px 15px; /* Increased padding for better appearance */
+	border-radius: 5px; /* Rounded corners */
+	/* Add spacing between icon and text */
+	qproperty-iconSize: 32px;
+	qproperty-iconSpacing: 10px; /* Adjust this to increase/decrease space between icon and text */
+}
+
+QPushButton::hover
+{
+	background-color: #00A36C; /* Background color on hover */
+	color: #ffffff; /* Text color on hover */
+}
+
+QPushButton::pressed
+{
+	background-color: #00A36C; /* Background color when pressed */
+	border-color: #00A36C; /* Border color when pressed */
+	color: #ffffff; /* Text color when pressed */
+}
+
+/*-----QToolButton-----*/
+QToolButton
+{
+	background-color: #ff9c2b;
+	color: #000000;
+	font-weight: bold;
+	border-style: solid;
+	border-color: #000000;
+	padding: 6px;
+}
+
+QToolButton::hover
+{
+	background-color: #ffaf5d;
+}
+
+QToolButton::pressed
+{
+	background-color: #dd872f;
+}
+
+/*-----QLineEdit-----*/
+QLineEdit
+{
+	background-color: #38394e;
+	color: #c1c1c1; /* Light gray text color for better visibility */
+	border-style: solid;
+	border-width: 1px;
+	border-color: #4a4c68;
+}
+
+/*-----QComboBox-----*/
+QComboBox {
+    background-color: #38394e; /* Dark background for combo box */
+    color: #c1c1c1; /* Light gray text color for better visibility */
+    border: 1px solid #4a4c68;
+    padding: 5px;
+}
+
+QComboBox QAbstractItemView {
+    background-color: #232430; /* Dark background for dropdown list */
+    color: #c1c1c1; /* Light gray text color for dropdown items */
+    selection-background-color: #41424e; /* Background color when an item is selected */
+    selection-color: #ffffff; /* Text color when an item is selected */
+}
+
+/*-----QTableView-----*/
+QTableView, 
+QHeaderView, 
+QTableView::item 
+{
+	background-color: #232430;
+	color: #c1c1c1;
+	border: none;
+}
+
+QTableView::item:selected 
+{ 
+    background-color: #41424e;
+    color: #c1c1c1;
+}
+
+QHeaderView::section:horizontal 
+{
+    background-color: #232430;
+	border: 1px solid #37384d;
+	padding: 5px;
+}
+
+QTableView::indicator {
+	background-color: #1d1d28;
+	border: 1px solid #37384d;
+}
+
+QTableView::indicator:checked {
+	image:url("./ressources/check.png"); /* To replace with an actual image path */
+	background-color: #1d1d28;
+}
+
+/*-----QTabWidget-----*/
+QTabWidget::pane 
+{ 
+    border: none;
+}
+
+QTabWidget::tab-bar 
+{
+    left: 5px; 
+}
+
+QTabBar::tab 
+{
+    color: #c1c1c1;
+    min-width: 1px;
+	padding-left: 25px;
+	margin-left:-22px;
+    height: 28px;
+	border: none;
+}
+
+QTabBar::tab:selected 
+{
+    color: #c1c1c1;
+	font-weight: bold;
+    height: 28px;
+}
+
+QTabBar::tab:!first 
+{
+    margin-left: -20px;
+}
+
+QTabBar::tab:hover 
+{
+    color: #DDD;
+}
+
+/*-----QScrollBar-----*/
+QScrollBar:horizontal 
+{
+    background-color: transparent;
+    height: 8px;
+    margin: 0px;
+    padding: 0px;
+}
+
+QScrollBar::handle:horizontal 
+{
+    border: none;
+	min-width: 100px;
+    background-color: #56576c;
+}
+
+QScrollBar::add-line:horizontal, 
+QScrollBar::sub-line:horizontal,
+QScrollBar::add-page:horizontal, 
+QScrollBar::sub-page:horizontal 
+{
+    width: 0px;
+    background-color: transparent;
+}
+
+QScrollBar:vertical 
+{
+    background-color: transparent;
+    width: 8px;
+    margin: 0;
+}
+
+QScrollBar::handle:vertical 
+{
+    border: none;
+	min-height: 100px;
+    background-color: #56576c;
+}
+
+QScrollBar::add-line:vertical, 
+QScrollBar::sub-line:vertical,
+QScrollBar::add-page:vertical, 
+QScrollBar::sub-page:vertical 
+{
+    height: 0px;
+    background-color: transparent;
+}
