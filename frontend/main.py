@@ -16,6 +16,7 @@ from PySide6.QtWidgets import (
     QMainWindow,
     QMessageBox,
     QPushButton,
+    QSizePolicy,
     QStackedWidget,
     QVBoxLayout,
     QWidget,
@@ -47,13 +48,58 @@ class WelcomeDialog(QDialog):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Welcome to StrongBox!")
+
         layout = QVBoxLayout()
+
         label = QLabel("Welcome to StrongBox! Click OK to proceed.")
         layout.addWidget(label)
+
         ok_button = QPushButton("OK")
-        ok_button.clicked.connect(self.accept)
+        ok_button.clicked.connect(self.accept)  # Closes the dialog when OK is clicked
         layout.addWidget(ok_button)
+
         self.setLayout(layout)
+
+
+class VerifyMasterPasswordDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        self.setWindowTitle("Verify Master Password")
+        self.setMinimumSize(400, 100)
+
+        layout = QVBoxLayout()
+
+        self.label = QLabel("Enter master password:")
+        layout.addWidget(self.label)
+
+        self.password_input = QLineEdit()
+        self.password_input.setEchoMode(QLineEdit.Password)
+        layout.addWidget(self.password_input)
+
+        # Create the buttons
+        self.ok_button = QPushButton("OK")
+        self.cancel_button = QPushButton("Cancel")
+
+        # Connect the buttons to the dialog's accept and reject slots
+        self.ok_button.clicked.connect(self.accept)
+        self.cancel_button.clicked.connect(self.reject)
+
+        # Create a layout for the buttons
+        button_layout = QHBoxLayout()
+        button_layout.addWidget(self.ok_button)
+        button_layout.addWidget(self.cancel_button)
+
+        # Make the buttons expand to take up half of the dialog each
+        self.ok_button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+        self.cancel_button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+
+        layout.addLayout(button_layout)
+
+        self.setLayout(layout)
+
+    def get_password(self):
+        return self.password_input.text()
 
 
 class PasswordManager(QMainWindow):
@@ -75,7 +121,7 @@ class PasswordManager(QMainWindow):
         # Password Generator button with custom icon
         self.generator_button = QPushButton("Password Generator")
         self.generator_button.setIcon(
-            QIcon("frontend\icons\magic-wand.png")
+            QIcon(r"frontend\icons\magic-wand.png")
         )  # Set your custom icon path
         self.generator_button.clicked.connect(self.show_password_generator)
         left_column.addWidget(self.generator_button)
@@ -83,7 +129,7 @@ class PasswordManager(QMainWindow):
         # Manage Passwords button with custom icon
         self.manage_button = QPushButton("Manage Passwords")
         self.manage_button.setIcon(
-            QIcon("frontend\icons\safe-box_64x64.png")
+            QIcon(r"frontend\icons\safe-box_64x64.png")
         )  # Set your custom icon path
         self.manage_button.clicked.connect(self.show_manage_passwords)
         left_column.addWidget(self.manage_button)
@@ -186,14 +232,11 @@ class PasswordManager(QMainWindow):
         from backend.database import verify_master_password
 
         while True:
-            password, ok = QInputDialog.getText(
-                self,
-                "Verify Master Password",
-                "Enter master password:",
-                QLineEdit.Password,
-            )
-            if ok and password:
-                if verify_master_password(self.conn, password):
+            dialog = VerifyMasterPasswordDialog(self)
+
+            if dialog.exec() == QDialog.Accepted:
+                password = dialog.get_password()
+                if password and verify_master_password(self.conn, password):
                     logger.info("Master password verified successfully.")
                     return True
                 else:

@@ -25,8 +25,9 @@ QPushButton
 	border-radius: 5px; /* Rounded corners */
 	/* Add spacing between icon and text */
 	qproperty-iconSize: 32px;
-	qproperty-iconSpacing: 10px; /* Adjust this to increase/decrease space between icon and text */
+	
 }
+
 
 QPushButton::hover
 {

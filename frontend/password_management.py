@@ -168,7 +168,7 @@ class PasswordManagementTab(QWidget):
         details_dialog.setWindowTitle("Password Details")
 
         # Set a fixed width for the dialog to ensure it looks neat
-        details_dialog.setFixedWidth(500)  # Adjust this value as needed
+        details_dialog.setFixedWidth(600)  # Adjust this value as needed
 
         layout = QVBoxLayout(details_dialog)
 
