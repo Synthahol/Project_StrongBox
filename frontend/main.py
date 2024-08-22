@@ -47,6 +47,10 @@ logger = logging.getLogger(__name__)
 class WelcomeDialog(QDialog):
     def __init__(self):
         super().__init__()
+
+        # Set the custom icon for the dialog title bar
+        self.setWindowIcon(QIcon(r"frontend/icons/muscles.png"))
+
         self.setWindowTitle("Welcome to StrongBox!")
 
         layout = QVBoxLayout()
@@ -108,11 +112,18 @@ class PasswordManager(QMainWindow):
         self.conn = None  # Initialize conn
         self.cipher_suite = None  # Initialize cipher_suite
 
-        self.setWindowTitle("StrongBox - Password Manager")
+        self.setWindowTitle("StrongBox")
         self.setGeometry(300, 300, 800, 600)  # Adjusted size
 
+        # Set the custom icon for the title bar
+        self.setWindowIcon(QIcon(r"frontend/icons/muscles.png"))
+
+        # Create the main widget and set it as the central widget
+        self.main_widget = QWidget(self)
+        self.setCentralWidget(self.main_widget)
+
         # Main layout for the window
-        main_layout = QHBoxLayout()
+        main_layout = QHBoxLayout(self.main_widget)
 
         # Left side - column with buttons
         left_column = QVBoxLayout()
@@ -121,7 +132,7 @@ class PasswordManager(QMainWindow):
         # Password Generator button with custom icon
         self.generator_button = QPushButton("Password Generator")
         self.generator_button.setIcon(
-            QIcon(r"frontend\icons\magic-wand.png")
+            QIcon(r"frontend/icons/magic-wand.png")
         )  # Set your custom icon path
         self.generator_button.clicked.connect(self.show_password_generator)
         left_column.addWidget(self.generator_button)
@@ -129,7 +140,7 @@ class PasswordManager(QMainWindow):
         # Manage Passwords button with custom icon
         self.manage_button = QPushButton("Manage Passwords")
         self.manage_button.setIcon(
-            QIcon(r"frontend\icons\safe-box_64x64.png")
+            QIcon(r"frontend/icons/safe-box_64x64.png")
         )  # Set your custom icon path
         self.manage_button.clicked.connect(self.show_manage_passwords)
         left_column.addWidget(self.manage_button)
@@ -144,11 +155,7 @@ class PasswordManager(QMainWindow):
         main_layout.addLayout(left_column)
         main_layout.addWidget(self.stacked_widget)
 
-        # Setting the main layout to the central widget
-        container = QWidget()
-        container.setLayout(main_layout)
-        self.setCentralWidget(container)
-
+        # Initialize the application
         self.initialize_app()
 
     def initialize_app(self):
@@ -295,7 +302,7 @@ class PasswordManager(QMainWindow):
 def main():
     app = QApplication(sys.argv)
 
-    # Load stylesheet
+    # Load stylesheet from style.qss
     stylesheet_path = os.path.join(os.path.dirname(__file__), "styles", "style.qss")
     with open(stylesheet_path, "r") as file:
         app.setStyleSheet(file.read())

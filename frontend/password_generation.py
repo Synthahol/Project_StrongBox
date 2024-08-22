@@ -33,7 +33,7 @@ class PasswordGenerationTab(QWidget):
 
     def create_ui(self):
         # Add the title at the top
-        title_label = QLabel("StrongBox Password Generator")
+        title_label = QLabel("StrongBox Secure Password Generator")
         title_label.setStyleSheet(
             "font-size: 30px; font-weight: bold; margin-bottom: 15px;"
         )
