@@ -33,8 +33,11 @@ class PasswordGenerationTab(QWidget):
 
     def create_ui(self):
         # Add the title at the top
-        title_label = QLabel("Password Generator")
-        title_label.setAlignment(Qt.AlignCenter)  # Center the title
+        title_label = QLabel("StrongBox Password Generator")
+        title_label.setStyleSheet(
+            "font-size: 30px; font-weight: bold; margin-bottom: 15px;"
+        )
+        title_label.setAlignment(Qt.AlignCenter)
         self.layout.addWidget(title_label)
 
         # Add some space between the title and the content

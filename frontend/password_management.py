@@ -1,5 +1,6 @@
 import logging
 
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QApplication,
     QDialog,
@@ -43,8 +44,9 @@ class PasswordManagementTab(QWidget):
         # Add title and styling for better UI
         title_label = QLabel("StrongBox Password Manager")
         title_label.setStyleSheet(
-            "font-size: 20px; font-weight: bold; margin-bottom: 15px;"
+            "font-size: 30px; font-weight: bold; margin-bottom: 15px;"
         )
+        title_label.setAlignment(Qt.AlignCenter)
         self.layout.addWidget(title_label)
 
         # Add horizontal line using utility function
@@ -98,6 +100,31 @@ class PasswordManagementTab(QWidget):
         header.setSectionResizeMode(QHeaderView.Stretch)
 
         return table
+    
+    def show_centered_error(self, message, title="Error"):
+        msg_box = QMessageBox()
+        msg_box.setIcon(QMessageBox.Critical)
+        msg_box.setText(message)
+        msg_box.setWindowTitle(title)
+        msg_box.setStandardButtons(QMessageBox.Ok)
+        
+        # Access the layout of the QMessageBox
+        layout = msg_box.layout()
+
+        # Find the button box within the layout
+        button_box = msg_box.buttonBox()
+
+        # Create a new horizontal layout for centering the button
+        centered_layout = QHBoxLayout()
+        centered_layout.addStretch(1)  # Add stretchable space to the left
+        centered_layout.addWidget(button_box)  # Add the button box
+        centered_layout.addStretch(1)  # Add stretchable space to the right
+
+        # Replace the original layout's button box with the centered layout
+        layout.replaceWidget(button_box, centered_layout.itemAt(0).widget())
+
+        # Show the message box
+        msg_box.exec()
 
     def load_passwords(self):
         self.password_table.setRowCount(0)

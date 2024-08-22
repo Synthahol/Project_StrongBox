@@ -2760,3 +2760,152 @@
 2024-08-22 12:55:12,663 - __main__ - INFO - Master password verified successfully.
 2024-08-22 12:55:12,675 - backend.database - INFO - Retrieved all passwords.
 2024-08-22 12:55:12,711 - __main__ - INFO - StrongBox application started.
+2024-08-22 12:58:06,119 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-22 12:58:06,120 - backend.database - INFO - Encryption key for DefaultStrongBox loaded from .env file.
+2024-08-22 12:58:06,120 - backend.database - DEBUG - ENCRYPTION_KEY_DEFAULTSTRONGBOX: MQfyS... (truncated for security)
+2024-08-22 12:58:06,120 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db
+2024-08-22 12:58:06,127 - backend.database - INFO - Initialized database with key_id.
+2024-08-22 12:58:06,127 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db with key_id: 64d1d37b-2030-4ffd-af9d-a1ebcab41b71
+2024-08-22 12:58:06,128 - backend.database - INFO - Checked if master password is set.
+2024-08-22 12:58:10,239 - backend.database - INFO - Verified master password.
+2024-08-22 12:58:10,239 - __main__ - INFO - Master password verified successfully.
+2024-08-22 12:58:10,250 - backend.database - INFO - Retrieved all passwords.
+2024-08-22 12:58:10,281 - __main__ - INFO - StrongBox application started.
+2024-08-22 13:12:00,010 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-22 13:12:00,011 - backend.database - INFO - Encryption key for DefaultStrongBox loaded from .env file.
+2024-08-22 13:12:00,013 - backend.database - DEBUG - ENCRYPTION_KEY_DEFAULTSTRONGBOX: MQfyS... (truncated for security)
+2024-08-22 13:12:00,014 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db
+2024-08-22 13:12:00,022 - backend.database - INFO - Initialized database with key_id.
+2024-08-22 13:12:00,023 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db with key_id: f7b801af-3905-4230-b753-ebe53bb9b4bf
+2024-08-22 13:12:00,024 - backend.database - INFO - Checked if master password is set.
+2024-08-22 13:12:04,720 - backend.database - INFO - Verified master password.
+2024-08-22 13:12:04,721 - __main__ - INFO - Master password verified successfully.
+2024-08-22 13:12:04,731 - backend.database - INFO - Retrieved all passwords.
+2024-08-22 13:12:04,766 - __main__ - INFO - StrongBox application started.
+2024-08-22 13:12:24,084 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 13:12:24,084 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 13:12:25,756 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 13:12:25,759 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 13:12:26,162 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 13:12:26,163 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 13:12:26,544 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 13:12:26,544 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 13:12:26,996 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 13:12:26,996 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 13:12:27,407 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 13:12:27,407 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 13:12:27,783 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 13:12:27,783 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 13:12:28,194 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 13:12:28,195 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 13:12:28,546 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 13:12:28,547 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 13:12:28,870 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 13:12:28,870 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 13:12:29,161 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 13:12:29,161 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 13:12:29,506 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 13:12:29,506 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 13:12:29,949 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 13:12:29,950 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 13:12:30,407 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 13:12:30,407 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 13:12:30,767 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 13:12:30,768 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 13:12:31,126 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 13:12:31,127 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 13:12:31,546 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 13:12:31,547 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 13:12:31,982 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 13:12:31,982 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 13:12:32,403 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 13:12:32,403 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 13:12:32,799 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 13:12:32,799 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 13:12:33,174 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 13:12:33,175 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 13:12:33,638 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 13:12:33,639 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 13:12:34,148 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 13:12:34,149 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 13:12:34,516 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 13:12:34,517 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 13:12:34,816 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 13:12:34,817 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 13:12:35,207 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 13:12:35,207 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 13:12:35,589 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 13:12:35,589 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 13:12:35,980 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 13:12:35,980 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 13:12:36,467 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 13:12:36,467 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 13:12:36,811 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 13:12:36,812 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 13:12:37,305 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 13:12:37,306 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 13:12:40,300 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 13:12:40,300 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 13:12:40,877 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 13:12:40,877 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 13:12:41,236 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 13:12:41,237 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 13:12:41,657 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 13:12:41,657 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 13:12:42,092 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 13:12:42,092 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 13:12:42,497 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 13:12:42,497 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 13:12:42,924 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 13:12:42,925 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 13:12:43,344 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 13:12:43,344 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 13:12:43,733 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 13:12:43,733 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 13:12:44,146 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 13:12:44,147 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 13:12:44,656 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 13:12:44,657 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 13:12:45,174 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 13:12:45,175 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 13:12:45,650 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 13:12:45,650 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 13:12:49,801 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 13:12:49,802 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 13:12:50,199 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 13:12:50,200 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 13:13:32,343 - backend.database - INFO - Verified master password.
+2024-08-22 13:13:32,344 - __main__ - INFO - Master password verified successfully.
+2024-08-22 13:13:32,344 - password_management - DEBUG - Service selected: www.google.com
+2024-08-22 13:13:49,054 - backend.database - INFO - Retrieved encrypted password for service: www.google.com, username: Gabriel.
+2024-08-22 13:13:49,055 - password_management - DEBUG - Retrieved Username: Gabriel, Encrypted Password: gAAAAABmvv-2EFuU2Z5awvmCGKGNSr-SeBq7phhHfGVMBZQ1gHOVIqgEx4-xstLFFvg-LC2r0Fkt69-Fo4RM0zH1W3pktSG0cg==
+2024-08-22 13:13:49,057 - password_management - DEBUG - Decrypted Password: LoyalServantUwU
+2024-08-22 13:17:00,277 - __main__ - WARNING - Master password is required to proceed.
+2024-08-22 13:17:28,800 - password_management - DEBUG - Master password verification failed.
+2024-08-22 13:18:57,982 - __main__ - WARNING - Master password is required to proceed.
+2024-08-22 13:19:03,231 - password_management - DEBUG - Master password verification failed.
+2024-08-22 13:31:20,212 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-22 13:31:20,213 - backend.database - INFO - Encryption key for DefaultStrongBox loaded from .env file.
+2024-08-22 13:31:20,213 - backend.database - DEBUG - ENCRYPTION_KEY_DEFAULTSTRONGBOX: MQfyS... (truncated for security)
+2024-08-22 13:31:20,216 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db
+2024-08-22 13:31:20,224 - backend.database - INFO - Initialized database with key_id.
+2024-08-22 13:31:20,225 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db with key_id: 8f75b8e2-4da7-4111-9b3b-43f5eb70b188
+2024-08-22 13:31:20,225 - backend.database - INFO - Checked if master password is set.
+2024-08-22 13:31:27,184 - backend.database - INFO - Verified master password.
+2024-08-22 13:31:27,185 - __main__ - INFO - Master password verified successfully.
+2024-08-22 13:31:27,194 - backend.database - INFO - Retrieved all passwords.
+2024-08-22 13:31:27,227 - __main__ - INFO - StrongBox application started.
+2024-08-22 13:31:44,905 - __main__ - WARNING - Master password is required to proceed.
+2024-08-22 13:33:48,143 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-22 13:33:48,144 - backend.database - INFO - Encryption key for DefaultStrongBox loaded from .env file.
+2024-08-22 13:33:48,144 - backend.database - DEBUG - ENCRYPTION_KEY_DEFAULTSTRONGBOX: MQfyS... (truncated for security)
+2024-08-22 13:33:48,145 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db
+2024-08-22 13:33:48,152 - backend.database - INFO - Initialized database with key_id.
+2024-08-22 13:33:48,152 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db with key_id: 826ff02a-c98d-4dee-8f9c-2d5afa0393df
+2024-08-22 13:33:48,153 - backend.database - INFO - Checked if master password is set.
+2024-08-22 13:33:52,944 - backend.database - INFO - Verified master password.
+2024-08-22 13:33:52,944 - __main__ - INFO - Master password verified successfully.
+2024-08-22 13:33:52,956 - backend.database - INFO - Retrieved all passwords.
+2024-08-22 13:33:52,987 - __main__ - INFO - StrongBox application started.
+2024-08-22 13:33:57,234 - __main__ - WARNING - Master password is required to proceed.
+2024-08-22 13:34:09,505 - password_management - DEBUG - Master password verification failed.
