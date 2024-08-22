@@ -2225,3 +2225,538 @@
 2024-08-21 12:32:24,156 - backend.database - INFO - Retrieved encrypted password for service: www.hanoi.com, username: Tourist.
 2024-08-21 12:32:24,156 - password_management - DEBUG - Retrieved Username: Tourist, Encrypted Password: gAAAAABmxXSuc57WnvDRAUL82fKur1k4yophSy7T00UlS_zFCcNES_UabVv0OIRRErl6ELROQPZgh3jOcSe4JuB4Tjhwc4CLkLibFd2Q-cyQShPNhcPR2U4=
 2024-08-21 12:32:24,157 - password_management - DEBUG - Decrypted Password: m|zo5nZG+cy'KBX0qu^
+2024-08-21 18:15:38,793 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-21 18:15:38,794 - backend.database - INFO - Encryption key for DefaultStrongBox loaded from .env file.
+2024-08-21 18:15:38,794 - backend.database - DEBUG - ENCRYPTION_KEY_DEFAULTSTRONGBOX: MQfyS... (truncated for security)
+2024-08-21 18:15:38,795 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db
+2024-08-21 18:15:38,801 - backend.database - INFO - Initialized database with key_id.
+2024-08-21 18:15:38,801 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db with key_id: e6682b32-0b12-487e-b4c2-2c7789ff00f3
+2024-08-21 18:15:38,802 - backend.database - INFO - Checked if master password is set.
+2024-08-21 18:15:45,110 - backend.database - INFO - Verified master password.
+2024-08-21 18:15:45,110 - __main__ - INFO - Master password verified successfully.
+2024-08-21 18:15:45,126 - backend.database - INFO - Retrieved all passwords.
+2024-08-21 18:15:45,164 - __main__ - INFO - StrongBox application started.
+2024-08-21 18:17:58,605 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-21 18:17:58,606 - backend.database - INFO - Encryption key for DefaultStrongBox loaded from .env file.
+2024-08-21 18:17:58,606 - backend.database - DEBUG - ENCRYPTION_KEY_DEFAULTSTRONGBOX: MQfyS... (truncated for security)
+2024-08-21 18:17:58,607 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db
+2024-08-21 18:17:58,612 - backend.database - INFO - Initialized database with key_id.
+2024-08-21 18:17:58,612 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db with key_id: ca42d8e5-5dc3-4899-b289-a814a1e179e0
+2024-08-21 18:17:58,614 - backend.database - INFO - Checked if master password is set.
+2024-08-21 18:18:03,958 - backend.database - INFO - Verified master password.
+2024-08-21 18:18:03,959 - __main__ - INFO - Master password verified successfully.
+2024-08-21 18:18:03,980 - backend.database - INFO - Retrieved all passwords.
+2024-08-21 18:18:04,008 - __main__ - INFO - StrongBox application started.
+2024-08-21 18:18:22,044 - backend.password_generator - INFO - Generated password with strength 1.
+2024-08-21 18:18:22,044 - password_generation - INFO - Generated password with strength 1.
+2024-08-21 18:18:24,999 - backend.password_generator - INFO - Generated password with strength 1.
+2024-08-21 18:18:24,999 - password_generation - INFO - Generated password with strength 1.
+2024-08-21 18:18:26,041 - backend.password_generator - INFO - Generated password with strength 1.
+2024-08-21 18:18:26,041 - password_generation - INFO - Generated password with strength 1.
+2024-08-21 18:18:26,687 - backend.password_generator - INFO - Generated password with strength 1.
+2024-08-21 18:18:26,687 - password_generation - INFO - Generated password with strength 1.
+2024-08-21 18:18:27,241 - backend.password_generator - INFO - Generated password with strength 1.
+2024-08-21 18:18:27,242 - password_generation - INFO - Generated password with strength 1.
+2024-08-21 18:18:27,721 - backend.password_generator - INFO - Generated password with strength 1.
+2024-08-21 18:18:27,721 - password_generation - INFO - Generated password with strength 1.
+2024-08-21 18:18:28,095 - backend.password_generator - INFO - Generated password with strength 1.
+2024-08-21 18:18:28,096 - password_generation - INFO - Generated password with strength 1.
+2024-08-21 18:18:28,396 - backend.password_generator - INFO - Generated password with strength 1.
+2024-08-21 18:18:28,396 - password_generation - INFO - Generated password with strength 1.
+2024-08-21 18:18:28,659 - backend.password_generator - INFO - Generated password with strength 1.
+2024-08-21 18:18:28,660 - password_generation - INFO - Generated password with strength 1.
+2024-08-21 18:18:28,853 - backend.password_generator - INFO - Generated password with strength 1.
+2024-08-21 18:18:28,853 - password_generation - INFO - Generated password with strength 1.
+2024-08-21 18:18:29,079 - backend.password_generator - INFO - Generated password with strength 1.
+2024-08-21 18:18:29,079 - password_generation - INFO - Generated password with strength 1.
+2024-08-21 18:18:29,251 - backend.password_generator - INFO - Generated password with strength 1.
+2024-08-21 18:18:29,252 - password_generation - INFO - Generated password with strength 1.
+2024-08-21 18:18:29,431 - backend.password_generator - INFO - Generated password with strength 1.
+2024-08-21 18:18:29,431 - password_generation - INFO - Generated password with strength 1.
+2024-08-21 18:18:29,633 - backend.password_generator - INFO - Generated password with strength 1.
+2024-08-21 18:18:29,634 - password_generation - INFO - Generated password with strength 1.
+2024-08-21 18:18:29,805 - backend.password_generator - INFO - Generated password with strength 1.
+2024-08-21 18:18:29,805 - password_generation - INFO - Generated password with strength 1.
+2024-08-21 18:18:29,986 - backend.password_generator - INFO - Generated password with strength 1.
+2024-08-21 18:18:29,987 - password_generation - INFO - Generated password with strength 1.
+2024-08-21 18:18:32,318 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-21 18:18:32,318 - password_generation - INFO - Generated password with strength 3.
+2024-08-21 18:18:32,619 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-21 18:18:32,619 - password_generation - INFO - Generated password with strength 3.
+2024-08-21 18:18:32,821 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-21 18:18:32,822 - password_generation - INFO - Generated password with strength 3.
+2024-08-21 18:18:33,054 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-21 18:18:33,054 - password_generation - INFO - Generated password with strength 3.
+2024-08-21 18:18:33,242 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-21 18:18:33,242 - password_generation - INFO - Generated password with strength 3.
+2024-08-21 18:18:33,437 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-21 18:18:33,437 - password_generation - INFO - Generated password with strength 3.
+2024-08-21 18:18:33,683 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-21 18:18:33,684 - password_generation - INFO - Generated password with strength 3.
+2024-08-21 18:18:33,901 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-21 18:18:33,901 - password_generation - INFO - Generated password with strength 3.
+2024-08-21 18:18:34,164 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-21 18:18:34,164 - password_generation - INFO - Generated password with strength 3.
+2024-08-21 22:56:11,992 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-21 22:56:11,993 - backend.database - INFO - Encryption key for DefaultStrongBox loaded from .env file.
+2024-08-21 22:56:11,993 - backend.database - DEBUG - ENCRYPTION_KEY_DEFAULTSTRONGBOX: MQfyS... (truncated for security)
+2024-08-21 22:56:11,994 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db
+2024-08-21 22:56:11,999 - backend.database - INFO - Initialized database with key_id.
+2024-08-21 22:56:11,999 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db with key_id: cd415869-69c3-4bc4-ac7a-7515016b79d2
+2024-08-21 22:56:12,000 - backend.database - INFO - Checked if master password is set.
+2024-08-21 22:56:17,513 - backend.database - INFO - Verified master password.
+2024-08-21 22:56:17,513 - __main__ - INFO - Master password verified successfully.
+2024-08-21 22:56:17,534 - backend.database - INFO - Retrieved all passwords.
+2024-08-21 22:56:17,564 - __main__ - INFO - StrongBox application started.
+2024-08-21 22:56:27,853 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-21 22:56:27,854 - backend.database - INFO - Encryption key for DefaultStrongBox loaded from .env file.
+2024-08-21 22:56:27,854 - backend.database - DEBUG - ENCRYPTION_KEY_DEFAULTSTRONGBOX: MQfyS... (truncated for security)
+2024-08-21 22:56:27,855 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db
+2024-08-21 22:56:27,860 - backend.database - INFO - Initialized database with key_id.
+2024-08-21 22:56:27,860 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db with key_id: 99e04a7e-d570-4247-b0d6-b5e01fcab826
+2024-08-21 22:56:27,860 - backend.database - INFO - Checked if master password is set.
+2024-08-21 22:56:33,200 - backend.database - INFO - Verified master password.
+2024-08-21 22:56:33,201 - __main__ - INFO - Master password verified successfully.
+2024-08-21 22:56:33,221 - backend.database - INFO - Retrieved all passwords.
+2024-08-21 22:56:33,270 - __main__ - INFO - StrongBox application started.
+2024-08-22 09:29:09,767 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-22 09:29:09,768 - backend.database - INFO - Encryption key for DefaultStrongBox loaded from .env file.
+2024-08-22 09:29:09,768 - backend.database - DEBUG - ENCRYPTION_KEY_DEFAULTSTRONGBOX: MQfyS... (truncated for security)
+2024-08-22 09:29:09,774 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db
+2024-08-22 09:29:09,784 - backend.database - INFO - Initialized database with key_id.
+2024-08-22 09:29:09,785 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db with key_id: 55baba34-a543-47e4-88cf-859d26655c7d
+2024-08-22 09:29:09,785 - backend.database - INFO - Checked if master password is set.
+2024-08-22 09:29:17,346 - backend.database - INFO - Verified master password.
+2024-08-22 09:29:17,347 - __main__ - INFO - Master password verified successfully.
+2024-08-22 09:29:17,381 - backend.database - INFO - Retrieved all passwords.
+2024-08-22 09:29:17,417 - __main__ - INFO - StrongBox application started.
+2024-08-22 09:33:43,758 - backend.password_generator - INFO - Generated password with strength 1.
+2024-08-22 09:33:43,759 - password_generation - INFO - Generated password with strength 1.
+2024-08-22 09:33:47,644 - backend.password_generator - INFO - Generated password with strength 1.
+2024-08-22 09:33:47,646 - password_generation - INFO - Generated password with strength 1.
+2024-08-22 09:33:48,454 - backend.password_generator - INFO - Generated password with strength 1.
+2024-08-22 09:33:48,455 - password_generation - INFO - Generated password with strength 1.
+2024-08-22 09:33:49,383 - backend.password_generator - INFO - Generated password with strength 1.
+2024-08-22 09:33:49,384 - password_generation - INFO - Generated password with strength 1.
+2024-08-22 10:09:09,938 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-22 10:09:09,938 - backend.database - INFO - Encryption key for DefaultStrongBox loaded from .env file.
+2024-08-22 10:09:09,939 - backend.database - DEBUG - ENCRYPTION_KEY_DEFAULTSTRONGBOX: MQfyS... (truncated for security)
+2024-08-22 10:09:09,942 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db
+2024-08-22 10:09:09,953 - backend.database - INFO - Initialized database with key_id.
+2024-08-22 10:09:09,953 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db with key_id: 83c90cfb-3cfe-4ab7-9065-1076b29409df
+2024-08-22 10:09:09,954 - backend.database - INFO - Checked if master password is set.
+2024-08-22 10:09:14,341 - backend.database - INFO - Verified master password.
+2024-08-22 10:09:14,341 - __main__ - INFO - Master password verified successfully.
+2024-08-22 10:09:14,383 - backend.database - INFO - Retrieved all passwords.
+2024-08-22 10:09:14,426 - __main__ - INFO - StrongBox application started.
+2024-08-22 10:19:48,280 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-22 10:19:48,282 - backend.database - INFO - Encryption key for DefaultStrongBox loaded from .env file.
+2024-08-22 10:19:48,283 - backend.database - DEBUG - ENCRYPTION_KEY_DEFAULTSTRONGBOX: MQfyS... (truncated for security)
+2024-08-22 10:19:48,285 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db
+2024-08-22 10:19:48,295 - backend.database - INFO - Initialized database with key_id.
+2024-08-22 10:19:48,295 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db with key_id: 93672aba-7e19-4b4f-b88e-0df479100d91
+2024-08-22 10:19:48,297 - backend.database - INFO - Checked if master password is set.
+2024-08-22 10:19:52,575 - backend.database - INFO - Verified master password.
+2024-08-22 10:19:52,576 - __main__ - INFO - Master password verified successfully.
+2024-08-22 10:19:52,587 - backend.database - INFO - Retrieved all passwords.
+2024-08-22 10:19:52,617 - __main__ - INFO - StrongBox application started.
+2024-08-22 10:45:25,810 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-22 10:45:25,811 - backend.database - INFO - Encryption key for DefaultStrongBox loaded from .env file.
+2024-08-22 10:45:25,811 - backend.database - DEBUG - ENCRYPTION_KEY_DEFAULTSTRONGBOX: MQfyS... (truncated for security)
+2024-08-22 10:45:25,812 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db
+2024-08-22 10:45:25,819 - backend.database - INFO - Initialized database with key_id.
+2024-08-22 10:45:25,820 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db with key_id: 755cdc60-b1a0-439f-88d0-78a3d73e14b7
+2024-08-22 10:45:25,821 - backend.database - INFO - Checked if master password is set.
+2024-08-22 10:45:30,454 - backend.database - INFO - Verified master password.
+2024-08-22 10:45:30,454 - __main__ - INFO - Master password verified successfully.
+2024-08-22 10:45:30,466 - backend.database - INFO - Retrieved all passwords.
+2024-08-22 10:45:30,498 - __main__ - INFO - StrongBox application started.
+2024-08-22 10:46:20,692 - backend.database - INFO - Verified master password.
+2024-08-22 10:46:20,693 - __main__ - INFO - Master password verified successfully.
+2024-08-22 10:46:20,693 - password_management - DEBUG - Service selected: www.hanoi.com
+2024-08-22 10:46:20,694 - backend.database - INFO - Retrieved encrypted password for service: www.hanoi.com, username: Tourist.
+2024-08-22 10:46:20,694 - password_management - DEBUG - Retrieved Username: Tourist, Encrypted Password: gAAAAABmxXSuc57WnvDRAUL82fKur1k4yophSy7T00UlS_zFCcNES_UabVv0OIRRErl6ELROQPZgh3jOcSe4JuB4Tjhwc4CLkLibFd2Q-cyQShPNhcPR2U4=
+2024-08-22 10:46:20,699 - password_management - DEBUG - Decrypted Password: m|zo5nZG+cy'KBX0qu^
+2024-08-22 10:47:06,014 - backend.database - INFO - Retrieved all passwords.
+2024-08-22 10:47:13,280 - backend.database - INFO - Verified master password.
+2024-08-22 10:47:13,281 - __main__ - INFO - Master password verified successfully.
+2024-08-22 10:47:13,282 - password_management - DEBUG - Service selected: www.hanoi.com
+2024-08-22 10:47:13,282 - backend.database - INFO - Retrieved encrypted password for service: www.hanoi.com, username: Tourist.
+2024-08-22 10:47:13,283 - password_management - DEBUG - Retrieved Username: Tourist, Encrypted Password: gAAAAABmxXSuc57WnvDRAUL82fKur1k4yophSy7T00UlS_zFCcNES_UabVv0OIRRErl6ELROQPZgh3jOcSe4JuB4Tjhwc4CLkLibFd2Q-cyQShPNhcPR2U4=
+2024-08-22 10:47:13,283 - password_management - DEBUG - Decrypted Password: m|zo5nZG+cy'KBX0qu^
+2024-08-22 10:47:34,917 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-22 10:47:34,917 - backend.database - INFO - Encryption key for DefaultStrongBox loaded from .env file.
+2024-08-22 10:47:34,918 - backend.database - DEBUG - ENCRYPTION_KEY_DEFAULTSTRONGBOX: MQfyS... (truncated for security)
+2024-08-22 10:47:34,918 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db
+2024-08-22 10:47:34,924 - backend.database - INFO - Initialized database with key_id.
+2024-08-22 10:47:34,925 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db with key_id: 58e3abfe-f497-47ae-aa31-6c8d6be9bc9f
+2024-08-22 10:47:34,926 - backend.database - INFO - Checked if master password is set.
+2024-08-22 10:47:39,716 - backend.database - INFO - Verified master password.
+2024-08-22 10:47:39,716 - __main__ - INFO - Master password verified successfully.
+2024-08-22 10:47:39,729 - backend.database - INFO - Retrieved all passwords.
+2024-08-22 10:47:39,766 - __main__ - INFO - StrongBox application started.
+2024-08-22 10:47:50,234 - backend.database - INFO - Verified master password.
+2024-08-22 10:47:50,235 - __main__ - INFO - Master password verified successfully.
+2024-08-22 10:47:50,235 - password_management - DEBUG - Service selected: www.hanoi.com
+2024-08-22 10:47:50,236 - backend.database - INFO - Retrieved encrypted password for service: www.hanoi.com, username: Tourist.
+2024-08-22 10:47:50,236 - password_management - DEBUG - Retrieved Username: Tourist, Encrypted Password: gAAAAABmxXSuc57WnvDRAUL82fKur1k4yophSy7T00UlS_zFCcNES_UabVv0OIRRErl6ELROQPZgh3jOcSe4JuB4Tjhwc4CLkLibFd2Q-cyQShPNhcPR2U4=
+2024-08-22 10:47:50,238 - password_management - DEBUG - Decrypted Password: m|zo5nZG+cy'KBX0qu^
+2024-08-22 10:48:47,263 - backend.database - INFO - Retrieved all passwords.
+2024-08-22 10:49:03,124 - backend.database - INFO - Verified master password.
+2024-08-22 10:49:03,124 - __main__ - INFO - Master password verified successfully.
+2024-08-22 10:49:03,125 - password_management - DEBUG - Service selected: www.hanoi.com
+2024-08-22 10:49:03,126 - backend.database - INFO - Retrieved encrypted password for service: www.hanoi.com, username: Tourist.
+2024-08-22 10:49:03,126 - password_management - DEBUG - Retrieved Username: Tourist, Encrypted Password: gAAAAABmxXSuc57WnvDRAUL82fKur1k4yophSy7T00UlS_zFCcNES_UabVv0OIRRErl6ELROQPZgh3jOcSe4JuB4Tjhwc4CLkLibFd2Q-cyQShPNhcPR2U4=
+2024-08-22 10:49:03,127 - password_management - DEBUG - Decrypted Password: m|zo5nZG+cy'KBX0qu^
+2024-08-22 10:49:28,257 - backend.database - INFO - Retrieved all passwords.
+2024-08-22 10:53:12,066 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-22 10:53:12,066 - backend.database - INFO - Encryption key for DefaultStrongBox loaded from .env file.
+2024-08-22 10:53:12,066 - backend.database - DEBUG - ENCRYPTION_KEY_DEFAULTSTRONGBOX: MQfyS... (truncated for security)
+2024-08-22 10:53:12,069 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db
+2024-08-22 10:53:12,075 - backend.database - INFO - Initialized database with key_id.
+2024-08-22 10:53:12,076 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db with key_id: 88b489a4-3ce7-4162-b740-04439562f996
+2024-08-22 10:53:12,076 - backend.database - INFO - Checked if master password is set.
+2024-08-22 10:53:16,980 - backend.database - INFO - Verified master password.
+2024-08-22 10:53:16,980 - __main__ - INFO - Master password verified successfully.
+2024-08-22 10:53:16,993 - backend.database - INFO - Retrieved all passwords.
+2024-08-22 10:53:17,040 - __main__ - INFO - StrongBox application started.
+2024-08-22 10:53:28,077 - backend.database - INFO - Verified master password.
+2024-08-22 10:53:28,078 - __main__ - INFO - Master password verified successfully.
+2024-08-22 10:53:28,078 - password_management - DEBUG - Service selected: www.hanoi.com
+2024-08-22 10:53:28,079 - backend.database - INFO - Retrieved encrypted password for service: www.hanoi.com, username: Tourist.
+2024-08-22 10:53:28,079 - password_management - DEBUG - Retrieved Username: Tourist, Encrypted Password: gAAAAABmxXSuc57WnvDRAUL82fKur1k4yophSy7T00UlS_zFCcNES_UabVv0OIRRErl6ELROQPZgh3jOcSe4JuB4Tjhwc4CLkLibFd2Q-cyQShPNhcPR2U4=
+2024-08-22 10:53:28,081 - password_management - DEBUG - Decrypted Password: m|zo5nZG+cy'KBX0qu^
+2024-08-22 10:53:56,524 - backend.database - INFO - Retrieved all passwords.
+2024-08-22 10:54:09,805 - backend.database - INFO - Verified master password.
+2024-08-22 10:54:09,805 - __main__ - INFO - Master password verified successfully.
+2024-08-22 10:54:09,805 - password_management - DEBUG - Service selected: www.hanoi.com
+2024-08-22 10:54:09,806 - backend.database - INFO - Retrieved encrypted password for service: www.hanoi.com, username: Your Mom.
+2024-08-22 10:54:09,806 - password_management - DEBUG - Retrieved Username: Your Mom, Encrypted Password: gAAAAABmxrZJ_oDNBV5v1AoekLKFyv_omWiW7gwb3s4Mg8gp0s88juXLOwVhjJDTcUlNgRJOZJnEqDi-ctIiFWs1onTY8vjzuA==
+2024-08-22 10:54:09,806 - password_management - DEBUG - Decrypted Password: ******
+2024-08-22 11:05:29,637 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-22 11:05:29,638 - backend.database - INFO - Encryption key for DefaultStrongBox loaded from .env file.
+2024-08-22 11:05:29,638 - backend.database - DEBUG - ENCRYPTION_KEY_DEFAULTSTRONGBOX: MQfyS... (truncated for security)
+2024-08-22 11:05:29,639 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db
+2024-08-22 11:05:29,644 - backend.database - INFO - Initialized database with key_id.
+2024-08-22 11:05:29,645 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db with key_id: 1b7fb2bf-5d7a-445c-b1bb-538f574cad5f
+2024-08-22 11:05:29,645 - backend.database - INFO - Checked if master password is set.
+2024-08-22 11:05:34,943 - backend.database - INFO - Verified master password.
+2024-08-22 11:05:34,943 - __main__ - INFO - Master password verified successfully.
+2024-08-22 11:05:34,962 - backend.database - INFO - Retrieved all passwords.
+2024-08-22 11:05:34,999 - __main__ - INFO - StrongBox application started.
+2024-08-22 11:05:45,081 - backend.database - INFO - Verified master password.
+2024-08-22 11:05:45,081 - __main__ - INFO - Master password verified successfully.
+2024-08-22 11:05:45,082 - password_management - DEBUG - Service selected: www.hanoi.com
+2024-08-22 11:05:45,083 - backend.database - INFO - Retrieved encrypted password for service: www.hanoi.com, username: Your Mom.
+2024-08-22 11:05:45,083 - password_management - DEBUG - Retrieved Username: Your Mom, Encrypted Password: gAAAAABmxrZJ_oDNBV5v1AoekLKFyv_omWiW7gwb3s4Mg8gp0s88juXLOwVhjJDTcUlNgRJOZJnEqDi-ctIiFWs1onTY8vjzuA==
+2024-08-22 11:05:45,085 - password_management - DEBUG - Decrypted Password: ******
+2024-08-22 11:05:59,507 - password_management - ERROR - Failed to decrypt password: 
+2024-08-22 11:06:16,899 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 11:06:16,901 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 11:06:22,369 - password_management - ERROR - Failed to decrypt password: 
+2024-08-22 11:06:29,157 - backend.database - INFO - Retrieved all passwords.
+2024-08-22 11:06:53,436 - backend.database - INFO - Verified master password.
+2024-08-22 11:06:53,437 - __main__ - INFO - Master password verified successfully.
+2024-08-22 11:06:53,438 - password_management - DEBUG - Service selected: www.hanoi.com
+2024-08-22 11:06:53,438 - backend.database - INFO - Retrieved encrypted password for service: www.hanoi.com, username: Your Mom.
+2024-08-22 11:06:53,438 - password_management - DEBUG - Retrieved Username: Your Mom, Encrypted Password: gAAAAABmxrlD6O3ET1KtdzFJticAkZmP4sgtJkp66GpaEy9TfAvedURxdqu-CC0cwg951UDPWlo5I_D0fnHLiGjFmPo3qvlBP4S-Owq_t9__KTzN_aXBNugDPCdK6_VKGCJvScdwP83X
+2024-08-22 11:06:53,439 - password_management - DEBUG - Decrypted Password: X?xy$v$7$5?pX'O5~48RyLPQJxn`6ZG4M~FQGw9X7V
+2024-08-22 11:08:50,319 - password_management - ERROR - Failed to decrypt password: 
+2024-08-22 11:09:07,077 - backend.database - INFO - Retrieved all passwords.
+2024-08-22 11:09:12,643 - backend.database - INFO - Verified master password.
+2024-08-22 11:09:12,643 - __main__ - INFO - Master password verified successfully.
+2024-08-22 11:09:12,644 - password_management - DEBUG - Service selected: www.hanoi.com
+2024-08-22 11:09:12,644 - backend.database - INFO - Retrieved encrypted password for service: www.hanoi.com, username: Your Mom.
+2024-08-22 11:09:12,645 - password_management - DEBUG - Retrieved Username: Your Mom, Encrypted Password: gAAAAABmxrnhJsMljaB6iO_S_xDRdwRcItFKksFTtwJ3y-zfbl8XvqujlBnj6EjaE5-N1WilUGhmRB98ogVx-jUewKWTrvpUSQ==
+2024-08-22 11:09:12,645 - password_management - DEBUG - Decrypted Password: 
+2024-08-22 11:09:19,845 - password_management - ERROR - Failed to decrypt password: 
+2024-08-22 11:15:32,962 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-22 11:15:32,963 - backend.database - INFO - Encryption key for DefaultStrongBox loaded from .env file.
+2024-08-22 11:15:32,963 - backend.database - DEBUG - ENCRYPTION_KEY_DEFAULTSTRONGBOX: MQfyS... (truncated for security)
+2024-08-22 11:15:32,964 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db
+2024-08-22 11:15:32,970 - backend.database - INFO - Initialized database with key_id.
+2024-08-22 11:15:32,970 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db with key_id: 212408b9-d949-4bb6-88d9-2946a9a4cf2f
+2024-08-22 11:15:32,971 - backend.database - INFO - Checked if master password is set.
+2024-08-22 11:15:37,913 - backend.database - INFO - Verified master password.
+2024-08-22 11:15:37,913 - __main__ - INFO - Master password verified successfully.
+2024-08-22 11:15:37,930 - backend.database - INFO - Retrieved all passwords.
+2024-08-22 11:15:37,968 - __main__ - INFO - StrongBox application started.
+2024-08-22 11:15:50,525 - backend.database - INFO - Verified master password.
+2024-08-22 11:15:50,526 - __main__ - INFO - Master password verified successfully.
+2024-08-22 11:15:50,526 - password_management - DEBUG - Service selected: www.hanoi.com
+2024-08-22 11:15:50,526 - backend.database - INFO - Retrieved encrypted password for service: www.hanoi.com, username: Your Mom.
+2024-08-22 11:15:50,526 - password_management - DEBUG - Retrieved Username: Your Mom, Encrypted Password: gAAAAABmxrnhJsMljaB6iO_S_xDRdwRcItFKksFTtwJ3y-zfbl8XvqujlBnj6EjaE5-N1WilUGhmRB98ogVx-jUewKWTrvpUSQ==
+2024-08-22 11:15:50,528 - password_management - DEBUG - Decrypted Password: 
+2024-08-22 11:16:02,371 - backend.password_generator - INFO - Generated password with strength 2.
+2024-08-22 11:16:02,371 - password_generation - INFO - Generated password with strength 2.
+2024-08-22 11:16:18,822 - backend.database - INFO - Retrieved all passwords.
+2024-08-22 11:16:25,739 - backend.database - INFO - Verified master password.
+2024-08-22 11:16:25,739 - __main__ - INFO - Master password verified successfully.
+2024-08-22 11:16:25,740 - password_management - DEBUG - Service selected: www.hanoi.com
+2024-08-22 11:16:25,740 - backend.database - INFO - Retrieved encrypted password for service: www.hanoi.com, username: Your Dad.
+2024-08-22 11:16:25,740 - password_management - DEBUG - Retrieved Username: Your Dad, Encrypted Password: gAAAAABmxruRViGyDQfNRV1-F6KEmgztTJ_8Y_pzDqpjEoVBifBn62pym9xphK_tg_1GDVUog3iE_UTVbiJJr2gJxjgxOjws7oNwn9R8ATPlu49Zoyrul0A=
+2024-08-22 11:16:25,741 - password_management - DEBUG - Decrypted Password: Gs11X?XC7,m,ly3_*Ic7R[;Gm-T
+2024-08-22 11:16:59,533 - backend.database - INFO - Verified master password.
+2024-08-22 11:16:59,534 - __main__ - INFO - Master password verified successfully.
+2024-08-22 11:16:59,534 - password_management - DEBUG - Service selected: www.hanoi.com
+2024-08-22 11:16:59,534 - backend.database - INFO - Retrieved encrypted password for service: www.hanoi.com, username: Your Dad.
+2024-08-22 11:16:59,534 - password_management - DEBUG - Retrieved Username: Your Dad, Encrypted Password: gAAAAABmxruRViGyDQfNRV1-F6KEmgztTJ_8Y_pzDqpjEoVBifBn62pym9xphK_tg_1GDVUog3iE_UTVbiJJr2gJxjgxOjws7oNwn9R8ATPlu49Zoyrul0A=
+2024-08-22 11:16:59,535 - password_management - DEBUG - Decrypted Password: Gs11X?XC7,m,ly3_*Ic7R[;Gm-T
+2024-08-22 11:18:10,562 - backend.database - INFO - Retrieved all passwords.
+2024-08-22 11:18:16,378 - backend.database - INFO - Verified master password.
+2024-08-22 11:18:16,378 - __main__ - INFO - Master password verified successfully.
+2024-08-22 11:18:16,379 - password_management - DEBUG - Service selected: www.hanoi.com
+2024-08-22 11:18:16,380 - backend.database - INFO - Retrieved encrypted password for service: www.hanoi.com, username: Your Dad.
+2024-08-22 11:18:16,380 - password_management - DEBUG - Retrieved Username: Your Dad, Encrypted Password: gAAAAABmxrwBHfnVPmEpmSilOXKa0vzvfk_l7Lb80eIO6D_HD7ETGyYwnWQU34Z-SwE5JFbDakq_9z864kAfXLKDMm6llVUmQa9RU5EdV_sQTthSzViPRPk=
+2024-08-22 11:18:16,380 - password_management - DEBUG - Decrypted Password: Gs11X?XC7,m,ly3_*Ic7R[;Gm-T
+2024-08-22 11:21:59,471 - backend.database - INFO - Verified master password.
+2024-08-22 11:21:59,471 - __main__ - INFO - Master password verified successfully.
+2024-08-22 11:21:59,472 - password_management - DEBUG - Service selected: www.hanoi.com
+2024-08-22 11:21:59,473 - backend.database - INFO - Retrieved encrypted password for service: www.hanoi.com, username: Your Dad.
+2024-08-22 11:21:59,473 - password_management - DEBUG - Retrieved Username: Your Dad, Encrypted Password: gAAAAABmxrwBHfnVPmEpmSilOXKa0vzvfk_l7Lb80eIO6D_HD7ETGyYwnWQU34Z-SwE5JFbDakq_9z864kAfXLKDMm6llVUmQa9RU5EdV_sQTthSzViPRPk=
+2024-08-22 11:21:59,474 - password_management - DEBUG - Decrypted Password: Gs11X?XC7,m,ly3_*Ic7R[;Gm-T
+2024-08-22 11:22:31,569 - backend.master_password - ERROR - Error verifying password: Keys do not match.
+2024-08-22 11:22:31,570 - backend.database - INFO - Verified master password.
+2024-08-22 11:22:31,570 - __main__ - WARNING - Incorrect master password.
+2024-08-22 11:22:37,500 - backend.database - INFO - Verified master password.
+2024-08-22 11:22:37,500 - __main__ - INFO - Master password verified successfully.
+2024-08-22 11:22:37,500 - password_management - DEBUG - Service selected: www.hanoi.com
+2024-08-22 11:22:37,500 - backend.database - INFO - Retrieved encrypted password for service: www.hanoi.com, username: Your Dad.
+2024-08-22 11:22:37,502 - password_management - DEBUG - Retrieved Username: Your Dad, Encrypted Password: gAAAAABmxrwBHfnVPmEpmSilOXKa0vzvfk_l7Lb80eIO6D_HD7ETGyYwnWQU34Z-SwE5JFbDakq_9z864kAfXLKDMm6llVUmQa9RU5EdV_sQTthSzViPRPk=
+2024-08-22 11:22:37,503 - password_management - DEBUG - Decrypted Password: Gs11X?XC7,m,ly3_*Ic7R[;Gm-T
+2024-08-22 11:24:46,666 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-22 11:24:46,667 - backend.database - INFO - Encryption key for DefaultStrongBox loaded from .env file.
+2024-08-22 11:24:46,668 - backend.database - DEBUG - ENCRYPTION_KEY_DEFAULTSTRONGBOX: MQfyS... (truncated for security)
+2024-08-22 11:24:46,669 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db
+2024-08-22 11:24:46,675 - backend.database - INFO - Initialized database with key_id.
+2024-08-22 11:24:46,676 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db with key_id: 5dc0a1f1-bff8-4f21-9f26-74378cf0fff3
+2024-08-22 11:24:46,677 - backend.database - INFO - Checked if master password is set.
+2024-08-22 11:24:52,106 - backend.database - INFO - Verified master password.
+2024-08-22 11:24:52,107 - __main__ - INFO - Master password verified successfully.
+2024-08-22 11:24:52,124 - backend.database - INFO - Retrieved all passwords.
+2024-08-22 11:24:52,168 - __main__ - INFO - StrongBox application started.
+2024-08-22 11:25:02,765 - backend.database - INFO - Verified master password.
+2024-08-22 11:25:02,766 - __main__ - INFO - Master password verified successfully.
+2024-08-22 11:25:02,767 - password_management - DEBUG - Service selected: www.hanoi.com
+2024-08-22 11:25:02,767 - backend.database - INFO - Retrieved encrypted password for service: www.hanoi.com, username: Your Dad.
+2024-08-22 11:25:02,768 - password_management - DEBUG - Retrieved Username: Your Dad, Encrypted Password: gAAAAABmxrwBHfnVPmEpmSilOXKa0vzvfk_l7Lb80eIO6D_HD7ETGyYwnWQU34Z-SwE5JFbDakq_9z864kAfXLKDMm6llVUmQa9RU5EdV_sQTthSzViPRPk=
+2024-08-22 11:25:02,770 - password_management - DEBUG - Decrypted Password: Gs11X?XC7,m,ly3_*Ic7R[;Gm-T
+2024-08-22 11:32:57,189 - backend.password_generator - INFO - Generated password with strength 2.
+2024-08-22 11:32:57,189 - password_generation - INFO - Generated password with strength 2.
+2024-08-22 11:33:08,795 - backend.database - INFO - Retrieved all passwords.
+2024-08-22 11:33:15,057 - backend.database - INFO - Verified master password.
+2024-08-22 11:33:15,058 - __main__ - INFO - Master password verified successfully.
+2024-08-22 11:33:15,059 - password_management - DEBUG - Service selected: www.hanoi.com
+2024-08-22 11:33:15,059 - backend.database - INFO - Retrieved encrypted password for service: www.hanoi.com, username: Your Dad.
+2024-08-22 11:33:15,060 - password_management - DEBUG - Retrieved Username: Your Dad, Encrypted Password: gAAAAABmxr-Dg66MgMhcPYcmD0FDL-9S5GmDGrqWE65lv8dn1D5_3vcRuKyPIBw-VXystq51f5Zuc55weo6Lk8DvOeSbRaE4bMtXWeymEbxXpIZoxcysCUjC_mR65iTt0WfpuHUFIwc8
+2024-08-22 11:33:15,060 - password_management - DEBUG - Decrypted Password: tchHe}695PpJ=$w))hQ(]hX%|x\@MsT(`p/e
+2024-08-22 11:34:48,724 - backend.database - INFO - Verified master password.
+2024-08-22 11:34:48,724 - __main__ - INFO - Master password verified successfully.
+2024-08-22 11:34:48,725 - password_management - DEBUG - Service selected: www.hanoi.com
+2024-08-22 11:34:48,726 - backend.database - INFO - Retrieved encrypted password for service: www.hanoi.com, username: Your Dad.
+2024-08-22 11:34:48,726 - password_management - DEBUG - Retrieved Username: Your Dad, Encrypted Password: gAAAAABmxr-Dg66MgMhcPYcmD0FDL-9S5GmDGrqWE65lv8dn1D5_3vcRuKyPIBw-VXystq51f5Zuc55weo6Lk8DvOeSbRaE4bMtXWeymEbxXpIZoxcysCUjC_mR65iTt0WfpuHUFIwc8
+2024-08-22 11:34:48,727 - password_management - DEBUG - Decrypted Password: tchHe}695PpJ=$w))hQ(]hX%|x\@MsT(`p/e
+2024-08-22 11:38:41,768 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-22 11:38:41,769 - backend.database - INFO - Encryption key for DefaultStrongBox loaded from .env file.
+2024-08-22 11:38:41,769 - backend.database - DEBUG - ENCRYPTION_KEY_DEFAULTSTRONGBOX: MQfyS... (truncated for security)
+2024-08-22 11:38:41,770 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db
+2024-08-22 11:38:41,776 - backend.database - INFO - Initialized database with key_id.
+2024-08-22 11:38:41,777 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db with key_id: 5abdea10-ba43-44c3-a633-d2b56063576e
+2024-08-22 11:38:41,778 - backend.database - INFO - Checked if master password is set.
+2024-08-22 11:38:47,861 - backend.database - INFO - Verified master password.
+2024-08-22 11:38:47,861 - __main__ - INFO - Master password verified successfully.
+2024-08-22 11:38:47,877 - backend.database - INFO - Retrieved all passwords.
+2024-08-22 11:38:47,918 - __main__ - INFO - StrongBox application started.
+2024-08-22 11:39:16,777 - backend.database - INFO - Verified master password.
+2024-08-22 11:39:16,778 - __main__ - INFO - Master password verified successfully.
+2024-08-22 11:39:16,778 - password_management - DEBUG - Service selected: www.hanoi.com
+2024-08-22 11:39:16,779 - backend.database - INFO - Retrieved encrypted password for service: www.hanoi.com, username: Your Dad.
+2024-08-22 11:39:16,779 - password_management - DEBUG - Retrieved Username: Your Dad, Encrypted Password: gAAAAABmxr-Dg66MgMhcPYcmD0FDL-9S5GmDGrqWE65lv8dn1D5_3vcRuKyPIBw-VXystq51f5Zuc55weo6Lk8DvOeSbRaE4bMtXWeymEbxXpIZoxcysCUjC_mR65iTt0WfpuHUFIwc8
+2024-08-22 11:39:16,782 - password_management - DEBUG - Decrypted Password: tchHe}695PpJ=$w))hQ(]hX%|x\@MsT(`p/e
+2024-08-22 11:40:47,946 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-22 11:40:47,947 - backend.database - INFO - Encryption key for DefaultStrongBox loaded from .env file.
+2024-08-22 11:40:47,947 - backend.database - DEBUG - ENCRYPTION_KEY_DEFAULTSTRONGBOX: MQfyS... (truncated for security)
+2024-08-22 11:40:47,948 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db
+2024-08-22 11:40:47,954 - backend.database - INFO - Initialized database with key_id.
+2024-08-22 11:40:47,954 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db with key_id: eb5b9c33-bc06-49a0-9db0-04ff65e7bb63
+2024-08-22 11:40:47,955 - backend.database - INFO - Checked if master password is set.
+2024-08-22 11:40:53,574 - backend.database - INFO - Verified master password.
+2024-08-22 11:40:53,575 - __main__ - INFO - Master password verified successfully.
+2024-08-22 11:40:53,601 - backend.database - INFO - Retrieved all passwords.
+2024-08-22 11:40:53,658 - __main__ - INFO - StrongBox application started.
+2024-08-22 11:41:03,797 - backend.database - INFO - Verified master password.
+2024-08-22 11:41:03,798 - __main__ - INFO - Master password verified successfully.
+2024-08-22 11:41:03,799 - password_management - DEBUG - Service selected: www.hanoi.com
+2024-08-22 11:41:03,799 - backend.database - INFO - Retrieved encrypted password for service: www.hanoi.com, username: Your Dad.
+2024-08-22 11:41:03,799 - password_management - DEBUG - Retrieved Username: Your Dad, Encrypted Password: gAAAAABmxr-Dg66MgMhcPYcmD0FDL-9S5GmDGrqWE65lv8dn1D5_3vcRuKyPIBw-VXystq51f5Zuc55weo6Lk8DvOeSbRaE4bMtXWeymEbxXpIZoxcysCUjC_mR65iTt0WfpuHUFIwc8
+2024-08-22 11:41:03,803 - password_management - DEBUG - Decrypted Password: tchHe}695PpJ=$w))hQ(]hX%|x\@MsT(`p/e
+2024-08-22 11:42:55,487 - backend.database - INFO - Verified master password.
+2024-08-22 11:42:55,488 - __main__ - INFO - Master password verified successfully.
+2024-08-22 11:42:55,488 - password_management - DEBUG - Service selected: www.hanoi.com
+2024-08-22 11:42:55,489 - backend.database - INFO - Retrieved encrypted password for service: www.hanoi.com, username: Your Dad.
+2024-08-22 11:42:55,490 - password_management - DEBUG - Retrieved Username: Your Dad, Encrypted Password: gAAAAABmxr-Dg66MgMhcPYcmD0FDL-9S5GmDGrqWE65lv8dn1D5_3vcRuKyPIBw-VXystq51f5Zuc55weo6Lk8DvOeSbRaE4bMtXWeymEbxXpIZoxcysCUjC_mR65iTt0WfpuHUFIwc8
+2024-08-22 11:42:55,490 - password_management - DEBUG - Decrypted Password: tchHe}695PpJ=$w))hQ(]hX%|x\@MsT(`p/e
+2024-08-22 11:48:12,815 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-22 11:48:12,816 - backend.database - INFO - Encryption key for DefaultStrongBox loaded from .env file.
+2024-08-22 11:48:12,816 - backend.database - DEBUG - ENCRYPTION_KEY_DEFAULTSTRONGBOX: MQfyS... (truncated for security)
+2024-08-22 11:48:12,816 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db
+2024-08-22 11:48:12,822 - backend.database - INFO - Initialized database with key_id.
+2024-08-22 11:48:12,823 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db with key_id: c2278766-1544-404c-af1d-0d99f7f547d7
+2024-08-22 11:48:12,824 - backend.database - INFO - Checked if master password is set.
+2024-08-22 11:48:18,437 - backend.database - INFO - Verified master password.
+2024-08-22 11:48:18,437 - __main__ - INFO - Master password verified successfully.
+2024-08-22 11:48:18,447 - backend.database - INFO - Retrieved all passwords.
+2024-08-22 11:48:18,477 - __main__ - INFO - StrongBox application started.
+2024-08-22 11:48:26,198 - backend.database - INFO - Verified master password.
+2024-08-22 11:48:26,198 - __main__ - INFO - Master password verified successfully.
+2024-08-22 11:48:26,199 - password_management - DEBUG - Service selected: www.hanoi.com
+2024-08-22 11:48:26,200 - backend.database - INFO - Retrieved encrypted password for service: www.hanoi.com, username: Your Dad.
+2024-08-22 11:48:26,200 - password_management - DEBUG - Retrieved Username: Your Dad, Encrypted Password: gAAAAABmxr-Dg66MgMhcPYcmD0FDL-9S5GmDGrqWE65lv8dn1D5_3vcRuKyPIBw-VXystq51f5Zuc55weo6Lk8DvOeSbRaE4bMtXWeymEbxXpIZoxcysCUjC_mR65iTt0WfpuHUFIwc8
+2024-08-22 11:48:26,201 - password_management - DEBUG - Decrypted Password: tchHe}695PpJ=$w))hQ(]hX%|x\@MsT(`p/e
+2024-08-22 11:48:45,542 - backend.database - INFO - Verified master password.
+2024-08-22 11:48:45,542 - __main__ - INFO - Master password verified successfully.
+2024-08-22 11:48:45,543 - password_management - DEBUG - Service selected: www.hanoi.com
+2024-08-22 11:48:45,544 - backend.database - INFO - Retrieved encrypted password for service: www.hanoi.com, username: Your Dad.
+2024-08-22 11:48:45,545 - password_management - DEBUG - Retrieved Username: Your Dad, Encrypted Password: gAAAAABmxr-Dg66MgMhcPYcmD0FDL-9S5GmDGrqWE65lv8dn1D5_3vcRuKyPIBw-VXystq51f5Zuc55weo6Lk8DvOeSbRaE4bMtXWeymEbxXpIZoxcysCUjC_mR65iTt0WfpuHUFIwc8
+2024-08-22 11:48:45,545 - password_management - DEBUG - Decrypted Password: tchHe}695PpJ=$w))hQ(]hX%|x\@MsT(`p/e
+2024-08-22 11:50:44,132 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-22 11:50:44,133 - backend.database - INFO - Encryption key for DefaultStrongBox loaded from .env file.
+2024-08-22 11:50:44,133 - backend.database - DEBUG - ENCRYPTION_KEY_DEFAULTSTRONGBOX: MQfyS... (truncated for security)
+2024-08-22 11:50:44,134 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db
+2024-08-22 11:50:44,140 - backend.database - INFO - Initialized database with key_id.
+2024-08-22 11:50:44,140 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db with key_id: 4d503ff6-52a8-4abd-8541-cb03cc3a5481
+2024-08-22 11:50:44,141 - backend.database - INFO - Checked if master password is set.
+2024-08-22 11:50:49,741 - backend.database - INFO - Verified master password.
+2024-08-22 11:50:49,741 - __main__ - INFO - Master password verified successfully.
+2024-08-22 11:50:49,751 - backend.database - INFO - Retrieved all passwords.
+2024-08-22 11:50:49,787 - __main__ - INFO - StrongBox application started.
+2024-08-22 11:50:58,477 - backend.database - INFO - Verified master password.
+2024-08-22 11:50:58,478 - __main__ - INFO - Master password verified successfully.
+2024-08-22 11:50:58,478 - password_management - DEBUG - Service selected: www.hanoi.com
+2024-08-22 11:50:58,479 - backend.database - INFO - Retrieved encrypted password for service: www.hanoi.com, username: Your Dad.
+2024-08-22 11:50:58,480 - password_management - DEBUG - Retrieved Username: Your Dad, Encrypted Password: gAAAAABmxr-Dg66MgMhcPYcmD0FDL-9S5GmDGrqWE65lv8dn1D5_3vcRuKyPIBw-VXystq51f5Zuc55weo6Lk8DvOeSbRaE4bMtXWeymEbxXpIZoxcysCUjC_mR65iTt0WfpuHUFIwc8
+2024-08-22 11:50:58,481 - password_management - DEBUG - Decrypted Password: tchHe}695PpJ=$w))hQ(]hX%|x\@MsT(`p/e
+2024-08-22 11:51:10,666 - backend.database - INFO - Verified master password.
+2024-08-22 11:51:10,667 - __main__ - INFO - Master password verified successfully.
+2024-08-22 11:51:10,668 - password_management - DEBUG - Service selected: www.hanoi.com
+2024-08-22 11:51:10,668 - backend.database - INFO - Retrieved encrypted password for service: www.hanoi.com, username: Your Dad.
+2024-08-22 11:51:10,669 - password_management - DEBUG - Retrieved Username: Your Dad, Encrypted Password: gAAAAABmxr-Dg66MgMhcPYcmD0FDL-9S5GmDGrqWE65lv8dn1D5_3vcRuKyPIBw-VXystq51f5Zuc55weo6Lk8DvOeSbRaE4bMtXWeymEbxXpIZoxcysCUjC_mR65iTt0WfpuHUFIwc8
+2024-08-22 11:51:10,670 - password_management - DEBUG - Decrypted Password: tchHe}695PpJ=$w))hQ(]hX%|x\@MsT(`p/e
+2024-08-22 11:51:54,390 - backend.database - INFO - Retrieved all passwords.
+2024-08-22 11:52:04,326 - backend.database - INFO - Verified master password.
+2024-08-22 11:52:04,326 - __main__ - INFO - Master password verified successfully.
+2024-08-22 11:52:04,327 - password_management - DEBUG - Service selected: www.hanoi.com
+2024-08-22 11:52:04,327 - backend.database - INFO - Retrieved encrypted password for service: www.hanoi.com, username: Your Dad.
+2024-08-22 11:52:04,327 - password_management - DEBUG - Retrieved Username: Your Dad, Encrypted Password: gAAAAABmxsPp_Grvb83ERVFtm4634AlmFYB-tKU93T8-IVB36TyFcFTHxA4_-VPClbiYDnntUHdj8VjbMAgXnA7denKicmIrRMRAYqGiCBq_qGYwNY0XtKR8eALj0rOx3So2H7AXt4cS
+2024-08-22 11:52:04,328 - password_management - DEBUG - Decrypted Password: tchHe}695PpJ=$w))hQ(]hX%|x\@MsT(`p/e
+2024-08-22 12:17:34,553 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-22 12:17:34,555 - backend.database - INFO - Encryption key for DefaultStrongBox loaded from .env file.
+2024-08-22 12:17:34,556 - backend.database - DEBUG - ENCRYPTION_KEY_DEFAULTSTRONGBOX: MQfyS... (truncated for security)
+2024-08-22 12:17:34,556 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db
+2024-08-22 12:17:34,564 - backend.database - INFO - Initialized database with key_id.
+2024-08-22 12:17:34,565 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db with key_id: 2c14c626-9dc4-4598-8fb4-8bf2c419ea48
+2024-08-22 12:17:34,566 - backend.database - INFO - Checked if master password is set.
+2024-08-22 12:17:40,223 - backend.master_password - ERROR - Error verifying password: Keys do not match.
+2024-08-22 12:17:40,223 - backend.database - INFO - Verified master password.
+2024-08-22 12:17:40,223 - __main__ - WARNING - Incorrect master password.
+2024-08-22 12:17:46,007 - backend.database - INFO - Verified master password.
+2024-08-22 12:17:46,008 - __main__ - INFO - Master password verified successfully.
+2024-08-22 12:17:46,020 - backend.database - INFO - Retrieved all passwords.
+2024-08-22 12:17:46,050 - __main__ - INFO - StrongBox application started.
+2024-08-22 12:18:34,568 - backend.database - INFO - Verified master password.
+2024-08-22 12:18:34,569 - __main__ - INFO - Master password verified successfully.
+2024-08-22 12:18:34,569 - password_management - DEBUG - Service selected: www.hanoi.com
+2024-08-22 12:18:34,570 - backend.database - INFO - Retrieved encrypted password for service: www.hanoi.com, username: Your Dad.
+2024-08-22 12:18:34,570 - password_management - DEBUG - Retrieved Username: Your Dad, Encrypted Password: gAAAAABmxsPp_Grvb83ERVFtm4634AlmFYB-tKU93T8-IVB36TyFcFTHxA4_-VPClbiYDnntUHdj8VjbMAgXnA7denKicmIrRMRAYqGiCBq_qGYwNY0XtKR8eALj0rOx3So2H7AXt4cS
+2024-08-22 12:18:34,572 - password_management - DEBUG - Decrypted Password: tchHe}695PpJ=$w))hQ(]hX%|x\@MsT(`p/e
+2024-08-22 12:24:45,704 - backend.database - INFO - Retrieved all passwords.
+2024-08-22 12:25:13,471 - backend.password_generator - INFO - Generated password with strength 3.
+2024-08-22 12:25:13,471 - password_generation - INFO - Generated password with strength 3.
+2024-08-22 12:25:36,621 - backend.database - INFO - Stored password for service: www.vietnam.com, username: Just_A_Tourist.
+2024-08-22 12:25:36,621 - password_management - INFO - Password for www.vietnam.com stored successfully.
+2024-08-22 12:25:38,722 - backend.database - INFO - Retrieved all passwords.
+2024-08-22 12:25:47,365 - backend.database - INFO - Verified master password.
+2024-08-22 12:25:47,366 - __main__ - INFO - Master password verified successfully.
+2024-08-22 12:25:47,367 - password_management - DEBUG - Service selected: www.vietnam.com
+2024-08-22 12:25:47,368 - backend.database - INFO - Retrieved encrypted password for service: www.vietnam.com, username: Just_A_Tourist.
+2024-08-22 12:25:47,368 - password_management - DEBUG - Retrieved Username: Just_A_Tourist, Encrypted Password: gAAAAABmxsvQLYUw2V_Usk_q2incXrZut6TJXM0lW0ZDRIRbU7T2xPKMaXNeQtlm7_TU0mFvo4pBrTy_bldt6W9FUFG1L25shMlVN_T0FzckVNKioROweqT7FkVAUiG_qhdRdVd9exiW
+2024-08-22 12:25:47,368 - password_management - DEBUG - Decrypted Password: MA{i*SJSzwuuxd+wy.j{-,'[~)E`mQbTU"pCy|S0yOrj
+2024-08-22 12:31:21,828 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-22 12:31:21,829 - backend.database - INFO - Encryption key for DefaultStrongBox loaded from .env file.
+2024-08-22 12:31:21,830 - backend.database - DEBUG - ENCRYPTION_KEY_DEFAULTSTRONGBOX: MQfyS... (truncated for security)
+2024-08-22 12:31:21,830 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db
+2024-08-22 12:31:21,836 - backend.database - INFO - Initialized database with key_id.
+2024-08-22 12:31:21,837 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db with key_id: 71c0b0bf-76c9-4a6a-aa7c-569d6d226031
+2024-08-22 12:31:21,838 - backend.database - INFO - Checked if master password is set.
+2024-08-22 12:31:30,903 - backend.master_password - ERROR - Error verifying password: Keys do not match.
+2024-08-22 12:31:30,903 - backend.database - INFO - Verified master password.
+2024-08-22 12:31:30,903 - __main__ - WARNING - Incorrect master password.
+2024-08-22 12:31:36,622 - backend.database - INFO - Verified master password.
+2024-08-22 12:31:36,622 - __main__ - INFO - Master password verified successfully.
+2024-08-22 12:31:36,633 - backend.database - INFO - Retrieved all passwords.
+2024-08-22 12:31:36,663 - __main__ - INFO - StrongBox application started.
+2024-08-22 12:32:29,807 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-22 12:32:29,808 - backend.database - INFO - Encryption key for DefaultStrongBox loaded from .env file.
+2024-08-22 12:32:29,808 - backend.database - DEBUG - ENCRYPTION_KEY_DEFAULTSTRONGBOX: MQfyS... (truncated for security)
+2024-08-22 12:32:29,809 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db
+2024-08-22 12:32:29,815 - backend.database - INFO - Initialized database with key_id.
+2024-08-22 12:32:29,815 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db with key_id: 0a3acae8-edfb-4901-a345-3bdfb9c24ce1
+2024-08-22 12:32:29,816 - backend.database - INFO - Checked if master password is set.
+2024-08-22 12:32:35,871 - backend.database - INFO - Verified master password.
+2024-08-22 12:32:35,872 - __main__ - INFO - Master password verified successfully.
+2024-08-22 12:32:35,883 - backend.database - INFO - Retrieved all passwords.
+2024-08-22 12:32:35,915 - __main__ - INFO - StrongBox application started.
+2024-08-22 12:35:59,106 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-22 12:35:59,107 - backend.database - INFO - Encryption key for DefaultStrongBox loaded from .env file.
+2024-08-22 12:35:59,108 - backend.database - DEBUG - ENCRYPTION_KEY_DEFAULTSTRONGBOX: MQfyS... (truncated for security)
+2024-08-22 12:35:59,108 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db
+2024-08-22 12:35:59,115 - backend.database - INFO - Initialized database with key_id.
+2024-08-22 12:35:59,116 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db with key_id: 5fd286f7-a7ec-4cbf-8471-dab50e40c164
+2024-08-22 12:35:59,117 - backend.database - INFO - Checked if master password is set.
+2024-08-22 12:36:04,043 - backend.database - INFO - Verified master password.
+2024-08-22 12:36:04,043 - __main__ - INFO - Master password verified successfully.
+2024-08-22 12:36:04,065 - backend.database - INFO - Retrieved all passwords.
+2024-08-22 12:36:04,122 - __main__ - INFO - StrongBox application started.
+2024-08-22 12:38:17,592 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-22 12:38:17,593 - backend.database - INFO - Encryption key for DefaultStrongBox loaded from .env file.
+2024-08-22 12:38:17,593 - backend.database - DEBUG - ENCRYPTION_KEY_DEFAULTSTRONGBOX: MQfyS... (truncated for security)
+2024-08-22 12:38:17,594 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db
+2024-08-22 12:38:17,601 - backend.database - INFO - Initialized database with key_id.
+2024-08-22 12:38:17,601 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db with key_id: 0a80a8b9-64c3-4052-9a2a-c7beb4034225
+2024-08-22 12:38:17,602 - backend.database - INFO - Checked if master password is set.
+2024-08-22 12:38:22,607 - backend.database - INFO - Verified master password.
+2024-08-22 12:38:22,607 - __main__ - INFO - Master password verified successfully.
+2024-08-22 12:38:22,618 - backend.database - INFO - Retrieved all passwords.
+2024-08-22 12:41:10,462 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-22 12:41:10,463 - backend.database - INFO - Encryption key for DefaultStrongBox loaded from .env file.
+2024-08-22 12:41:10,463 - backend.database - DEBUG - ENCRYPTION_KEY_DEFAULTSTRONGBOX: MQfyS... (truncated for security)
+2024-08-22 12:41:10,463 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db
+2024-08-22 12:41:10,468 - backend.database - INFO - Initialized database with key_id.
+2024-08-22 12:41:10,468 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db with key_id: 559922d1-010b-4ba5-ae8b-b4ac513a4729
+2024-08-22 12:41:10,469 - backend.database - INFO - Checked if master password is set.
+2024-08-22 12:41:15,205 - backend.database - INFO - Verified master password.
+2024-08-22 12:41:15,205 - __main__ - INFO - Master password verified successfully.
+2024-08-22 12:41:15,215 - backend.database - INFO - Retrieved all passwords.
+2024-08-22 12:41:15,247 - __main__ - INFO - StrongBox application started.
+2024-08-22 12:50:33,049 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-22 12:50:33,050 - backend.database - INFO - Encryption key for DefaultStrongBox loaded from .env file.
+2024-08-22 12:50:33,051 - backend.database - DEBUG - ENCRYPTION_KEY_DEFAULTSTRONGBOX: MQfyS... (truncated for security)
+2024-08-22 12:50:33,052 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db
+2024-08-22 12:50:33,059 - backend.database - INFO - Initialized database with key_id.
+2024-08-22 12:50:33,060 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db with key_id: 8e29ad1a-bdc1-4a82-acf0-30adf1ad54ea
+2024-08-22 12:50:33,061 - backend.database - INFO - Checked if master password is set.
+2024-08-22 12:50:37,545 - backend.database - INFO - Verified master password.
+2024-08-22 12:50:37,547 - __main__ - INFO - Master password verified successfully.
+2024-08-22 12:50:37,557 - backend.database - INFO - Retrieved all passwords.
+2024-08-22 12:50:37,590 - __main__ - INFO - StrongBox application started.
+2024-08-22 12:55:07,874 - backend.database - DEBUG - Starting load_or_generate_key()
+2024-08-22 12:55:07,874 - backend.database - INFO - Encryption key for DefaultStrongBox loaded from .env file.
+2024-08-22 12:55:07,875 - backend.database - DEBUG - ENCRYPTION_KEY_DEFAULTSTRONGBOX: MQfyS... (truncated for security)
+2024-08-22 12:55:07,876 - backend.database - INFO - Created connection to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db
+2024-08-22 12:55:07,882 - backend.database - INFO - Initialized database with key_id.
+2024-08-22 12:55:07,883 - __main__ - INFO - Connected to database: c:\Users\15097\Desktop\Serious_Projects\Project_StrongBox\frontend\user_databases\DefaultStrongBox.db with key_id: a4ecdbbc-8575-4eb9-b1ca-1bf724d84d4f
+2024-08-22 12:55:07,884 - backend.database - INFO - Checked if master password is set.
+2024-08-22 12:55:12,663 - backend.database - INFO - Verified master password.
+2024-08-22 12:55:12,663 - __main__ - INFO - Master password verified successfully.
+2024-08-22 12:55:12,675 - backend.database - INFO - Retrieved all passwords.
+2024-08-22 12:55:12,711 - __main__ - INFO - StrongBox application started.

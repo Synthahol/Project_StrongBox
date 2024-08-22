@@ -268,3 +268,58 @@ def get_all_passwords(conn: sqlite3.Connection) -> list[tuple[str, str, str]]:
     except sqlite3.Error as e:
         logger.error(f"Error retrieving all passwords: {e}")
         return []
+
+
+def update_password(
+    conn,
+    old_service,
+    old_username,
+    old_password,
+    new_service,
+    new_username,
+    new_password,
+    cipher_suite,
+):
+    cursor = conn.cursor()
+
+    # Encrypt the new password
+    encrypted_new_password = cipher_suite.encrypt(new_password.encode()).decode()
+
+    try:
+        cursor.execute(
+            """
+            UPDATE passwords 
+            SET service = ?, username = ?, password = ? 
+            WHERE service = ? AND username = ?
+        """,
+            (
+                new_service,
+                new_username,
+                encrypted_new_password,
+                old_service,
+                old_username,
+            ),
+        )
+
+        conn.commit()
+
+        # Log success
+        print(f"Updated password for {new_service} - {new_username}")
+
+    except sqlite3.Error as e:
+        print(f"Failed to update password: {e}")
+        raise
+
+
+def delete_password(conn, service, username, cipher_suite):
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        DELETE FROM passwords 
+        WHERE service = ? AND username = ?
+    """,
+        (service, username),
+    )
+
+    conn.commit()

@@ -15,17 +15,17 @@ QLabel
 }
 
 /*-----QPushButton-----*/
-QPushButton
+QPushButton 
 {
-	background-color: transparent; /* Transparent background */
-	color: #c1c1c1; /* Text color matching border */
-	font-weight: bold;
-	border: 2px solid #00A36C; /* Colored border */
-	padding: 8px 15px; /* Increased padding for better appearance */
-	border-radius: 5px; /* Rounded corners */
-	/* Add spacing between icon and text */
-	qproperty-iconSize: 32px;
-	
+    background-color: transparent; /* Transparent background */
+    color: #c1c1c1; /* Text color matching border */
+    font-weight: bold;
+    border: 2px solid #00A36C; /* Colored border */
+    padding: 0px; /* Remove padding */
+    margin: 0px; /* Remove margin */
+    border-radius: 5px; /* Rounded corners */
+    min-height: 30px; /* Set minimum height */
+    qproperty-iconSize: 32px;
 }
 
 
@@ -102,6 +102,17 @@ QTableView::item:selected
 { 
     background-color: #41424e;
     color: #c1c1c1;
+}
+
+QTableWidget::item {
+    padding: 0px; /* Ensure no padding inside cells */
+    margin: 0px; /* Ensure no margin inside cells */
+}
+
+QTableWidget {
+    gridline-color: #transparent;
+    padding: 0px; /* Ensure no padding inside the table */
+    margin: 0px; /* Ensure no margin inside the table */
 }
 
 QHeaderView::section:horizontal 
