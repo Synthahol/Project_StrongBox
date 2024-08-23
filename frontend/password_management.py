@@ -1,5 +1,6 @@
 import logging
 
+from blueprints import ButtonFactory
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QApplication,
@@ -38,6 +39,10 @@ class PasswordManagementTab(QWidget):
         self.conn = conn
         self.cipher_suite = cipher_suite
         self.layout = QVBoxLayout(self)
+        # Create an instance of ButtonFactory
+        self.button_factory = ButtonFactory(self)
+
+        # Use the button factory to create buttons
         self.create_ui()
 
     def create_ui(self):
@@ -100,14 +105,28 @@ class PasswordManagementTab(QWidget):
         header.setSectionResizeMode(QHeaderView.Stretch)
 
         return table
-    
+
+    def show_success_message(self, message):
+        msg_box = QMessageBox()
+        msg_box.setIcon(QMessageBox.Information)
+        msg_box.setText(message)
+        msg_box.setWindowTitle("Success")
+        msg_box.exec()
+
+    def show_error(self, message):
+        msg_box = QMessageBox()
+        msg_box.setIcon(QMessageBox.Critical)
+        msg_box.setText(message)
+        msg_box.setWindowTitle("Error")
+        msg_box.exec()
+
     def show_centered_error(self, message, title="Error"):
         msg_box = QMessageBox()
         msg_box.setIcon(QMessageBox.Critical)
         msg_box.setText(message)
         msg_box.setWindowTitle(title)
         msg_box.setStandardButtons(QMessageBox.Ok)
-        
+
         # Access the layout of the QMessageBox
         layout = msg_box.layout()
 
@@ -260,33 +279,52 @@ class PasswordManagementTab(QWidget):
 
         layout = QVBoxLayout(details_dialog)
 
-        # Set the dialog to a fixed width of 800 pixels
-        details_dialog.setFixedWidth(800)
+        # Set the dialog to a fixed width of 800 pixels and height to 200 pixels
+        details_dialog.setFixedWidth(700)
+        details_dialog.setFixedHeight(200)
 
-        service_label = QLabel(f"Service: {service}")
-        layout.addWidget(service_label)
+        # service_label = QLabel(f"Service: {service}")
+        # layout.addWidget(service_label)
 
-        username_layout = QHBoxLayout()
-        username_label = QLabel(f"Username: {username}")
-        copy_username_btn = QPushButton("Copy Username")
-        copy_username_btn.clicked.connect(lambda: self.copy_to_clipboard(username))
-        username_layout.addWidget(username_label)
-        username_layout.addWidget(copy_username_btn)
+        # Copy Service button layout
+        username_layout = self.button_factory.create_button_with_layout(
+            f"Service: {service}",
+            "Copy Service",
+            self.width() * 0.15,  # set button width to 15% of box width
+            lambda: self.copy_to_clipboard(service),
+        )
         layout.addLayout(username_layout)
 
-        password_layout = QHBoxLayout()
-        password_label = QLabel(f"Password: {decrypted_password}")
-        copy_password_btn = QPushButton("Copy Password")
-        copy_password_btn.clicked.connect(
-            lambda: self.copy_to_clipboard(decrypted_password)
+        # Copy Username button layout
+        username_layout = self.button_factory.create_button_with_layout(
+            f"Username: {username}",
+            "Copy Username",
+            self.width() * 0.15,  # set button width to 15% of box width
+            lambda: self.copy_to_clipboard(username),
         )
-        password_layout.addWidget(password_label)
-        password_layout.addWidget(copy_password_btn)
+        layout.addLayout(username_layout)
+
+        # Copy Password button layout
+        password_layout = self.button_factory.create_button_with_layout(
+            f"Password: {decrypted_password}",
+            "Copy Password",
+            self.width() * 0.15,  # set button width to 15% of box width
+            lambda: self.copy_to_clipboard(decrypted_password),
+        )
         layout.addLayout(password_layout)
 
+        # Close button layout
+        close_button_layout = QHBoxLayout()
         close_button = QPushButton("Close")
+        close_button.setFixedWidth(
+            self.width() * 0.15
+        )  # set button width to 15% of box width
         close_button.clicked.connect(details_dialog.accept)
-        layout.addWidget(close_button)
+
+        close_button_layout.addStretch()  # Add stretchable space to push the button to the center
+        close_button_layout.addWidget(close_button)
+        close_button_layout.addStretch()  # Add stretchable space to push the button to the center
+        layout.addLayout(close_button_layout)
 
         details_dialog.setLayout(layout)
 
@@ -298,7 +336,7 @@ class PasswordManagementTab(QWidget):
     def copy_to_clipboard(self, text):
         clipboard = QApplication.clipboard()
         clipboard.setText(text)
-        QMessageBox.information(self, "Copied", "Text copied to clipboard!")
+        self.show_success_message("Text copied to clipboard!")
 
     def store_password(self):
         service = self.service_input.text()
@@ -306,22 +344,18 @@ class PasswordManagementTab(QWidget):
         password = self.password_input.text()
 
         if not service or not username or not password:
-            QMessageBox.warning(
-                self, "Warning", "All fields must be filled out to store a password."
-            )
+            self.show_error("All fields must be filled out to store a password.")
             return
 
         try:
             # Call the store_password function with the plain text password
             store_password(self.conn, service, username, password, self.cipher_suite)
             logger.info(f"Password for {service} stored successfully.")
-            QMessageBox.information(
-                self, "Success", f"Password for {service} stored successfully."
-            )
+            self.show_success_message(f"Password for {service} stored successfully.")
             self.load_passwords()
         except Exception as e:
             logger.error(f"Failed to store password: {e}")
-            QMessageBox.critical(self, "Error", f"Failed to store password: {e}")
+            self.show_error(f"Failed to store password: {e}")
 
 
 class ModifyPasswordDialog(QDialog):

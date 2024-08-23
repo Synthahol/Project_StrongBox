@@ -10,7 +10,6 @@ from PySide6.QtWidgets import (
     QApplication,
     QDialog,
     QHBoxLayout,
-    QInputDialog,
     QLabel,
     QLineEdit,
     QMainWindow,
@@ -21,6 +20,8 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
+
+from backend.settings import SettingsTab
 
 # Add the root directory to sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
@@ -42,6 +43,46 @@ logging.basicConfig(
     handlers=[logging.FileHandler(LOG_FILE), logging.StreamHandler()],
 )
 logger = logging.getLogger(__name__)
+
+
+class CustomInputDialog(QDialog):
+    def __init__(self, title, label, echo_mode=QLineEdit.Normal, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle(title)
+
+        layout = QVBoxLayout(self)
+
+        self.label = QLabel(label)
+        layout.addWidget(self.label)
+
+        self.input_field = QLineEdit()
+        self.input_field.setEchoMode(echo_mode)
+        layout.addWidget(self.input_field)
+
+        # Create the buttons
+        self.ok_button = QPushButton("OK")
+        self.cancel_button = QPushButton("Cancel")
+
+        # Set buttons' minimum width
+        self.ok_button.setMinimumWidth(100)
+        self.cancel_button.setMinimumWidth(100)
+
+        # Create a layout for the buttons
+        button_layout = QHBoxLayout()
+        button_layout.addStretch(1)
+        button_layout.addWidget(self.ok_button)
+        button_layout.addWidget(self.cancel_button)
+        button_layout.addStretch(1)
+
+        layout.addLayout(button_layout)
+
+        self.ok_button.clicked.connect(self.accept)
+        self.cancel_button.clicked.connect(self.reject)
+
+        self.setLayout(layout)
+
+    def get_input(self):
+        return self.input_field.text()
 
 
 class WelcomeDialog(QDialog):
@@ -145,6 +186,13 @@ class PasswordManager(QMainWindow):
         self.manage_button.clicked.connect(self.show_manage_passwords)
         left_column.addWidget(self.manage_button)
 
+        # Settings button with custom icon
+        self.settings_button = QPushButton("Visual Settings")
+        self.settings_button.setIcon(QIcon(r"frontend/icons/settings.png"))
+        self.settings_button.setStyleSheet("text-align: left; padding-left: 0px;")
+        self.settings_button.clicked.connect(self.show_settings)
+        left_column.addWidget(self.settings_button)
+
         # Adding a spacer to push the buttons to the top
         left_column.addStretch()
 
@@ -157,6 +205,9 @@ class PasswordManager(QMainWindow):
 
         # Initialize the application
         self.initialize_app()
+
+        # Maximize the window instead of going full screen
+        self.showMaximized()
 
     def initialize_app(self):
         from cryptography.fernet import Fernet
@@ -195,14 +246,19 @@ class PasswordManager(QMainWindow):
                     self.show_error("Master password verification failed.")
                     return
 
-            # Create the Password Generation page and Manage Passwords page after connection is established
+            # Create the Password Generation page, Manage Passwords page, and Settings page after connection is established
             self.password_generation_tab = PasswordGenerationTab()
             self.password_management_tab = PasswordManagementTab(
                 self.conn, self.cipher_suite
             )
+            self.settings_tab = SettingsTab(
+                main_window=self
+            )  # Initialize the SettingsTab
 
+            # Add all tabs to the stacked widget
             self.stacked_widget.addWidget(self.password_generation_tab)
             self.stacked_widget.addWidget(self.password_management_tab)
+            self.stacked_widget.addWidget(self.settings_tab)
 
             self.show_password_generator()  # Show the Password Generator by default
         else:
@@ -216,22 +272,44 @@ class PasswordManager(QMainWindow):
     def show_manage_passwords(self):
         self.stacked_widget.setCurrentWidget(self.password_management_tab)
 
+    def show_settings(self):
+        """Switches the view to the Settings tab."""
+        self.stacked_widget.setCurrentWidget(self.settings_tab)
+
     def set_master_password(self):
         while True:
-            password, ok = self.prompt_user_input(
-                "Set Master Password", "Enter a master password:", QLineEdit.Password
+            # Use the custom input dialog for entering the master password
+            dialog = CustomInputDialog(
+                "Set Master Password",
+                "Enter a master password:",
+                QLineEdit.Password,
+                self,
             )
-            if ok and password:
-                confirm_password, ok = self.prompt_user_input(
-                    "Confirm Master Password",
-                    "Confirm master password:",
-                    QLineEdit.Password,
-                )
-                if ok and password == confirm_password:
-                    self.store_master_password(password)
-                    break
+            if dialog.exec() == QDialog.Accepted:
+                password = dialog.get_input()
+                if password:
+                    # Use the custom input dialog for confirming the master password
+                    confirm_dialog = CustomInputDialog(
+                        "Confirm Master Password",
+                        "Confirm master password:",
+                        QLineEdit.Password,
+                        self,
+                    )
+                    if confirm_dialog.exec() == QDialog.Accepted:
+                        confirm_password = confirm_dialog.get_input()
+                        if password == confirm_password:
+                            self.store_master_password(password)
+                            break
+                        else:
+                            self.show_warning(
+                                "Passwords do not match. Please try again."
+                            )
+                    else:
+                        self.show_warning(
+                            "Confirmation of master password is required."
+                        )
                 else:
-                    self.show_warning("Passwords do not match. Please try again.")
+                    self.show_warning("Master password is required to proceed.")
             else:
                 self.show_warning("Master password is required to proceed.")
 
@@ -255,7 +333,11 @@ class PasswordManager(QMainWindow):
                 return False  # Return False if the user cancels
 
     def prompt_user_input(self, title, label, echo_mode=QLineEdit.Normal):
-        return QInputDialog.getText(self, title, label, echo_mode)
+        dialog = CustomInputDialog(title, label, echo_mode, self)
+        if dialog.exec() == QDialog.Accepted:
+            return dialog.get_input(), True
+        else:
+            return "", False
 
     def store_master_password(self, password):
         from backend.database import set_master_password
@@ -268,13 +350,94 @@ class PasswordManager(QMainWindow):
             self.show_warning(f"Password validation failed: {ve}")
 
     def show_info(self, message):
-        QMessageBox.information(self, "Info", message)
+        msg_box = QMessageBox()
+        msg_box.setIcon(QMessageBox.Information)
+        msg_box.setText(message)
+        msg_box.setWindowTitle("Info")
+        msg_box.setStandardButtons(QMessageBox.Ok)
+
+        # Access the "OK" button directly
+        ok_button = msg_box.button(QMessageBox.Ok)
+
+        # Set the minimum width for the "OK" button
+        ok_button.setMinimumWidth(100)  # Adjust the width as needed
+
+        # Create a new horizontal layout for centering the button
+        centered_layout = QHBoxLayout()
+        centered_layout.addStretch(1)  # Add stretchable space to the left
+        centered_layout.addWidget(ok_button)  # Add the OK button
+        centered_layout.addStretch(1)  # Add stretchable space to the right
+
+        # Access the layout of the QMessageBox
+        layout = msg_box.layout()
+
+        # Replace the original button layout with the centered layout
+        layout.addLayout(centered_layout, layout.rowCount(), 0, 1, layout.columnCount())
+
+        # Show the message box
+        msg_box.exec()
 
     def show_warning(self, message):
         msg_box = QMessageBox()
         msg_box.setIcon(QMessageBox.Warning)
         msg_box.setText(message)
         msg_box.setWindowTitle("Warning")
+        msg_box.setStandardButtons(QMessageBox.Ok)
+
+        # Access the "OK" button directly
+        ok_button = msg_box.button(QMessageBox.Ok)
+
+        # Set the minimum width for the "OK" button
+        ok_button.setMinimumWidth(100)  # Adjust the width as needed
+
+        # Create a new horizontal layout for centering the button
+        centered_layout = QHBoxLayout()
+        centered_layout.addStretch(1)  # Add stretchable space to the left
+        centered_layout.addWidget(ok_button)  # Add the OK button
+        centered_layout.addStretch(1)  # Add stretchable space to the right
+
+        # Access the layout of the QMessageBox
+        layout = msg_box.layout()
+
+        # Replace the original button layout with the centered layout
+        layout.addLayout(centered_layout, layout.rowCount(), 0, 1, layout.columnCount())
+
+        # Show the message box
+        msg_box.exec()
+
+    def show_copied_message(self, message="Text copied to clipboard!"):
+        msg_box = QMessageBox()
+        msg_box.setIcon(QMessageBox.Information)
+        msg_box.setText(message)
+        msg_box.setWindowTitle("Copied")
+        msg_box.setStandardButtons(QMessageBox.Ok)
+
+        # Access the "OK" button directly
+        ok_button = msg_box.button(QMessageBox.Ok)
+
+        # Set the minimum width for the "OK" button
+        ok_button.setMinimumWidth(100)  # Adjust the width as needed
+
+        # Create a new horizontal layout for centering the button
+        centered_layout = QHBoxLayout()
+        centered_layout.addStretch(1)  # Add stretchable space to the left
+        centered_layout.addWidget(ok_button)  # Add the OK button
+        centered_layout.addStretch(1)  # Add stretchable space to the right
+
+        # Access the layout of the QMessageBox
+        layout = msg_box.layout()
+
+        # Replace the original button layout with the centered layout
+        layout.addLayout(centered_layout, layout.rowCount(), 0, 1, layout.columnCount())
+
+        # Show the message box
+        msg_box.exec()
+
+    def show_success_message(self, message="Operation completed successfully!"):
+        msg_box = QMessageBox()
+        msg_box.setIcon(QMessageBox.Information)
+        msg_box.setText(message)
+        msg_box.setWindowTitle("Success")
         msg_box.setStandardButtons(QMessageBox.Ok)
 
         # Access the "OK" button directly
