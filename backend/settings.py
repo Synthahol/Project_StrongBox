@@ -207,7 +207,7 @@ class SettingsTab(QWidget):
             # Apply background color to the passwords table and its cells
             f"QTableWidget {{"
             f"background-color: {self.current_settings['background_color']};"
-            f"gridline-color: {self.current_settings['button_color']};"
+            # f"gridline-color: {self.current_settings['button_color']};"
             f"color: #ffffff;"  # Adjust text color if needed
             f"}}"
             f"QTableWidget::item {{"
@@ -218,7 +218,7 @@ class SettingsTab(QWidget):
             f"QHeaderView::section {{"
             f"background-color: {self.current_settings['background_color']};"
             f"color: #ffffff;"  # Text color for headers
-            f"border: 1px solid {self.current_settings['button_color']};"  # Border for headers
+            # f"border: 1px solid {self.current_settings['button_color']};"  # Border for headers
             f"}}"
         )
 

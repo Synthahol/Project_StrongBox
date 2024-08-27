@@ -1,8 +1,10 @@
 import base64
 import logging
 import os
+import random
 import re
 import sqlite3
+import string
 
 from cryptography.fernet import Fernet
 from dotenv import load_dotenv
@@ -130,22 +132,27 @@ def create_connection(db_file: str) -> sqlite3.Connection:
 def initialize_db(conn: sqlite3.Connection, key_id: str):
     try:
         with conn:
+            # Create the passwords table if it doesn't exist
             conn.execute("""CREATE TABLE IF NOT EXISTS passwords (
                                 id INTEGER PRIMARY KEY,
                                 service TEXT NOT NULL,
                                 username TEXT NOT NULL,
                                 password TEXT NOT NULL
                             );""")
+            # Create the master_password table if it doesn't exist
             conn.execute("""CREATE TABLE IF NOT EXISTS master_password (
                                 id INTEGER PRIMARY KEY,
                                 salt BLOB NOT NULL,
                                 password BLOB NOT NULL
                             );""")
+            # Create the metadata table if it doesn't exist
             conn.execute("""CREATE TABLE IF NOT EXISTS metadata (
                                 key_id TEXT NOT NULL
                             );""")
+            # Insert the key_id into metadata
             conn.execute("INSERT INTO metadata (key_id) VALUES (?)", (key_id,))
-        logger.info("Initialized database with key_id.")
+
+        logger.info("Initialized database.")
     except sqlite3.Error as e:
         logger.error(f"Error initializing database: {e}")
 
@@ -323,3 +330,15 @@ def delete_password(conn, service, username, cipher_suite):
     )
 
     conn.commit()
+
+
+# Function to generate a random verification code
+def generate_verification_code(length=6):
+    return "".join(random.choices(string.digits, k=length))
+
+
+def login_user(conn: sqlite3.Connection, username: str, master_password: str):
+    if verify_master_password(conn, master_password):
+        print("Login successful.")
+    else:
+        print("Master password verification failed.")

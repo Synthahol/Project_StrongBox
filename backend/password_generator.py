@@ -9,11 +9,11 @@ logger = logging.getLogger(__name__)
 def generate_password(strength: int = 32) -> str:
     try:
         if strength == 1:
-            length = secrets.choice(range(12, 25))
+            length = secrets.choice(range(16, 29))
         elif strength == 2:
-            length = secrets.choice(range(25, 38))
+            length = secrets.choice(range(29, 43))
         elif strength == 3:
-            length = secrets.choice(range(38, 51))
+            length = secrets.choice(range(43, 61))
         else:
             raise ValueError(
                 "Invalid password strength. Choose strength level 1, 2, or 3."

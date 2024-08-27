@@ -3,9 +3,10 @@ import os
 import sys
 import uuid
 
+from blueprints import ButtonFactory, CustomMessageBox
 from password_generation import PasswordGenerationTab
 from password_management import PasswordManagementTab
-from PySide6.QtGui import QIcon  # Import QIcon for setting custom icons
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
     QApplication,
     QDialog,
@@ -15,7 +16,6 @@ from PySide6.QtWidgets import (
     QMainWindow,
     QMessageBox,
     QPushButton,
-    QSizePolicy,
     QStackedWidget,
     QVBoxLayout,
     QWidget,
@@ -59,25 +59,17 @@ class CustomInputDialog(QDialog):
         self.input_field.setEchoMode(echo_mode)
         layout.addWidget(self.input_field)
 
-        # Create the buttons
-        self.ok_button = QPushButton("OK")
-        self.cancel_button = QPushButton("Cancel")
-
-        # Set buttons' minimum width
-        self.ok_button.setMinimumWidth(100)
-        self.cancel_button.setMinimumWidth(100)
-
-        # Create a layout for the buttons
-        button_layout = QHBoxLayout()
-        button_layout.addStretch(1)
-        button_layout.addWidget(self.ok_button)
-        button_layout.addWidget(self.cancel_button)
-        button_layout.addStretch(1)
-
+        # Use ButtonFactory for creating the OK and Cancel buttons
+        button_factory = ButtonFactory(self)
+        button_layout = button_factory.create_button_with_layout(
+            "", "OK", 100, self.accept
+        )
         layout.addLayout(button_layout)
 
-        self.ok_button.clicked.connect(self.accept)
-        self.cancel_button.clicked.connect(self.reject)
+        cancel_button = QPushButton("Cancel")
+        cancel_button.setMinimumWidth(100)
+        cancel_button.clicked.connect(self.reject)
+        layout.addWidget(cancel_button)
 
         self.setLayout(layout)
 
@@ -99,9 +91,12 @@ class WelcomeDialog(QDialog):
         label = QLabel("Welcome to StrongBox! Click OK to proceed.")
         layout.addWidget(label)
 
-        ok_button = QPushButton("OK")
-        ok_button.clicked.connect(self.accept)  # Closes the dialog when OK is clicked
-        layout.addWidget(ok_button)
+        # Use ButtonFactory for the OK button
+        button_factory = ButtonFactory(self)
+        button_layout = button_factory.create_button_with_layout(
+            "", "OK", 100, self.accept
+        )
+        layout.addLayout(button_layout)
 
         self.setLayout(layout)
 
@@ -113,7 +108,7 @@ class VerifyMasterPasswordDialog(QDialog):
         self.setWindowTitle("Verify Master Password")
         self.setMinimumSize(400, 100)
 
-        layout = QVBoxLayout()
+        layout = QVBoxLayout(self)
 
         self.label = QLabel("Enter master password:")
         layout.addWidget(self.label)
@@ -122,25 +117,14 @@ class VerifyMasterPasswordDialog(QDialog):
         self.password_input.setEchoMode(QLineEdit.Password)
         layout.addWidget(self.password_input)
 
-        # Create the buttons
-        self.ok_button = QPushButton("OK")
-        self.cancel_button = QPushButton("Cancel")
+        # Create an instance of ButtonFactory
+        button_factory = ButtonFactory(self)
 
-        # Connect the buttons to the dialog's accept and reject slots
-        self.ok_button.clicked.connect(self.accept)
-        self.cancel_button.clicked.connect(self.reject)
-
-        # Create a layout for the buttons
-        button_layout = QHBoxLayout()
-        button_layout.addWidget(self.ok_button)
-        button_layout.addWidget(self.cancel_button)
-
-        # Make the buttons expand to take up half of the dialog each
-        self.ok_button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
-        self.cancel_button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+        # Use ButtonFactory to create both OK and Cancel buttons
+        buttons = [("OK", 100, self.accept), ("Cancel", 100, self.reject)]
+        button_layout = button_factory.create_buttons_with_spacing(buttons)
 
         layout.addLayout(button_layout)
-
         self.setLayout(layout)
 
     def get_password(self):
@@ -243,7 +227,11 @@ class PasswordManager(QMainWindow):
                 self.set_master_password()
             else:
                 if not self.verify_master_password():
-                    self.show_error("Master password verification failed.")
+                    CustomMessageBox(
+                        "Error",
+                        "Master password verification failed.",
+                        QMessageBox.Critical,
+                    ).show_message()
                     return
 
             # Create the Password Generation page, Manage Passwords page, and Settings page after connection is established
@@ -262,7 +250,9 @@ class PasswordManager(QMainWindow):
 
             self.show_password_generator()  # Show the Password Generator by default
         else:
-            self.show_error("Failed to connect to the database.")
+            CustomMessageBox(
+                "Error", "Failed to connect to the database.", QMessageBox.Critical
+            ).show_message()
             logger.error("Failed to connect to the database.")
             return
 
@@ -301,17 +291,29 @@ class PasswordManager(QMainWindow):
                             self.store_master_password(password)
                             break
                         else:
-                            self.show_warning(
-                                "Passwords do not match. Please try again."
-                            )
+                            CustomMessageBox(
+                                "Warning",
+                                "Passwords do not match. Please try again.",
+                                QMessageBox.Warning,
+                            ).show_message()
                     else:
-                        self.show_warning(
-                            "Confirmation of master password is required."
-                        )
+                        CustomMessageBox(
+                            "Warning",
+                            "Confirmation of master password is required.",
+                            QMessageBox.Warning,
+                        ).show_message()
                 else:
-                    self.show_warning("Master password is required to proceed.")
+                    CustomMessageBox(
+                        "Warning",
+                        "Master password is required to proceed.",
+                        QMessageBox.Warning,
+                    ).show_message()
             else:
-                self.show_warning("Master password is required to proceed.")
+                CustomMessageBox(
+                    "Warning",
+                    "Master password is required to proceed.",
+                    QMessageBox.Warning,
+                ).show_message()
 
     def verify_master_password(self):
         from backend.database import verify_master_password
@@ -325,11 +327,17 @@ class PasswordManager(QMainWindow):
                     logger.info("Master password verified successfully.")
                     return True
                 else:
-                    logger.warning("Incorrect master password.")
-                    self.show_warning("Incorrect master password. Please try again.")
+                    CustomMessageBox(
+                        "Warning",
+                        "Incorrect master password. Please try again.",
+                        QMessageBox.Warning,
+                    ).show_message()
             else:
-                logger.warning("Master password is required to proceed.")
-                self.show_warning("Master password is required to proceed.")
+                CustomMessageBox(
+                    "Warning",
+                    "Master password is required to proceed.",
+                    QMessageBox.Warning,
+                ).show_message()
                 return False  # Return False if the user cancels
 
     def prompt_user_input(self, title, label, echo_mode=QLineEdit.Normal):
@@ -344,122 +352,26 @@ class PasswordManager(QMainWindow):
 
         try:
             set_master_password(self.conn, password)
-            self.show_info("Master password set successfully!")
+            CustomMessageBox(
+                "Info", "Master password set successfully!", QMessageBox.Information
+            ).show_message()
             logger.info("Master password set successfully.")
         except ValueError as ve:
-            self.show_warning(f"Password validation failed: {ve}")
+            CustomMessageBox(
+                "Warning", f"Password validation failed: {ve}", QMessageBox.Warning
+            ).show_message()
 
     def show_info(self, message):
-        msg_box = QMessageBox()
-        msg_box.setIcon(QMessageBox.Information)
-        msg_box.setText(message)
-        msg_box.setWindowTitle("Info")
-        msg_box.setStandardButtons(QMessageBox.Ok)
-
-        # Access the "OK" button directly
-        ok_button = msg_box.button(QMessageBox.Ok)
-
-        # Set the minimum width for the "OK" button
-        ok_button.setMinimumWidth(100)  # Adjust the width as needed
-
-        # Create a new horizontal layout for centering the button
-        centered_layout = QHBoxLayout()
-        centered_layout.addStretch(1)  # Add stretchable space to the left
-        centered_layout.addWidget(ok_button)  # Add the OK button
-        centered_layout.addStretch(1)  # Add stretchable space to the right
-
-        # Access the layout of the QMessageBox
-        layout = msg_box.layout()
-
-        # Replace the original button layout with the centered layout
-        layout.addLayout(centered_layout, layout.rowCount(), 0, 1, layout.columnCount())
-
-        # Show the message box
-        msg_box.exec()
+        CustomMessageBox("Info", message, QMessageBox.Information).show_message()
 
     def show_warning(self, message):
-        msg_box = QMessageBox()
-        msg_box.setIcon(QMessageBox.Warning)
-        msg_box.setText(message)
-        msg_box.setWindowTitle("Warning")
-        msg_box.setStandardButtons(QMessageBox.Ok)
-
-        # Access the "OK" button directly
-        ok_button = msg_box.button(QMessageBox.Ok)
-
-        # Set the minimum width for the "OK" button
-        ok_button.setMinimumWidth(100)  # Adjust the width as needed
-
-        # Create a new horizontal layout for centering the button
-        centered_layout = QHBoxLayout()
-        centered_layout.addStretch(1)  # Add stretchable space to the left
-        centered_layout.addWidget(ok_button)  # Add the OK button
-        centered_layout.addStretch(1)  # Add stretchable space to the right
-
-        # Access the layout of the QMessageBox
-        layout = msg_box.layout()
-
-        # Replace the original button layout with the centered layout
-        layout.addLayout(centered_layout, layout.rowCount(), 0, 1, layout.columnCount())
-
-        # Show the message box
-        msg_box.exec()
+        CustomMessageBox("Warning", message, QMessageBox.Warning).show_message()
 
     def show_copied_message(self, message="Text copied to clipboard!"):
-        msg_box = QMessageBox()
-        msg_box.setIcon(QMessageBox.Information)
-        msg_box.setText(message)
-        msg_box.setWindowTitle("Copied")
-        msg_box.setStandardButtons(QMessageBox.Ok)
-
-        # Access the "OK" button directly
-        ok_button = msg_box.button(QMessageBox.Ok)
-
-        # Set the minimum width for the "OK" button
-        ok_button.setMinimumWidth(100)  # Adjust the width as needed
-
-        # Create a new horizontal layout for centering the button
-        centered_layout = QHBoxLayout()
-        centered_layout.addStretch(1)  # Add stretchable space to the left
-        centered_layout.addWidget(ok_button)  # Add the OK button
-        centered_layout.addStretch(1)  # Add stretchable space to the right
-
-        # Access the layout of the QMessageBox
-        layout = msg_box.layout()
-
-        # Replace the original button layout with the centered layout
-        layout.addLayout(centered_layout, layout.rowCount(), 0, 1, layout.columnCount())
-
-        # Show the message box
-        msg_box.exec()
+        CustomMessageBox("Copied", message, QMessageBox.Information).show_message()
 
     def show_success_message(self, message="Operation completed successfully!"):
-        msg_box = QMessageBox()
-        msg_box.setIcon(QMessageBox.Information)
-        msg_box.setText(message)
-        msg_box.setWindowTitle("Success")
-        msg_box.setStandardButtons(QMessageBox.Ok)
-
-        # Access the "OK" button directly
-        ok_button = msg_box.button(QMessageBox.Ok)
-
-        # Set the minimum width for the "OK" button
-        ok_button.setMinimumWidth(100)  # Adjust the width as needed
-
-        # Create a new horizontal layout for centering the button
-        centered_layout = QHBoxLayout()
-        centered_layout.addStretch(1)  # Add stretchable space to the left
-        centered_layout.addWidget(ok_button)  # Add the OK button
-        centered_layout.addStretch(1)  # Add stretchable space to the right
-
-        # Access the layout of the QMessageBox
-        layout = msg_box.layout()
-
-        # Replace the original button layout with the centered layout
-        layout.addLayout(centered_layout, layout.rowCount(), 0, 1, layout.columnCount())
-
-        # Show the message box
-        msg_box.exec()
+        CustomMessageBox("Success", message, QMessageBox.Information).show_message()
 
 
 def main():

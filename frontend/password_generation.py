@@ -54,7 +54,7 @@ class PasswordGenerationTab(QWidget):
 
         self.strength_combo = QComboBox()
         self.strength_combo.addItems(
-            ["1 (12-24 chars)", "2 (25-37 chars)", "3 (38-50 chars)"]
+            ["1 (16-28 chars)", "2 (29-42 chars)", "3 (43-60 chars)"]
         )
         strength_layout.addWidget(self.strength_combo)
 
@@ -89,4 +89,30 @@ class PasswordGenerationTab(QWidget):
     def copy_to_clipboard(self):
         clipboard = QApplication.clipboard()
         clipboard.setText(self.generated_password.text())
-        QMessageBox.information(self, "Copied", "Password copied to clipboard!")
+
+        msg_box = QMessageBox()
+        msg_box.setIcon(QMessageBox.Information)
+        msg_box.setText("Password copied to clipboard!")
+        msg_box.setWindowTitle("Copied")
+        msg_box.setStandardButtons(QMessageBox.Ok)
+
+        # Access the "OK" button directly
+        ok_button = msg_box.button(QMessageBox.Ok)
+
+        # Set the minimum width for the "OK" button
+        ok_button.setMinimumWidth(100)  # Optional: Adjust the button width as needed
+
+        # Create a new horizontal layout for centering the button
+        centered_layout = QHBoxLayout()
+        centered_layout.addStretch(1)  # Add stretchable space to the left
+        centered_layout.addWidget(ok_button)  # Add the OK button
+        centered_layout.addStretch(1)  # Add stretchable space to the right
+
+        # Access the layout of the QMessageBox
+        layout = msg_box.layout()
+
+        # Replace the original layout's button box with the centered layout
+        layout.addLayout(centered_layout, layout.rowCount(), 0, 1, layout.columnCount())
+
+        # Show the message box
+        msg_box.exec()
