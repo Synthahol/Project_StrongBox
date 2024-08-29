@@ -12,15 +12,17 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QLineEdit,
-    QMessageBox,
     QPushButton,
     QSizePolicy,
     QSpacerItem,
     QVBoxLayout,
     QWidget,
+    QMessageBox
+    
 )
 
 from backend.password_generator import generate_password
+from blueprints import CustomMessageBox  # Import CustomMessageBox for consistency
 
 logger = logging.getLogger(__name__)
 
@@ -84,35 +86,20 @@ class PasswordGenerationTab(QWidget):
             logger.info(f"Generated password with strength {strength}.")
         except Exception as e:
             logger.error(f"Failed to generate password: {e}")
-            QMessageBox.critical(self, "Error", f"Failed to generate password: {e}")
+            msg_box = CustomMessageBox(
+                title="Error",
+                message=f"Failed to generate password: {e}",
+                icon=QMessageBox.Critical,
+            )
+            msg_box.show_message()
 
     def copy_to_clipboard(self):
         clipboard = QApplication.clipboard()
         clipboard.setText(self.generated_password.text())
 
-        msg_box = QMessageBox()
-        msg_box.setIcon(QMessageBox.Information)
-        msg_box.setText("Password copied to clipboard!")
-        msg_box.setWindowTitle("Copied")
-        msg_box.setStandardButtons(QMessageBox.Ok)
-
-        # Access the "OK" button directly
-        ok_button = msg_box.button(QMessageBox.Ok)
-
-        # Set the minimum width for the "OK" button
-        ok_button.setMinimumWidth(100)  # Optional: Adjust the button width as needed
-
-        # Create a new horizontal layout for centering the button
-        centered_layout = QHBoxLayout()
-        centered_layout.addStretch(1)  # Add stretchable space to the left
-        centered_layout.addWidget(ok_button)  # Add the OK button
-        centered_layout.addStretch(1)  # Add stretchable space to the right
-
-        # Access the layout of the QMessageBox
-        layout = msg_box.layout()
-
-        # Replace the original layout's button box with the centered layout
-        layout.addLayout(centered_layout, layout.rowCount(), 0, 1, layout.columnCount())
-
-        # Show the message box
-        msg_box.exec()
+        msg_box = CustomMessageBox(
+            title="Copied",
+            message="Password copied to clipboard!",
+            icon=QMessageBox.Information,
+        )
+        msg_box.show_message()

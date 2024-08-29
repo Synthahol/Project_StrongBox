@@ -2,6 +2,7 @@ import logging
 
 from blueprints import ButtonFactory, CustomMessageBox
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
     QApplication,
     QDialog,
@@ -27,7 +28,7 @@ from backend.database import (
     store_password,
     update_password,
 )
-from backend.master_password import verify_password  # Ensure this is imported correctly
+from backend.master_password import verify_password
 from backend.utils import create_button, create_horizontal_line, create_input
 
 logger = logging.getLogger(__name__)
@@ -39,25 +40,21 @@ class PasswordManagementTab(QWidget):
         self.conn = conn
         self.cipher_suite = cipher_suite
         self.layout = QVBoxLayout(self)
+        self.setWindowIcon(QIcon("frontend/icons/muscles.png"))  # Set the custom icon
+
         # Create an instance of ButtonFactory
         self.button_factory = ButtonFactory(self)
-
-        # Use the button factory to create buttons
         self.create_ui()
 
     def create_ui(self):
-        # Add title and styling for better UI
         title_label = QLabel("StrongBox Password Manager")
         title_label.setStyleSheet(
             "font-size: 30px; font-weight: bold; margin-bottom: 15px;"
         )
         title_label.setAlignment(Qt.AlignCenter)
         self.layout.addWidget(title_label)
-
-        # Add horizontal line using utility function
         self.layout.addWidget(create_horizontal_line())
 
-        # Use utility functions to create input fields
         self.service_input = create_input(
             "Service:", "Enter or copy/paste service name", self.layout
         )
@@ -66,7 +63,6 @@ class PasswordManagementTab(QWidget):
             "Password:", "Enter password", self.layout, QLineEdit.Password
         )
 
-        # Create buttons using utility function
         btn_layout = QHBoxLayout()
         self.layout.addLayout(btn_layout)
         self.store_btn = create_button(
@@ -74,10 +70,7 @@ class PasswordManagementTab(QWidget):
         )
         btn_layout.addWidget(self.store_btn)
 
-        # Add another horizontal line
         self.layout.addWidget(create_horizontal_line())
-
-        # Create table for displaying stored passwords
         self.layout.addWidget(QLabel("Stored Passwords"))
         self.password_table = self.create_password_table()
         self.layout.addWidget(self.password_table)
@@ -90,35 +83,21 @@ class PasswordManagementTab(QWidget):
         table.setHorizontalHeaderLabels(
             ["Service", "Username", "Password", "Action", "Modify"]
         )
-        table.setStyleSheet("""
-        QTableWidget::item {
-            padding: 0px; /* Remove padding for cells */
-            margin: 0px; /* Remove margin for cells */
-        }
-    """)
-
-        # Set row height
+        table.setStyleSheet("QTableWidget::item { padding: 0px; margin: 0px; }")
         table.verticalHeader().setDefaultSectionSize(40)
-
-        # Make the columns responsive to the width of the main window
         header = table.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)
-
         return table
 
     def show_success_message(self, message):
         msg_box = CustomMessageBox(
-            title="Success",
-            message=message,
-            icon=QMessageBox.Information,
+            title="Success", message=message, icon=QMessageBox.Information
         )
         msg_box.show_message()
 
     def show_error(self, message):
         msg_box = CustomMessageBox(
-            title="Error",
-            message=message,
-            icon=QMessageBox.Critical,
+            title="Error", message=message, icon=QMessageBox.Critical
         )
         msg_box.show_message()
 
@@ -129,38 +108,27 @@ class PasswordManagementTab(QWidget):
             self.password_table.insertRow(row_num)
             self.password_table.setItem(row_num, 0, QTableWidgetItem(service))
             self.password_table.setItem(row_num, 1, QTableWidgetItem(username))
+            self.password_table.setItem(row_num, 2, QTableWidgetItem("******"))
 
-            # Display masked password instead of hashed or encrypted password
-            masked_password = "******"
-            self.password_table.setItem(row_num, 2, QTableWidgetItem(masked_password))
-
-            # Button to Show Password
             show_btn = create_button(
                 "Show", "", lambda ch, r=row_num: self.show_password(r)
             )
             show_btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-            show_btn.setStyleSheet(
-                "padding: 0px; margin: 0px;"
-            )  # Ensure no extra padding/margin
+            show_btn.setStyleSheet("padding: 0px; margin: 0px;")
             self.password_table.setCellWidget(row_num, 3, show_btn)
 
-            # Button to Modify Password
             modify_btn = QPushButton("Modify")
             modify_btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-            modify_btn.setStyleSheet(
-                "padding: 0px; margin: 0px;"
-            )  # Ensure no extra padding/margin
+            modify_btn.setStyleSheet("padding: 0px; margin: 0px;")
             modify_btn.clicked.connect(lambda ch, r=row_num: self.modify_password(r))
             self.password_table.setCellWidget(row_num, 4, modify_btn)
 
     def modify_password(self, row):
-        # First, prompt the user to enter the master password
         dialog = MasterPasswordDialog(self.verify_master_password)
         if dialog.exec() == QDialog.Accepted:
             service = self.password_table.item(row, 0).text()
             username = self.password_table.item(row, 1).text()
 
-            # Retrieve the encrypted password directly from the database
             cursor = self.conn.execute(
                 "SELECT password FROM passwords WHERE service = ? AND username = ?",
                 (service, username),
@@ -175,7 +143,6 @@ class PasswordManagementTab(QWidget):
 
     def verify_master_password(self, entered_password: str) -> bool:
         try:
-            # Retrieve the stored password and salt from the database
             cursor = self.conn.execute("SELECT salt, password FROM master_password")
             row = cursor.fetchone()
 
@@ -184,8 +151,6 @@ class PasswordManagementTab(QWidget):
                 return False
 
             stored_salt, stored_password = row
-
-            # Verify the entered password
             return verify_password(stored_password, entered_password, stored_salt)
         except Exception as e:
             logger.error(f"Error verifying master password: {e}")
@@ -193,7 +158,6 @@ class PasswordManagementTab(QWidget):
 
     def show_password(self, row):
         main_window = self.window()
-
         if not main_window.verify_master_password():
             logger.debug("Master password verification failed.")
             return
@@ -226,7 +190,6 @@ class PasswordManagementTab(QWidget):
             else:
                 selected_username = usernames[0]
 
-            # Retrieve the encrypted password for the selected service and username
             username, encrypted_password = retrieve_password(
                 self.conn, service, selected_username, self.cipher_suite
             )
@@ -239,10 +202,7 @@ class PasswordManagementTab(QWidget):
                     encrypted_password.encode()
                 ).decode()
                 logger.debug(f"Decrypted Password: {decrypted_password}")
-
-                # Create a custom dialog for showing the password details with copy buttons
                 self.show_password_details_dialog(service, username, decrypted_password)
-
             else:
                 logger.warning("Failed to retrieve password details.")
                 CustomMessageBox(
@@ -257,40 +217,38 @@ class PasswordManagementTab(QWidget):
     def show_password_details_dialog(self, service, username, decrypted_password):
         details_dialog = QDialog(self)
         details_dialog.setWindowTitle("Password Details")
+        details_dialog.setWindowIcon(
+            QIcon("frontend/icons/muscles.png")
+        )  # Set the custom icon
 
         layout = QVBoxLayout(details_dialog)
-
-        # Set the dialog to a fixed width and height
         details_dialog.setFixedWidth(700)
         details_dialog.setFixedHeight(200)
 
-        # Layout for Service with Copy Button
         service_layout = QHBoxLayout()
         service_label = QLabel(f"Service: {service}")
         service_layout.addWidget(service_label)
-        service_layout.addStretch()  # Add stretch to push the button to the right
+        service_layout.addStretch()
         copy_service_button = QPushButton("Copy Service")
         copy_service_button.setFixedWidth(self.width() * 0.15)
         copy_service_button.clicked.connect(lambda: self.copy_to_clipboard(service))
         service_layout.addWidget(copy_service_button)
         layout.addLayout(service_layout)
 
-        # Layout for Username with Copy Button
         username_layout = QHBoxLayout()
         username_label = QLabel(f"Username: {username}")
         username_layout.addWidget(username_label)
-        username_layout.addStretch()  # Add stretch to push the button to the right
+        username_layout.addStretch()
         copy_username_button = QPushButton("Copy Username")
         copy_username_button.setFixedWidth(self.width() * 0.15)
         copy_username_button.clicked.connect(lambda: self.copy_to_clipboard(username))
         username_layout.addWidget(copy_username_button)
         layout.addLayout(username_layout)
 
-        # Layout for Password with Copy Button
         password_layout = QHBoxLayout()
         password_label = QLabel(f"Password: {decrypted_password}")
         password_layout.addWidget(password_label)
-        password_layout.addStretch()  # Add stretch to push the button to the right
+        password_layout.addStretch()
         copy_password_button = QPushButton("Copy Password")
         copy_password_button.setFixedWidth(self.width() * 0.15)
         copy_password_button.clicked.connect(
@@ -299,21 +257,17 @@ class PasswordManagementTab(QWidget):
         password_layout.addWidget(copy_password_button)
         layout.addLayout(password_layout)
 
-        # Close button layout
         close_button_layout = QHBoxLayout()
         close_button = QPushButton("Close")
         close_button.setFixedWidth(self.width() * 0.15)
         close_button.clicked.connect(details_dialog.accept)
-        close_button_layout.addStretch()  # Add stretch to push the button to the center
+        close_button_layout.addStretch()
         close_button_layout.addWidget(close_button)
-        close_button_layout.addStretch()  # Add stretch to push the button to the center
+        close_button_layout.addStretch()
         layout.addLayout(close_button_layout)
 
         details_dialog.setLayout(layout)
-
-        # Adjust the dialog size based on its content (height will adjust, width is fixed)
         details_dialog.adjustSize()
-
         details_dialog.exec()
 
     def copy_to_clipboard(self, text):
@@ -331,17 +285,13 @@ class PasswordManagementTab(QWidget):
             return
 
         try:
-            # Call the store_password function with the plain text password
             store_password(self.conn, service, username, password, self.cipher_suite)
             logger.info(f"Password for {service} stored successfully.")
             self.show_success_message(f"Password for {service} stored successfully.")
             self.load_passwords()
-            
-            # Clear the input fields after storing the password.
             self.service_input.clear()
             self.username_input.clear()
             self.password_input.clear()
-            
         except Exception as e:
             logger.error(f"Failed to store password: {e}")
             self.show_error(f"Failed to store password: {e}")
@@ -355,14 +305,14 @@ class ModifyPasswordDialog(QDialog):
         self.cipher_suite = cipher_suite
         self.service = service
         self.username = username
-        self.encrypted_password = encrypted_password  # Store the encrypted password
+        self.encrypted_password = encrypted_password
         self.row = row
 
         self.setWindowTitle("Modify Service, Username, or Password")
-        self.setMinimumWidth(400)  # Adjust the width as needed
+        self.setMinimumWidth(400)
+        self.setWindowIcon(QIcon("frontend/icons/muscles.png"))  # Set the custom icon
 
         layout = QVBoxLayout(self)
-
         self.layout = QGridLayout()
 
         self.layout.addWidget(QLabel("Service:"), 0, 0)
@@ -374,26 +324,19 @@ class ModifyPasswordDialog(QDialog):
         self.layout.addWidget(self.username_input, 1, 1)
 
         try:
-            # Attempt to decrypt the password
             decrypted_password = self.cipher_suite.decrypt(
                 encrypted_password.encode()
             ).decode()
         except Exception as e:
-            # Log the decryption error
             logger.error(f"Failed to decrypt password for {service}: {e}")
-            decrypted_password = ""  # Default to an empty string on failure
+            decrypted_password = ""
 
         self.layout.addWidget(QLabel("Password:"), 2, 0)
-        self.password_input = QLineEdit(
-            decrypted_password
-        )  # Display decrypted password
-        self.password_input.setEchoMode(QLineEdit.Password)  # Keep password masked
+        self.password_input = QLineEdit(decrypted_password)
+        self.password_input.setEchoMode(QLineEdit.Password)
         self.layout.addWidget(self.password_input, 2, 1)
 
-        # Create an instance of ButtonFactory
         button_factory = ButtonFactory(self)
-
-        # Use ButtonFactory to create Save and Delete buttons
         buttons = [
             ("Save", 100, self.save_password),
             ("Delete", 100, self.delete_password),
@@ -402,9 +345,7 @@ class ModifyPasswordDialog(QDialog):
 
         layout.addLayout(self.layout)
         layout.addLayout(button_layout)
-
         self.setLayout(layout)
-
         self.adjustSize()
 
     def save_password(self):
@@ -440,8 +381,8 @@ class MasterPasswordDialog(QDialog):
         super().__init__(parent)
         self.verify_master_password_callback = verify_master_password_callback
         self.setWindowTitle("Enter Master Password")
-
-        self.setMinimumWidth(400)  # Adjust the width as needed
+        self.setMinimumWidth(400)
+        self.setWindowIcon(QIcon("frontend/icons/muscles.png"))  # Set the custom icon
 
         layout = QVBoxLayout(self)
 
@@ -452,10 +393,7 @@ class MasterPasswordDialog(QDialog):
         self.password_input.setEchoMode(QLineEdit.Password)
         layout.addWidget(self.password_input)
 
-        # Create an instance of ButtonFactory
         button_factory = ButtonFactory(self)
-
-        # Use ButtonFactory to create OK and Cancel buttons
         self.button_box = QHBoxLayout()
         ok_button_layout = button_factory.create_button_with_layout(
             "", "OK", 100, self.check_password
@@ -464,10 +402,8 @@ class MasterPasswordDialog(QDialog):
             "", "Cancel", 100, self.reject
         )
 
-        # Add buttons to the layout
         self.button_box.addLayout(ok_button_layout)
         self.button_box.addLayout(cancel_button_layout)
-
         layout.addLayout(self.button_box)
 
     def check_password(self):
@@ -475,9 +411,12 @@ class MasterPasswordDialog(QDialog):
         if self.verify_master_password_callback(entered_password):
             self.accept()
         else:
-            QMessageBox.warning(
-                self, "Incorrect Password", "The password you entered is incorrect."
+            msg_box = CustomMessageBox(
+                title="Incorrect Password",
+                message="The password you entered is incorrect.",
+                icon=QMessageBox.Warning,
             )
+            msg_box.show_message()
             self.password_input.clear()
 
 
@@ -485,6 +424,7 @@ class UsernameSelectionDialog(QDialog):
     def __init__(self, usernames):
         super().__init__()
         self.setWindowTitle("Select Username")
+        self.setWindowIcon(QIcon("frontend/icons/muscles.png"))  # Set the custom icon
         self.selected_username = None
 
         layout = QVBoxLayout()
@@ -495,7 +435,6 @@ class UsernameSelectionDialog(QDialog):
         select_button = QPushButton("Select")
         select_button.clicked.connect(self.select_username)
         layout.addWidget(select_button)
-
         self.setLayout(layout)
 
     def select_username(self):
@@ -504,6 +443,9 @@ class UsernameSelectionDialog(QDialog):
             self.selected_username = selected_items[0].text()
             self.accept()
         else:
-            CustomMessageBox(
-                "Selection Error", "Please select a username.", QMessageBox.Warning
-            ).show_message()
+            msg_box = CustomMessageBox(
+                title="Selection Error",
+                message="Please select a username.",
+                icon=QMessageBox.Warning,
+            )
+            msg_box.show_message()
