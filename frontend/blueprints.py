@@ -53,7 +53,7 @@ class CustomMessageBox(QMessageBox):
         self.setIcon(icon)
         self.setStandardButtons(QMessageBox.Ok)
         # Ensure the icon path is correctly formatted and accessible
-        self.setWindowIcon(QIcon("frontend/icons/muscles.png"))  # Corrected the path
+        self.setWindowIcon(QIcon("frontend/icons/muscles.png"))
 
         # Access the "OK" button directly
         ok_button = self.button(QMessageBox.Ok)
