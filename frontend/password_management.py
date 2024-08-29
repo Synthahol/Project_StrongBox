@@ -336,6 +336,12 @@ class PasswordManagementTab(QWidget):
             logger.info(f"Password for {service} stored successfully.")
             self.show_success_message(f"Password for {service} stored successfully.")
             self.load_passwords()
+            
+            # Clear the input fields after storing the password.
+            self.service_input.clear()
+            self.username_input.clear()
+            self.password_input.clear()
+            
         except Exception as e:
             logger.error(f"Failed to store password: {e}")
             self.show_error(f"Failed to store password: {e}")
@@ -352,7 +358,7 @@ class ModifyPasswordDialog(QDialog):
         self.encrypted_password = encrypted_password  # Store the encrypted password
         self.row = row
 
-        self.setWindowTitle("Modify Password")
+        self.setWindowTitle("Modify Service, Username, or Password")
         self.setMinimumWidth(400)  # Adjust the width as needed
 
         layout = QVBoxLayout(self)

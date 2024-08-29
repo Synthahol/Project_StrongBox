@@ -271,7 +271,7 @@ class PasswordManager(QMainWindow):
             # Use the custom input dialog for entering the master password
             dialog = CustomInputDialog(
                 "Set Master Password",
-                "Enter a master password:",
+                "Enter a master password. Password must have lowercase, uppercase, number, special character and must be at least 8 characters long. Remember this password as it cannot be recovered if lost.",
                 QLineEdit.Password,
                 self,
             )

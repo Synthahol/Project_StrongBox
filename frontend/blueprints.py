@@ -1,3 +1,4 @@
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QMessageBox, QPushButton
 
 
@@ -15,9 +16,7 @@ class ButtonFactory:
         button.clicked.connect(button_callback)
 
         layout.addStretch()  # Add stretchable space to the left
-        layout.addWidget(
-            label
-        )  # Optional: Add label if needed, otherwise remove this line
+        layout.addWidget(label)  # Optional: Add label if needed
         layout.addWidget(button)
         layout.addStretch()  # Add stretchable space to the right to center the button
 
@@ -53,6 +52,8 @@ class CustomMessageBox(QMessageBox):
         self.setText(message)
         self.setIcon(icon)
         self.setStandardButtons(QMessageBox.Ok)
+        # Ensure the icon path is correctly formatted and accessible
+        self.setWindowIcon(QIcon("frontend/icons/muscles.png"))  # Corrected the path
 
         # Access the "OK" button directly
         ok_button = self.button(QMessageBox.Ok)
