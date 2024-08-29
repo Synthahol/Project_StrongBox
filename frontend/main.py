@@ -165,7 +165,7 @@ class PasswordManager(QMainWindow):
         # Manage Passwords button with custom icon
         self.manage_button = QPushButton("Manage Passwords")
         self.manage_button.setIcon(
-            QIcon(r"frontend/icons/safe-box_64x64.png")
+            QIcon(r"frontend/icons/safe-box.png")
         )  # Set your custom icon path
         self.manage_button.clicked.connect(self.show_manage_passwords)
         left_column.addWidget(self.manage_button)
