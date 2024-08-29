@@ -220,7 +220,9 @@ class PasswordManager(QMainWindow):
         if self.conn:
             key_id = str(uuid.uuid4())
             initialize_db(self.conn, key_id)
-            logger.info(f"Connected to database: {db_path} with key_id: {key_id}")
+            logger.info(
+                "Database connection successful. {db_path} with key_id: {key_id}"
+            )
 
             # Check if the master password is set
             if not is_master_password_set(self.conn):

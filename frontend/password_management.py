@@ -5,6 +5,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
     QApplication,
+    QCompleter,
     QDialog,
     QGridLayout,
     QHBoxLayout,
@@ -40,9 +41,8 @@ class PasswordManagementTab(QWidget):
         self.conn = conn
         self.cipher_suite = cipher_suite
         self.layout = QVBoxLayout(self)
-        self.setWindowIcon(QIcon("frontend/icons/muscles.png"))  # Set the custom icon
+        self.setWindowIcon(QIcon("frontend/icons/muscles.png"))
 
-        # Create an instance of ButtonFactory
         self.button_factory = ButtonFactory(self)
         self.create_ui()
 
@@ -63,6 +63,9 @@ class PasswordManagementTab(QWidget):
             "Password:", "Enter password", self.layout, QLineEdit.Password
         )
 
+        self.add_autocomplete(self.service_input, self.get_services_list())
+        self.add_autocomplete(self.username_input, self.get_usernames_list())
+
         btn_layout = QHBoxLayout()
         self.layout.addLayout(btn_layout)
         self.store_btn = create_button(
@@ -76,6 +79,29 @@ class PasswordManagementTab(QWidget):
         self.layout.addWidget(self.password_table)
 
         self.load_passwords()
+
+    def add_autocomplete(self, line_edit, items):
+        completer = QCompleter(items)
+        completer.setCaseSensitivity(Qt.CaseInsensitive)
+        line_edit.setCompleter(completer)
+
+    def get_services_list(self):
+        try:
+            cursor = self.conn.execute("SELECT DISTINCT service FROM passwords")
+            services = [row[0] for row in cursor.fetchall()]
+            return services
+        except Exception:
+            logger.error("Error fetching services for autocomplete.")
+            return []
+
+    def get_usernames_list(self):
+        try:
+            cursor = self.conn.execute("SELECT DISTINCT username FROM passwords")
+            usernames = [row[0] for row in cursor.fetchall()]
+            return usernames
+        except Exception:
+            logger.error("Error fetching usernames for autocomplete.")
+            return []
 
     def create_password_table(self):
         table = QTableWidget()
@@ -152,8 +178,8 @@ class PasswordManagementTab(QWidget):
 
             stored_salt, stored_password = row
             return verify_password(stored_password, entered_password, stored_salt)
-        except Exception as e:
-            logger.error(f"Error verifying master password: {e}")
+        except Exception:
+            logger.error("Error verifying master password.")
             return False
 
     def show_password(self, row):
@@ -163,7 +189,7 @@ class PasswordManagementTab(QWidget):
             return
 
         service = self.password_table.item(row, 0).text()
-        logger.debug(f"Service selected: {service}")
+        logger.debug("Service selected.")
 
         try:
             cursor = self.conn.execute(
@@ -172,10 +198,10 @@ class PasswordManagementTab(QWidget):
             usernames = [username[0] for username in cursor.fetchall()]
 
             if not usernames:
-                logger.warning(f"No usernames found for service: {service}")
+                logger.warning("No usernames found.")
                 CustomMessageBox(
                     "Error",
-                    f"No usernames found for service: {service}",
+                    "No usernames found for the selected service.",
                     QMessageBox.Warning,
                 ).show_message()
                 return
@@ -193,33 +219,29 @@ class PasswordManagementTab(QWidget):
             username, encrypted_password = retrieve_password(
                 self.conn, service, selected_username, self.cipher_suite
             )
-            logger.debug(
-                f"Retrieved Username: {username}, Encrypted Password: {encrypted_password}"
-            )
+            logger.debug("Username and encrypted password retrieved.")
 
             if username and encrypted_password:
                 decrypted_password = self.cipher_suite.decrypt(
                     encrypted_password.encode()
                 ).decode()
-                logger.debug(f"Decrypted Password: {decrypted_password}")
+                logger.debug("Password decrypted successfully.")
                 self.show_password_details_dialog(service, username, decrypted_password)
             else:
                 logger.warning("Failed to retrieve password details.")
                 CustomMessageBox(
                     "Error", "Failed to retrieve password details.", QMessageBox.Warning
                 ).show_message()
-        except Exception as e:
-            logger.error(f"Error during password retrieval: {e}")
+        except Exception:
+            logger.error("Error during password retrieval.")
             CustomMessageBox(
-                "Error", f"Failed to retrieve password: {e}", QMessageBox.Critical
+                "Error", "Failed to retrieve password.", QMessageBox.Critical
             ).show_message()
 
     def show_password_details_dialog(self, service, username, decrypted_password):
         details_dialog = QDialog(self)
         details_dialog.setWindowTitle("Password Details")
-        details_dialog.setWindowIcon(
-            QIcon("frontend/icons/muscles.png")
-        )  # Set the custom icon
+        details_dialog.setWindowIcon(QIcon("frontend/icons/muscles.png"))
 
         layout = QVBoxLayout(details_dialog)
         details_dialog.setFixedWidth(700)
@@ -286,15 +308,15 @@ class PasswordManagementTab(QWidget):
 
         try:
             store_password(self.conn, service, username, password, self.cipher_suite)
-            logger.info(f"Password for {service} stored successfully.")
-            self.show_success_message(f"Password for {service} stored successfully.")
+            logger.info("Password stored successfully.")
+            self.show_success_message("Password stored successfully.")
             self.load_passwords()
             self.service_input.clear()
             self.username_input.clear()
             self.password_input.clear()
-        except Exception as e:
-            logger.error(f"Failed to store password: {e}")
-            self.show_error(f"Failed to store password: {e}")
+        except Exception:
+            logger.error("Failed to store password.")
+            self.show_error("Failed to store password.")
 
 
 class ModifyPasswordDialog(QDialog):
@@ -310,7 +332,7 @@ class ModifyPasswordDialog(QDialog):
 
         self.setWindowTitle("Modify Service, Username, or Password")
         self.setMinimumWidth(400)
-        self.setWindowIcon(QIcon("frontend/icons/muscles.png"))  # Set the custom icon
+        self.setWindowIcon(QIcon("frontend/icons/muscles.png"))
 
         layout = QVBoxLayout(self)
         self.layout = QGridLayout()
@@ -327,8 +349,8 @@ class ModifyPasswordDialog(QDialog):
             decrypted_password = self.cipher_suite.decrypt(
                 encrypted_password.encode()
             ).decode()
-        except Exception as e:
-            logger.error(f"Failed to decrypt password for {service}: {e}")
+        except Exception:
+            logger.error("Failed to decrypt password.")
             decrypted_password = ""
 
         self.layout.addWidget(QLabel("Password:"), 2, 0)
@@ -347,6 +369,14 @@ class ModifyPasswordDialog(QDialog):
         layout.addLayout(button_layout)
         self.setLayout(layout)
         self.adjustSize()
+        self.center_on_screen()
+
+    def center_on_screen(self):
+        screen = QApplication.primaryScreen().geometry()
+        dialog_rect = self.geometry()
+        center_x = (screen.width() - dialog_rect.width()) // 2
+        center_y = (screen.height() - dialog_rect.height()) // 2
+        self.move(center_x, center_y)
 
     def save_password(self):
         new_service = self.service_input.text()
@@ -382,7 +412,7 @@ class MasterPasswordDialog(QDialog):
         self.verify_master_password_callback = verify_master_password_callback
         self.setWindowTitle("Enter Master Password")
         self.setMinimumWidth(400)
-        self.setWindowIcon(QIcon("frontend/icons/muscles.png"))  # Set the custom icon
+        self.setWindowIcon(QIcon("frontend/icons/muscles.png"))
 
         layout = QVBoxLayout(self)
 
@@ -424,7 +454,7 @@ class UsernameSelectionDialog(QDialog):
     def __init__(self, usernames):
         super().__init__()
         self.setWindowTitle("Select Username")
-        self.setWindowIcon(QIcon("frontend/icons/muscles.png"))  # Set the custom icon
+        self.setWindowIcon(QIcon("frontend/icons/muscles.png"))
         self.selected_username = None
 
         layout = QVBoxLayout()

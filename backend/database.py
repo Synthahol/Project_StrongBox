@@ -29,35 +29,27 @@ load_dotenv(dotenv_path=env_path)
 
 def sanitize_env_var_name(database_name):
     """Sanitize the database name to create a valid environment variable name."""
-    # Convert to uppercase
     sanitized_name = database_name.upper()
-    # Replace any character that is not a letter, digit, or underscore with an underscore
     sanitized_name = re.sub(r"\W+", "_", sanitized_name)
-    # Remove trailing underscores and also ensure there's no undesired underscores at the end
     sanitized_name = re.sub(r"_+$", "", sanitized_name)
-    # Ensure the name doesn't start with a digit (prepend an underscore if it does)
     if sanitized_name and sanitized_name[0].isdigit():
         sanitized_name = "_" + sanitized_name
     return sanitized_name
 
 
-# Function to load or generate the encryption key
 def load_encryption_key():
-    # This key should be securely stored and managed
     encryption_key = os.getenv("ENCRYPTION_KEY")
     if not encryption_key:
         raise ValueError("Encryption key not found in environment variables.")
     return encryption_key.encode()
 
 
-# Function to encrypt the database key
 def encrypt_key(key, encryption_key):
     fernet = Fernet(encryption_key)
     encrypted_key = fernet.encrypt(key.encode())
     return base64.urlsafe_b64encode(encrypted_key).decode()
 
 
-# Function to decrypt the database key
 def decrypt_key(encrypted_key, encryption_key):
     fernet = Fernet(encryption_key)
     encrypted_key_bytes = base64.urlsafe_b64decode(encrypted_key.encode())
@@ -65,37 +57,29 @@ def decrypt_key(encrypted_key, encryption_key):
     return decrypted_key
 
 
-# Load the key from the .env file or generate a new one if it doesn't exist
 def load_or_generate_key(database_name):
     logger.debug("Starting load_or_generate_key()")
-
-    # Sanitize the environment variable name
     env_var_name = f"ENCRYPTION_KEY_{sanitize_env_var_name(database_name)}"
-
-    # Load the key from the environment variables
     key = os.getenv(env_var_name)
 
     if key is None:
         logger.debug(f"{env_var_name} not found in .env file. Generating a new key.")
-        key = Fernet.generate_key().decode()  # Generate key and convert to string
-
-        # Save the key to the .env file with the unique environment variable name
+        key = Fernet.generate_key().decode()
         try:
-            with open(env_path, "a") as env_file:  # Append to the .env file
+            with open(env_path, "a") as env_file:
                 env_file.write(f"{env_var_name}={key}\n")
             logger.info(
                 f"New encryption key for {database_name} generated and saved to .env file."
             )
         except Exception as e:
-            logger.error(f"Failed to write {env_var_name} to .env file: {e}")
+            logger.error("Failed to write %s to .env file: %s", env_var_name, e)
     else:
-        logger.info(f"Encryption key for {database_name} loaded from .env file.")
+        logger.info("Encryption key for %s loaded from .env file.", database_name)
 
     logger.debug(f"{env_var_name}: {key[:5]}... (truncated for security)")
-    return key.encode()  # Convert string back to bytes for Fernet
+    return key.encode()
 
 
-# Create the cipher suite based on the provided database name
 def get_cipher_suite(database_name):
     key = load_or_generate_key(database_name)
     return Fernet(key)
@@ -106,7 +90,7 @@ def encrypt_data(data: str, cipher_suite: Fernet) -> str:
         encrypted_data = cipher_suite.encrypt(data.encode())
         return encrypted_data.decode()
     except Exception as e:
-        logger.error(f"Error encrypting data: {e}")
+        logger.error("Error encrypting data: %s", e)
         return None
 
 
@@ -115,46 +99,41 @@ def decrypt_data(encrypted_data: str, cipher_suite: Fernet) -> str:
         decrypted_data = cipher_suite.decrypt(encrypted_data.encode())
         return decrypted_data.decode()
     except Exception as e:
-        logger.error(f"Error decrypting data: {e}")
+        logger.error("Error decrypting data: %s", e)
         return None
 
 
 def create_connection(db_file: str) -> sqlite3.Connection:
     try:
         conn = sqlite3.connect(db_file)
-        logger.info(f"Created connection to database: {db_file}")
+        logger.info("Created connection to database.")
         return conn
     except sqlite3.Error as e:
-        logger.error(f"Error creating connection to database: {e}")
+        logger.error("Error creating connection to database: %s", e)
         return None
 
 
 def initialize_db(conn: sqlite3.Connection, key_id: str):
     try:
         with conn:
-            # Create the passwords table if it doesn't exist
             conn.execute("""CREATE TABLE IF NOT EXISTS passwords (
                                 id INTEGER PRIMARY KEY,
                                 service TEXT NOT NULL,
                                 username TEXT NOT NULL,
                                 password TEXT NOT NULL
                             );""")
-            # Create the master_password table if it doesn't exist
             conn.execute("""CREATE TABLE IF NOT EXISTS master_password (
                                 id INTEGER PRIMARY KEY,
                                 salt BLOB NOT NULL,
                                 password BLOB NOT NULL
                             );""")
-            # Create the metadata table if it doesn't exist
             conn.execute("""CREATE TABLE IF NOT EXISTS metadata (
                                 key_id TEXT NOT NULL
                             );""")
-            # Insert the key_id into metadata
             conn.execute("INSERT INTO metadata (key_id) VALUES (?)", (key_id,))
-
         logger.info("Initialized database.")
     except sqlite3.Error as e:
-        logger.error(f"Error initializing database: {e}")
+        logger.error("Error initializing database: %s", e)
 
 
 def is_master_password_set(conn: sqlite3.Connection) -> bool:
@@ -164,12 +143,11 @@ def is_master_password_set(conn: sqlite3.Connection) -> bool:
         logger.info("Checked if master password is set.")
         return is_set
     except sqlite3.Error as e:
-        logger.error(f"Error checking if master password is set: {e}")
+        logger.error("Error checking if master password is set: %s", e)
         return False
 
 
 def set_master_password(conn: sqlite3.Connection, master_password: str):
-    # Validate the master password
     if not validate_master_password(master_password):
         logger.error("Master password validation failed.")
         raise ValueError("Master password does not meet security requirements.")
@@ -183,7 +161,7 @@ def set_master_password(conn: sqlite3.Connection, master_password: str):
             )
         logger.info("Master password set in the database.")
     except sqlite3.Error as e:
-        logger.error(f"Error setting master password: {e}")
+        logger.error("Error setting master password: %s", e)
 
 
 def verify_master_password(conn: sqlite3.Connection, master_password: str) -> bool:
@@ -197,7 +175,7 @@ def verify_master_password(conn: sqlite3.Connection, master_password: str) -> bo
             return is_verified
         return False
     except sqlite3.Error as e:
-        logger.error(f"Error verifying master password: {e}")
+        logger.error("Master password verification error: %s", e)
         return False
 
 
@@ -216,11 +194,9 @@ def store_password(
                     "INSERT INTO passwords (service, username, password) VALUES (?, ?, ?)",
                     (service, username, encrypted_password),
                 )
-            logger.info(
-                f"Stored password for service: {service}, username: {username}."
-            )
+            logger.info("Stored password for service.")
         except sqlite3.Error as e:
-            logger.error(f"Error storing password: {e}")
+            logger.error("Error storing password: %s", e)
 
 
 def retrieve_password(
@@ -235,17 +211,13 @@ def retrieve_password(
 
         if row and len(row) == 2:
             username, encrypted_password = row
-            logger.info(
-                f"Retrieved encrypted password for service: {service}, username: {username}."
-            )
+            logger.info("Retrieved encrypted password for service.")
             return username, encrypted_password
         else:
-            logger.info(
-                f"No password found for service: {service} and username: {username}."
-            )
+            logger.info("No password found for the specified service and username.")
             return None, None
     except sqlite3.Error as e:
-        logger.error(f"Error retrieving password: {e}")
+        logger.error("Error retrieving password: %s", e)
         return None, None
 
 
@@ -257,12 +229,10 @@ def check_existing_entry(conn: sqlite3.Connection, service: str, username: str) 
             (service, username),
         )
         is_existing = cur.fetchone() is not None
-        logger.info(
-            f"Checked existing entry for service: {service}, username: {username}."
-        )
+        logger.info("Checked existing entry for service.")
         return is_existing
     except sqlite3.Error as e:
-        logger.error(f"Error checking existing entry: {e}")
+        logger.error("Error checking existing entry: %s", e)
         return False
 
 
@@ -273,7 +243,7 @@ def get_all_passwords(conn: sqlite3.Connection) -> list[tuple[str, str, str]]:
         logger.info("Retrieved all passwords.")
         return passwords
     except sqlite3.Error as e:
-        logger.error(f"Error retrieving all passwords: {e}")
+        logger.error("Error retrieving all passwords: %s", e)
         return []
 
 
@@ -288,8 +258,6 @@ def update_password(
     cipher_suite,
 ):
     cursor = conn.cursor()
-
-    # Encrypt the new password
     encrypted_new_password = cipher_suite.encrypt(new_password.encode()).decode()
 
     try:
@@ -307,38 +275,32 @@ def update_password(
                 old_username,
             ),
         )
-
         conn.commit()
-
-        # Log success
-        print(f"Updated password for {new_service} - {new_username}")
-
+        logger.info("Updated password for the specified service and username.")
     except sqlite3.Error as e:
-        print(f"Failed to update password: {e}")
+        logger.error("Failed to update password: %s", e)
         raise
 
 
 def delete_password(conn, service, username, cipher_suite):
     cursor = conn.cursor()
+    try:
+        cursor.execute(
+            "DELETE FROM passwords WHERE service = ? AND username = ?",
+            (service, username),
+        )
+        conn.commit()
+        logger.info("Deleted password for the specified service and username.")
+    except sqlite3.Error as e:
+        logger.error("Failed to delete password: %s", e)
 
-    cursor.execute(
-        """
-        DELETE FROM passwords 
-        WHERE service = ? AND username = ?
-    """,
-        (service, username),
-    )
 
-    conn.commit()
-
-
-# Function to generate a random verification code
 def generate_verification_code(length=6):
     return "".join(random.choices(string.digits, k=length))
 
 
 def login_user(conn: sqlite3.Connection, username: str, master_password: str):
     if verify_master_password(conn, master_password):
-        print("Login successful.")
+        logger.info("Login successful.")
     else:
-        print("Master password verification failed.")
+        logger.warning("Master password verification failed.")
