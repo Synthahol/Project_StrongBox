@@ -1,5 +1,5 @@
 """
-Main module for the StrongBox application, handling the main application window,
+Main module for the Fortalice application, handling the main application window,
 dialogs, and initialization processes.
 """
 
@@ -92,10 +92,10 @@ class WelcomeDialog(QDialog):
     def __init__(self):
         super().__init__()
         self.setWindowIcon(QIcon(r"frontend/icons/muscles.png"))
-        self.setWindowTitle("Welcome to StrongBox!")
+        self.setWindowTitle("Welcome to Fortalice!")
 
         layout = QVBoxLayout()
-        label = QLabel("Welcome to StrongBox! Click OK to proceed.")
+        label = QLabel("Welcome to Fortalice! Click OK to proceed.")
         layout.addWidget(label)
 
         button_factory = ButtonFactory(self)
@@ -136,7 +136,7 @@ class VerifyMasterPasswordDialog(QDialog):
 
 
 class PasswordManager(QMainWindow):
-    """Main application window for StrongBox, managing the main functionalities."""
+    """Main application window for Fortalice, managing the main functionalities."""
 
     def __init__(self):
         super().__init__()
@@ -146,7 +146,7 @@ class PasswordManager(QMainWindow):
         self.password_management_tab = None
         self.settings_tab = None
 
-        self.setWindowTitle("StrongBox")
+        self.setWindowTitle("Fortalice")
         self.setGeometry(300, 300, 800, 600)
         self.setWindowIcon(QIcon(r"frontend/icons/muscles.png"))
 
@@ -209,7 +209,7 @@ class PasswordManager(QMainWindow):
             load_or_generate_key,
         )
 
-        database_name = "DefaultStrongBox"
+        database_name = "DefaultFortalice"
         key = load_or_generate_key(database_name)
         self.cipher_suite = Fernet(key)
         db_path = os.path.join(DATABASE_DIR, f"{database_name}.db")
@@ -357,7 +357,7 @@ class PasswordManager(QMainWindow):
 
 
 def main():
-    """Main entry point of the StrongBox application."""
+    """Main entry point of the Fortalice application."""
     app = QApplication(sys.argv)
 
     # Load stylesheet from style.qss
@@ -370,7 +370,7 @@ def main():
 
     window = PasswordManager()
     window.show()
-    logger.info("StrongBox application started.")
+    logger.info("Fortalice application started.")
     sys.exit(app.exec())
 
 

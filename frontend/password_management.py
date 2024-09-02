@@ -47,7 +47,7 @@ class PasswordManagementTab(QWidget):
         self.create_ui()
 
     def create_ui(self):
-        title_label = QLabel("StrongBox Password Manager")
+        title_label = QLabel("Fortalice Password Manager")
         title_label.setStyleSheet(
             "font-size: 30px; font-weight: bold; margin-bottom: 15px;"
         )
@@ -137,13 +137,13 @@ class PasswordManagementTab(QWidget):
             self.password_table.setItem(row_num, 2, QTableWidgetItem("******"))
 
             show_btn = create_button(
-                "Show", "", lambda ch, r=row_num: self.show_password(r)
+                "Show/Copy", "", lambda ch, r=row_num: self.show_password(r)
             )
             show_btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
             show_btn.setStyleSheet("padding: 0px; margin: 0px;")
             self.password_table.setCellWidget(row_num, 3, show_btn)
 
-            modify_btn = QPushButton("Modify")
+            modify_btn = QPushButton("Modify Info")
             modify_btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
             modify_btn.setStyleSheet("padding: 0px; margin: 0px;")
             modify_btn.clicked.connect(lambda ch, r=row_num: self.modify_password(r))

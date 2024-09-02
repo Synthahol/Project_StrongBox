@@ -5,6 +5,7 @@ import sys
 # Add the backend directory to sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
+from blueprints import CustomMessageBox  # Import CustomMessageBox for consistency
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QApplication,
@@ -12,17 +13,15 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QLineEdit,
+    QMessageBox,
     QPushButton,
     QSizePolicy,
     QSpacerItem,
     QVBoxLayout,
     QWidget,
-    QMessageBox
-    
 )
 
 from backend.password_generator import generate_password
-from blueprints import CustomMessageBox  # Import CustomMessageBox for consistency
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +34,7 @@ class PasswordGenerationTab(QWidget):
 
     def create_ui(self):
         # Add the title at the top
-        title_label = QLabel("StrongBox Secure Password Generator")
+        title_label = QLabel("Fortalice Secure Password Generator")
         title_label.setStyleSheet(
             "font-size: 30px; font-weight: bold; margin-bottom: 15px;"
         )

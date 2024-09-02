@@ -1,10 +1,8 @@
 import base64
 import logging
 import os
-import random
 import re
 import sqlite3
-import string
 
 from cryptography.fernet import Fernet
 from dotenv import load_dotenv
@@ -58,25 +56,40 @@ def decrypt_key(encrypted_key, encryption_key):
 
 
 def load_or_generate_key(database_name):
+    """
+    Load an encryption key from the environment, or generate a new one if not present.
+    Save the new key to the .env file.
+    """
     logger.debug("Starting load_or_generate_key()")
-    env_var_name = f"ENCRYPTION_KEY_{sanitize_env_var_name(database_name)}"
+    env_var_name = f"{database_name.upper()}_KEY"
     key = os.getenv(env_var_name)
 
     if key is None:
-        logger.debug(f"{env_var_name} not found in .env file. Generating a new key.")
-        key = Fernet.generate_key().decode()
+        logger.debug(
+            f"{env_var_name} not found in environment variables. Generating a new key."
+        )
         try:
-            with open(env_path, "a") as env_file:
-                env_file.write(f"{env_var_name}={key}\n")
-            logger.info(
-                f"New encryption key for {database_name} generated and saved to .env file."
-            )
-        except Exception as e:
-            logger.error("Failed to write %s to .env file: %s", env_var_name, e)
-    else:
-        logger.info("Encryption key for %s loaded from .env file.", database_name)
+            key = Fernet.generate_key().decode()
+            logger.info("Generated new encryption key.")
 
-    logger.debug(f"{env_var_name}: {key[:5]}... (truncated for security)")
+            # Attempt to write the new key to the .env file
+            try:
+                with open(env_path, "a") as env_file:
+                    env_file.write(f"{env_var_name}={key}\\n")
+                logger.info(f"New encryption key for {database_name} saved.")
+            except OSError as e:
+                logger.error("Failed to write to .env file: %s", e)
+                raise
+
+        except Exception as e:
+            logger.error(
+                "An unexpected error occurred while generating or saving the key: %s", e
+            )
+            raise
+    else:
+        logger.info("Encryption key for %s loaded.", database_name)
+        logger.debug(f"{env_var_name}.")
+
     return key.encode()
 
 
@@ -86,21 +99,23 @@ def get_cipher_suite(database_name):
 
 
 def encrypt_data(data: str, cipher_suite: Fernet) -> str:
+    """Encrypt data using the provided cipher suite."""
     try:
         encrypted_data = cipher_suite.encrypt(data.encode())
         return encrypted_data.decode()
     except Exception as e:
         logger.error("Error encrypting data: %s", e)
-        return None
+        raise
 
 
 def decrypt_data(encrypted_data: str, cipher_suite: Fernet) -> str:
+    """Decrypt data using the provided cipher suite."""
     try:
         decrypted_data = cipher_suite.decrypt(encrypted_data.encode())
         return decrypted_data.decode()
     except Exception as e:
         logger.error("Error decrypting data: %s", e)
-        return None
+        raise
 
 
 def create_connection(db_file: str) -> sqlite3.Connection:
@@ -293,10 +308,6 @@ def delete_password(conn, service, username, cipher_suite):
         logger.info("Deleted password for the specified service and username.")
     except sqlite3.Error as e:
         logger.error("Failed to delete password: %s", e)
-
-
-def generate_verification_code(length=6):
-    return "".join(random.choices(string.digits, k=length))
 
 
 def login_user(conn: sqlite3.Connection, username: str, master_password: str):
