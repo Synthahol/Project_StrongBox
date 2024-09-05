@@ -206,11 +206,11 @@ class PasswordManager(QMainWindow):
             create_connection,
             initialize_db,
             is_master_password_set,
-            load_or_generate_key,
+            manage_encryption_key,
         )
 
         database_name = "DefaultFortalice"
-        key = load_or_generate_key(database_name)
+        key = manage_encryption_key(database_name)
         self.cipher_suite = Fernet(key)
         db_path = os.path.join(DATABASE_DIR, f"{database_name}.db")
         self.conn = create_connection(db_path)
