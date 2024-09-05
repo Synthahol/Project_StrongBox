@@ -3,9 +3,11 @@ import logging
 import os
 import re
 import sqlite3
+import keyring
 
 from cryptography.fernet import Fernet
 from dotenv import load_dotenv
+
 
 from backend.master_password import (
     generate_salt,
@@ -24,6 +26,9 @@ env_path = os.path.join(project_root, ".env")
 # Load environment variables from the correct .env file
 load_dotenv(dotenv_path=env_path)
 
+# Service name to be used in keyring
+SERVICE_ID = 'my_fortalice_app'
+
 
 def sanitize_env_var_name(database_name):
     """Sanitize the database name to create a valid environment variable name."""
@@ -35,10 +40,14 @@ def sanitize_env_var_name(database_name):
     return sanitized_name
 
 
-def load_encryption_key():
-    encryption_key = os.getenv("ENCRYPTION_KEY")
+def load_encryption_key(database_name):
+    """Retrieve the encryption key from the Windows Credential Locker using keyring."""
+    key_name = f"{database_name}_KEY"
+    encryption_key = keyring.get_password(SERVICE_ID, key_name)
+    
     if not encryption_key:
-        raise ValueError("Encryption key not found in environment variables.")
+        raise ValueError("Encryption key not found in the Credential Locker. Please set it up first.")
+    
     return encryption_key.encode()
 
 
@@ -57,40 +66,27 @@ def decrypt_key(encrypted_key, encryption_key):
 
 def load_or_generate_key(database_name):
     """
-    Load an encryption key from the environment, or generate a new one if not present.
-    Save the new key to the .env file.
+    Load an encryption key from the Windows Credential Locker or generate a new one if not present.
+    Save the new key securely using keyring.
     """
     logger.debug("Starting load_or_generate_key()")
-    env_var_name = f"{database_name.upper()}_KEY"
-    key = os.getenv(env_var_name)
+    key_name = f"{database_name}_KEY"
 
-    if key is None:
-        logger.debug(
-            f"{env_var_name} not found in environment variables. Generating a new key."
-        )
-        try:
-            key = Fernet.generate_key().decode()
-            logger.info("Generated new encryption key.")
+    # Check if the key already exists in the Credential Locker
+    encryption_key = keyring.get_password(SERVICE_ID, key_name)
 
-            # Attempt to write the new key to the .env file
-            try:
-                with open(env_path, "a") as env_file:
-                    env_file.write(f"{env_var_name}={key}\\n")
-                logger.info(f"New encryption key for {database_name} saved.")
-            except OSError as e:
-                logger.error("Failed to write to .env file: %s", e)
-                raise
+    if encryption_key:
+        logger.info(f"Encryption key for {database_name} loaded successfully from Credential Locker.")
+        return encryption_key.encode()
 
-        except Exception as e:
-            logger.error(
-                "An unexpected error occurred while generating or saving the key: %s", e
-            )
-            raise
-    else:
-        logger.info("Encryption key for %s loaded.", database_name)
-        logger.debug(f"{env_var_name}.")
+    # If not found, generate a new key
+    encryption_key = Fernet.generate_key().decode()
 
-    return key.encode()
+    # Store the key securely using keyring
+    keyring.set_password(SERVICE_ID, key_name, encryption_key)
+    logger.info(f"New encryption key generated and stored securely in Credential Locker for {database_name}.")
+
+    return encryption_key.encode()
 
 
 def get_cipher_suite(database_name):
