@@ -1,7 +1,9 @@
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
     QDialog,
     QFrame,
+    QHBoxLayout,
     QLabel,
     QLineEdit,
     QPushButton,
@@ -10,17 +12,53 @@ from PySide6.QtWidgets import (
 
 
 def create_button(
-    text, icon_path, callback, style="padding: 5px 10px; font-size: 14px;"
-):
+    text: str,
+    icon_path: str = "",
+    callback=None,
+    style: str = "padding: 5px 10px; font-size: 14px;",
+) -> QPushButton:
+    """
+    Create a styled QPushButton with optional icon and callback function.
+
+    Args:
+        text (str): The text to display on the button.
+        icon_path (str): The file path to the button's icon. Default is an empty string.
+        callback (callable): The function to be called when the button is clicked. Default is None.
+        style (str): The CSS style string for the button. Default is 'padding: 5px 10px; font-size: 14px;'.
+
+    Returns:
+        QPushButton: The created button widget.
+    """
     button = QPushButton(text)
     if icon_path:  # Check if an icon path is provided
-        button.setIcon(QIcon(icon_path))
+        try:
+            button.setIcon(QIcon(icon_path))
+        except Exception as e:
+            print(f"Error loading icon: {e}")
     button.setStyleSheet(style)
-    button.clicked.connect(callback)
+    if callback:
+        button.clicked.connect(callback)
     return button
 
 
-def create_input(label_text, placeholder, parent_layout, echo_mode=QLineEdit.Normal):
+def create_input(
+    label_text: str,
+    placeholder: str,
+    parent_layout: QVBoxLayout,
+    echo_mode: QLineEdit.EchoMode = QLineEdit.Normal,
+) -> QLineEdit:
+    """
+    Create a labeled QLineEdit input field with placeholder text.
+
+    Args:
+        label_text (str): The text to display as the label for the input field.
+        placeholder (str): The placeholder text for the input field.
+        parent_layout (QVBoxLayout): The layout to which the label and input field will be added.
+        echo_mode (QLineEdit.EchoMode): The echo mode of the input field. Default is QLineEdit.Normal.
+
+    Returns:
+        QLineEdit: The created input field widget.
+    """
     label = QLabel(label_text)
     parent_layout.addWidget(label)
     input_field = QLineEdit()
@@ -30,14 +68,39 @@ def create_input(label_text, placeholder, parent_layout, echo_mode=QLineEdit.Nor
     return input_field
 
 
-def create_horizontal_line():
+def create_horizontal_line() -> QFrame:
+    """
+    Create a horizontal line (QFrame) to be used as a separator.
+
+    Returns:
+        QFrame: The created horizontal line widget.
+    """
     line = QFrame()
     line.setFrameShape(QFrame.HLine)
     line.setFrameShadow(QFrame.Sunken)
     return line
 
 
-def create_simple_dialog(parent, title, message, button_text="OK"):
+def create_simple_dialog(
+    parent,
+    title: str,
+    message: str,
+    button_text: str = "OK",
+    button_alignment: Qt.AlignmentFlag = Qt.AlignCenter,
+) -> QDialog:
+    """
+    Create a simple QDialog with a title, message, and a single button.
+
+    Args:
+        parent: The parent widget of the dialog.
+        title (str): The title of the dialog window.
+        message (str): The message to display in the dialog.
+        button_text (str): The text to display on the button. Default is "OK".
+        button_alignment (Qt.AlignmentFlag): The alignment for the button. Default is Qt.AlignCenter.
+
+    Returns:
+        QDialog: The created dialog widget.
+    """
     dialog = QDialog(parent)
     dialog.setWindowTitle(title)
     layout = QVBoxLayout()
@@ -45,9 +108,11 @@ def create_simple_dialog(parent, title, message, button_text="OK"):
     label = QLabel(message)
     layout.addWidget(label)
 
+    button_layout = QHBoxLayout()
     button = QPushButton(button_text)
     button.clicked.connect(dialog.accept)
-    layout.addWidget(button)
+    button_layout.addWidget(button, alignment=button_alignment)
 
+    layout.addLayout(button_layout)
     dialog.setLayout(layout)
     return dialog

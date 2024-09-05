@@ -423,18 +423,13 @@ class MasterPasswordDialog(QDialog):
         self.password_input.setEchoMode(QLineEdit.Password)
         layout.addWidget(self.password_input)
 
+        # Use ButtonFactory to create a consistent button layout
         button_factory = ButtonFactory(self)
-        self.button_box = QHBoxLayout()
-        ok_button_layout = button_factory.create_button_with_layout(
-            "", "OK", 100, self.check_password
-        )
-        cancel_button_layout = button_factory.create_button_with_layout(
-            "", "Cancel", 100, self.reject
-        )
+        buttons = [("OK", 100, self.check_password), ("Cancel", 100, self.reject)]
+        button_layout = button_factory.create_buttons_with_spacing(buttons)
 
-        self.button_box.addLayout(ok_button_layout)
-        self.button_box.addLayout(cancel_button_layout)
-        layout.addLayout(self.button_box)
+        layout.addLayout(button_layout)
+        self.setLayout(layout)
 
     def check_password(self):
         entered_password = self.password_input.text()

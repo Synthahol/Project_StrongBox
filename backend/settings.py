@@ -7,17 +7,20 @@ from PySide6.QtWidgets import (
     QColorDialog,
     QComboBox,
     QLabel,
-    QMainWindow,  # Assuming your main window class is derived from QMainWindow
+    QMainWindow,
     QPushButton,
     QSlider,
     QVBoxLayout,
     QWidget,
 )
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
+# Configure logging only if it has not been configured already
+if not logging.getLogger().hasHandlers():
+    logging.basicConfig(
+        level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    )
+
+logger = logging.getLogger(__name__)
 
 
 class SettingsTab(QWidget):
@@ -55,31 +58,7 @@ class SettingsTab(QWidget):
         # Font dropdown
         font_label = QLabel("Font:")
         self.font_dropdown = QComboBox()
-        self.font_dropdown.addItems(
-            [
-                "Arial",
-                "Verdana",
-                "Helvetica",
-                "Times New Roman",
-                "Courier New",
-                "Georgia",
-                "Trebuchet MS",
-                "Tahoma",
-                "Comic Sans MS",
-                "Impact",
-                "Lucida Console",
-                "Palatino Linotype",
-                "Segoe UI",
-                "Gill Sans",
-                "Candara",
-                "Arial Black",
-                "Calibri",
-                "Cambria",
-                "Garamond",
-                "Century Gothic",
-            ]
-        )
-
+        self.font_dropdown.addItems(self.get_available_fonts())
         self.font_dropdown.setCurrentText(self.local_settings["font_family"])
         self.font_dropdown.currentIndexChanged.connect(self.update_font)
 
@@ -115,7 +94,33 @@ class SettingsTab(QWidget):
         # Apply the local settings to the settings page
         self.apply_settings(settings_to_apply={"font_size", "font_family", "colors"})
 
+    def get_available_fonts(self):
+        """Returns a list of available fonts for the font dropdown."""
+        return [
+            "Arial",
+            "Verdana",
+            "Helvetica",
+            "Times New Roman",
+            "Courier New",
+            "Georgia",
+            "Trebuchet MS",
+            "Tahoma",
+            "Comic Sans MS",
+            "Impact",
+            "Lucida Console",
+            "Palatino Linotype",
+            "Segoe UI",
+            "Gill Sans",
+            "Candara",
+            "Arial Black",
+            "Calibri",
+            "Cambria",
+            "Garamond",
+            "Century Gothic",
+        ]
+
     def apply_settings(self, settings_to_apply=None):
+        """Apply the local settings to the current settings page and main window."""
         if settings_to_apply is None:
             settings_to_apply = {"font_size", "font_family", "colors"}
 
@@ -134,23 +139,23 @@ class SettingsTab(QWidget):
 
         stylesheet += "}"
 
-        # Apply custom button styling (Default or user-defined)
+        # Apply custom button styling
         if "colors" in settings_to_apply:
             stylesheet += (
                 "QPushButton {"
-                "background-color: transparent;"  # Transparent background
-                "color: #c1c1c1;"  # Light white text color by default
+                "background-color: transparent;"
+                "color: #c1c1c1;"
                 "font-weight: bold;"
-                f"border: 2px solid {self.local_settings['button_color']};"  # Colored border
-                "padding: 0px;"  # Remove padding
-                "margin: 0px;"  # Remove margin
-                "border-radius: 5px;"  # Rounded corners
-                "min-height: 30px;"  # Set minimum height
+                f"border: 2px solid {self.local_settings['button_color']};"
+                "padding: 0px;"
+                "margin: 0px;"
+                "border-radius: 5px;"
+                "min-height: 30px;"
                 "qproperty-iconSize: 32px;"
                 "}"
                 "QPushButton::hover {"
-                f"background-color: {self.local_settings['button_color']};"  # Background color on hover
-                "color: #ffffff;"  # White text color on hover
+                f"background-color: {self.local_settings['button_color']};"
+                "color: #ffffff;"
                 "}"
             )
 
@@ -165,20 +170,14 @@ class SettingsTab(QWidget):
         )
 
     def apply_settings_globally(self):
-        # Apply local settings globally
+        """Apply local settings globally and save them."""
         self.current_settings = self.local_settings.copy()
-
-        # Log the global settings application
         logging.info(f"Applying Global Settings: {self.current_settings}")
-
-        # Save the settings to a file
         self.save_settings(self.current_settings)
-
-        # Apply globally to the entire application
         self.apply_global_styles()
 
     def apply_global_styles(self):
-        # Create a global stylesheet using current settings
+        """Apply the global stylesheet to the main window."""
         global_stylesheet = (
             f"QWidget {{"
             f"background-color: {self.current_settings['background_color']};"
@@ -200,45 +199,44 @@ class SettingsTab(QWidget):
             f"background-color: {self.current_settings['button_color']};"
             f"color: #ffffff;"
             f"}}"
-            # Apply background color to the left column and other relevant areas
             f"#leftColumn {{"
             f"background-color: {self.current_settings['background_color']};"
             f"}}"
-            # Apply background color to the passwords table and its cells
             f"QTableWidget {{"
             f"background-color: {self.current_settings['background_color']};"
-            # f"gridline-color: {self.current_settings['button_color']};"
-            f"color: #ffffff;"  # Adjust text color if needed
+            f"color: #ffffff;"
             f"}}"
             f"QTableWidget::item {{"
             f"background-color: {self.current_settings['background_color']};"
-            f"color: #ffffff;"  # Text color for cells
+            f"color: #ffffff;"
             f"}}"
-            # Apply background color to the table headers
             f"QHeaderView::section {{"
             f"background-color: {self.current_settings['background_color']};"
-            f"color: #ffffff;"  # Text color for headers
-            # f"border: 1px solid {self.current_settings['button_color']};"  # Border for headers
+            f"color: #ffffff;"
             f"}}"
         )
 
-        # Apply the global stylesheet to the main window
         self.main_window.setStyleSheet(global_stylesheet)
 
     def reset_settings(self):
+        """Reset settings to default values."""
         self.local_settings = self.default_settings.copy()
         self.apply_settings(settings_to_apply={"font_size", "font_family", "colors"})
         self.font_size_slider.setValue(self.default_settings["font_size"])
         self.font_dropdown.setCurrentText(self.default_settings["font_family"])
+        logging.info("Settings have been reset to default.")
 
     def save_settings(self, settings):
+        """Save the current settings to a JSON file."""
         try:
             with open("settings.json", "w") as file:
                 json.dump(settings, file)
+            logging.info("Settings saved successfully.")
         except IOError as e:
             logging.error(f"Failed to save settings: {e}")
 
     def load_settings(self):
+        """Load settings from a JSON file, falling back to default settings if necessary."""
         if os.path.exists("settings.json"):
             try:
                 with open("settings.json", "r") as file:
@@ -248,31 +246,31 @@ class SettingsTab(QWidget):
         return None
 
     def update_font_size(self):
+        """Update the font size based on the slider value."""
         font_size = self.font_size_slider.value()
         self.local_settings["font_size"] = font_size
-        # Apply font size, font family, and colors to retain the selected settings
         self.apply_settings(settings_to_apply={"font_size", "font_family", "colors"})
 
     def update_font(self):
+        """Update the font family based on the dropdown selection."""
         font = self.font_dropdown.currentText()
         self.local_settings["font_family"] = font
-        # Apply font family, font size, and colors to retain the selected settings
         self.apply_settings(settings_to_apply={"font_size", "font_family", "colors"})
 
     def update_button_color(self):
+        """Update the button color using the color picker."""
         color = QColorDialog.getColor()
         if color.isValid():
             self.local_settings["button_color"] = color.name()
-            # Apply button color, font size, and font family to retain the selected settings
             self.apply_settings(
                 settings_to_apply={"font_size", "font_family", "colors"}
             )
 
     def update_background_color(self):
+        """Update the background color using the color picker."""
         color = QColorDialog.getColor()
         if color.isValid():
             self.local_settings["background_color"] = color.name()
-            # Apply background color, font size, and font family to retain the selected settings
             self.apply_settings(
                 settings_to_apply={"font_size", "font_family", "colors"}
             )
