@@ -61,6 +61,8 @@ class CustomInputDialog(QDialog):
         super().__init__(parent)
         self.setWindowTitle(title)
         layout = QVBoxLayout(self)
+
+        # Add the label and input field
         self.label = QLabel(label)
         layout.addWidget(self.label)
 
@@ -68,18 +70,13 @@ class CustomInputDialog(QDialog):
         self.input_field.setEchoMode(echo_mode)
         layout.addWidget(self.input_field)
 
+        # Use ButtonFactory to create consistent button layout
         button_factory = ButtonFactory(self)
-        button_layout = button_factory.create_button_with_layout(
-            "", "OK", 100, self.accept
-        )
+        buttons = [("OK", 100, self.accept), ("Cancel", 100, self.reject)]
+        button_layout = button_factory.create_buttons_with_spacing(buttons)
+
+        # Ensure the button layout is horizontal
         layout.addLayout(button_layout)
-
-        cancel_button = QPushButton("Cancel")
-        cancel_button.setMinimumWidth(100)
-        cancel_button.clicked.connect(self.reject)
-        layout.addWidget(cancel_button)
-
-        self.setLayout(layout)
 
     def get_input(self):
         """Return the input from the line edit."""
@@ -91,7 +88,7 @@ class WelcomeDialog(QDialog):
 
     def __init__(self):
         super().__init__()
-        self.setWindowIcon(QIcon(r"frontend/icons/muscles.png"))
+        self.setWindowIcon(QIcon(r"frontend/icons/encryption.png"))
         self.setWindowTitle("Welcome to Fortalice!")
 
         layout = QVBoxLayout()
@@ -148,7 +145,7 @@ class PasswordManager(QMainWindow):
 
         self.setWindowTitle("Fortalice")
         self.setGeometry(300, 300, 800, 600)
-        self.setWindowIcon(QIcon(r"frontend/icons/muscles.png"))
+        self.setWindowIcon(QIcon(r"frontend/icons/encryption.png"))
 
         self.main_widget = QWidget(self)
         self.setCentralWidget(self.main_widget)
@@ -266,32 +263,57 @@ class PasswordManager(QMainWindow):
         self.stacked_widget.setCurrentWidget(self.settings_tab)
 
     def set_master_password(self):
-        """Prompt the user to set the master password."""
+        """Prompt the user to set the master password using a custom input dialog."""
         while True:
-            password = self._prompt_password_input(
-                "Set Master Password",
-                "Enter a master password. It must contain lowercase, uppercase, number, special "
-                "character and be at least 8 characters long. Remember this password as it cannot "
-                "be recovered if lost.",
+            # Format the dialog text using HTML to separate each sentence into its own paragraph
+            dialog_text = (
+                "<p>Enter a master password. It must contain lowercase, uppercase, number, "
+                "special character and be at least 8 characters long.</p>"
+                "<p>Hint: use a unique passphrase like ILoveMyDog!2024.</p>"
+                "<p>Or make it whatever you want. You do you booboo. Just make sure it is unique to this program and very easy for you to remember because it cannot be recovered if forgotten or lost.</p>"
             )
-            if password:
-                confirm_password = self._prompt_password_input(
-                    "Confirm Master Password", "Confirm master password:"
-                )
-                if password == confirm_password:
-                    self.store_master_password(password)
-                    break
-                CustomMessageBox(
-                    "Warning",
-                    "Passwords do not match. Please try again.",
-                    QMessageBox.Warning,
-                ).show_message()
+
+            # Prompt the user to enter a master password
+            dialog = CustomInputDialog(
+                "Set Master Password",
+                dialog_text,
+                QLineEdit.Password,
+                self,
+            )
+            if dialog.exec() == QDialog.Accepted:
+                password = dialog.get_input()
+                if password:
+                    # Prompt the user to confirm the master password
+                    confirm_dialog = CustomInputDialog(
+                        "Confirm Master Password",
+                        "Confirm master password:",
+                        QLineEdit.Password,
+                        self,
+                    )
+                    if confirm_dialog.exec() == QDialog.Accepted:
+                        confirm_password = confirm_dialog.get_input()
+                        if password == confirm_password:
+                            self.store_master_password(password)
+                            break
+                        else:
+                            CustomMessageBox(
+                                "Warning",
+                                "Passwords do not match. Please try again.",
+                                QMessageBox.Warning,
+                            ).show_message()
+                else:
+                    CustomMessageBox(
+                        "Warning",
+                        "Master password is required to proceed.",
+                        QMessageBox.Warning,
+                    ).show_message()
             else:
                 CustomMessageBox(
                     "Warning",
                     "Master password is required to proceed.",
                     QMessageBox.Warning,
                 ).show_message()
+                break
 
     def _prompt_password_input(self, title, label):
         """Prompt the user for a password input."""
@@ -301,21 +323,23 @@ class PasswordManager(QMainWindow):
         return ""
 
     def verify_master_password(self):
-        """Verify the entered master password."""
+        """Verify the entered master password using a custom input dialog."""
         from backend.database import verify_master_password
 
         while True:
+            # Prompt the user to enter the master password for verification
             dialog = VerifyMasterPasswordDialog(self)
             if dialog.exec() == QDialog.Accepted:
                 password = dialog.get_password()
                 if password and verify_master_password(self.conn, password):
                     logger.info("Master password verified successfully.")
                     return True
-                CustomMessageBox(
-                    "Warning",
-                    "Incorrect master password. Please try again.",
-                    QMessageBox.Warning,
-                ).show_message()
+                else:
+                    CustomMessageBox(
+                        "Warning",
+                        "Incorrect master password. Please try again.",
+                        QMessageBox.Warning,
+                    ).show_message()
             else:
                 CustomMessageBox(
                     "Warning",
@@ -361,7 +385,8 @@ def main():
     app = QApplication(sys.argv)
 
     # Load stylesheet from style.qss
-    stylesheet_path = os.path.join(os.path.dirname(__file__), "styles", "style.qss")
+    stylesheet_path = os.path.join(os.path.dirname(__file__), 'styles', 'style.qss')
+
     with open(stylesheet_path, "r", encoding="utf-8") as file:
         app.setStyleSheet(file.read())
 

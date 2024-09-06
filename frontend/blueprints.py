@@ -105,7 +105,7 @@ class CustomMessageBox(QMessageBox):
         self.setText(message)
         self.setIcon(icon)
         self.setStandardButtons(QMessageBox.Ok)
-        self.setWindowIcon(QIcon("frontend/icons/muscles.png"))
+        self.setWindowIcon(QIcon("frontend/icons/encryption.png"))
 
         # Customize the "OK" button text and width
         ok_button = self.button(QMessageBox.Ok)

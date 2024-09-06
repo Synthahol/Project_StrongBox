@@ -41,7 +41,7 @@ class PasswordManagementTab(QWidget):
         self.conn = conn
         self.cipher_suite = cipher_suite
         self.layout = QVBoxLayout(self)
-        self.setWindowIcon(QIcon("frontend/icons/muscles.png"))
+        self.setWindowIcon(QIcon("frontend/icons/encryption.png"))
 
         self.button_factory = ButtonFactory(self)
         self.create_ui()
@@ -241,7 +241,7 @@ class PasswordManagementTab(QWidget):
     def show_password_details_dialog(self, service, username, decrypted_password):
         details_dialog = QDialog(self)
         details_dialog.setWindowTitle("Password Details")
-        details_dialog.setWindowIcon(QIcon("frontend/icons/muscles.png"))
+        details_dialog.setWindowIcon(QIcon("frontend/icons/encryption.png"))
 
         layout = QVBoxLayout(details_dialog)
         details_dialog.setFixedWidth(700)
@@ -332,7 +332,7 @@ class ModifyPasswordDialog(QDialog):
 
         self.setWindowTitle("Modify Service, Username, or Password")
         self.setMinimumWidth(400)
-        self.setWindowIcon(QIcon("frontend/icons/muscles.png"))
+        self.setWindowIcon(QIcon("frontend/icons/encryption.png"))
 
         layout = QVBoxLayout(self)
         self.layout = QGridLayout()
@@ -412,7 +412,7 @@ class MasterPasswordDialog(QDialog):
         self.verify_master_password_callback = verify_master_password_callback
         self.setWindowTitle("Enter Master Password")
         self.setMinimumWidth(400)
-        self.setWindowIcon(QIcon("frontend/icons/muscles.png"))
+        self.setWindowIcon(QIcon("frontend/icons/encryption.png"))
 
         layout = QVBoxLayout(self)
 
@@ -449,7 +449,7 @@ class UsernameSelectionDialog(QDialog):
     def __init__(self, usernames):
         super().__init__()
         self.setWindowTitle("Select Username")
-        self.setWindowIcon(QIcon("frontend/icons/muscles.png"))
+        self.setWindowIcon(QIcon("frontend/icons/encryption.png"))
         self.selected_username = None
 
         layout = QVBoxLayout()

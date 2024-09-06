@@ -1,6 +1,6 @@
 /*-----QMainWindow-----*/
 QMainWindow {
-    background-image: url("frontend/icons/muscles.png");
+    background-image: url("frontend/icons/encryption.png");
     background-position: center;
     background-repeat: no-repeat;
     background-color: #2e2e2e;
