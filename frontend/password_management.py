@@ -16,6 +16,7 @@ from PySide6.QtWidgets import (
     QListWidget,
     QMessageBox,
     QPushButton,
+    QSizePolicy,
     QTableWidget,
     QTableWidgetItem,
     QVBoxLayout,
@@ -31,8 +32,8 @@ from backend.database import (
     store_password,
     update_password,
 )
-from frontend.blueprints import ButtonFactory, CustomMessageBox
 from backend.utils import create_button, create_horizontal_line, create_input
+from frontend.blueprints import ButtonFactory, CustomMessageBox
 from session_manager import SessionManager
 
 logger = logging.getLogger(__name__)
@@ -108,14 +109,24 @@ class PasswordManagementTab(QWidget):
 
     def create_password_table(self):
         table = QTableWidget()
-        table.setColumnCount(5)
-        table.setHorizontalHeaderLabels(
-            ["Service", "Username", "Password", "Action", "Modify"]
-        )
+        table.setColumnCount(4)
+        table.setHorizontalHeaderLabels(["Service", "Username", "Password", "Action"])
         table.setStyleSheet("QTableWidget::item { padding: 0px; margin: 0px; }")
-        table.verticalHeader().setDefaultSectionSize(40)
+
+        # Removed the fixed default row height to allow automatic adjustment
+        # table.verticalHeader().setDefaultSectionSize(40)
+
         header = table.horizontalHeader()
-        header.setSectionResizeMode(QHeaderView.Stretch)
+        header.setSectionResizeMode(0, QHeaderView.Stretch)
+        header.setSectionResizeMode(1, QHeaderView.Stretch)
+        header.setSectionResizeMode(2, QHeaderView.Stretch)
+        header.setSectionResizeMode(3, QHeaderView.ResizeToContents)
+
+        # Adjusted size policy to allow expansion
+        table.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        # Optionally, you can remove the fixed minimum width
+        # table.setMinimumWidth(800)
+
         return table
 
     def show_success_message(self, message):
@@ -144,31 +155,63 @@ class PasswordManagementTab(QWidget):
             password_item.setData(Qt.UserRole, password)  # Store actual password
             self.password_table.setItem(row_num, 2, password_item)
 
-            # Actions (Reveal, Modify)
+            # Actions (Reveal, Copy, Modify)
             action_layout = QHBoxLayout()
+            action_layout.setAlignment(Qt.AlignCenter)
+            action_layout.setContentsMargins(
+                5, 5, 5, 5
+            )  # Add margins around the buttons
+            action_layout.setSpacing(5)
+
+            button_style = """
+            QPushButton {
+                padding: 5px;
+                min-width: 60px;
+                min-height: 30px;  /* Ensure buttons have minimum height */
+            }
+            """
+
+            from PySide6.QtWidgets import QSizePolicy
+
+            button_size_policy = QSizePolicy(
+                QSizePolicy.Preferred, QSizePolicy.Preferred
+            )
+            button_height = 30  # Adjust as needed
+
             reveal_button = QPushButton("Reveal")
+            reveal_button.setStyleSheet(button_style)
+            reveal_button.setSizePolicy(button_size_policy)
+            reveal_button.setMinimumHeight(button_height)
             reveal_button.clicked.connect(
                 lambda checked, row=row_num: self.toggle_password_visibility(row)
             )
             action_layout.addWidget(reveal_button)
 
             copy_button = QPushButton("Copy")
+            copy_button.setStyleSheet(button_style)
+            copy_button.setSizePolicy(button_size_policy)
+            copy_button.setMinimumHeight(button_height)
             copy_button.clicked.connect(
                 lambda checked, row=row_num: self.copy_password_to_clipboard(row)
             )
             action_layout.addWidget(copy_button)
 
-            action_widget = QWidget()
-            action_widget.setLayout(action_layout)
-            self.password_table.setCellWidget(row_num, 3, action_widget)
-
             modify_button = QPushButton("Modify")
+            modify_button.setStyleSheet(button_style)
+            modify_button.setSizePolicy(button_size_policy)
+            modify_button.setMinimumHeight(button_height)
             modify_button.clicked.connect(
                 lambda checked, row=row_num: self.modify_password(row)
             )
-            self.password_table.setCellWidget(row_num, 4, modify_button)
+            action_layout.addWidget(modify_button)
 
-        self.password_table.resizeColumnsToContents()
+            action_widget = QWidget()
+            action_widget.setLayout(action_layout)
+            action_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
+            self.password_table.setCellWidget(row_num, 3, action_widget)
+
+        # Adjust row heights to fit contents
+        self.password_table.resizeRowsToContents()
 
     def toggle_password_visibility(self, row):
         item = self.password_table.item(row, 2)
@@ -179,17 +222,21 @@ class PasswordManagementTab(QWidget):
             item.setText(actual_password)
             # Update the button text
             action_widget = self.password_table.cellWidget(row, 3)
-            reveal_button = action_widget.findChild(QPushButton, "Reveal")
-            if reveal_button:
-                reveal_button.setText("Hide")
+            buttons = action_widget.findChildren(QPushButton)
+            for button in buttons:
+                if button.text() == "Reveal":
+                    button.setText("Hide")
+                    break
         else:
             # Mask the password
             item.setText("•" * 8)
             # Update the button text
             action_widget = self.password_table.cellWidget(row, 3)
-            reveal_button = action_widget.findChild(QPushButton, "Hide")
-            if reveal_button:
-                reveal_button.setText("Reveal")
+            buttons = action_widget.findChildren(QPushButton)
+            for button in buttons:
+                if button.text() == "Hide":
+                    button.setText("Reveal")
+                    break
 
     def copy_password_to_clipboard(self, row):
         item = self.password_table.item(row, 2)

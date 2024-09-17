@@ -72,8 +72,6 @@ class PasskeyManagerTab(QWidget):
                 )
                 self.passkey_table.setCellWidget(i, 3, reveal_button)
 
-            # Resize columns to fit contents
-            self.passkey_table.resizeColumnsToContents()
 
         except ValueError as ve:
             QMessageBox.warning(self, "Warning", str(ve))

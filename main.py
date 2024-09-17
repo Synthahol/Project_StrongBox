@@ -185,7 +185,7 @@ class PasswordManager(QMainWindow):
         # Add the new passkey manager button
         self.passkey_button = self._create_button(
             "Manage Passkeys",
-            r"frontend/icons/key.png",  # Make sure this icon exists
+            r"frontend/icons/passkey.png",  # Make sure this icon exists
             self.show_passkey_manager,
         )
         layout.addWidget(self.passkey_button)
