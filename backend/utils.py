@@ -1,3 +1,5 @@
+import logging
+
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
@@ -5,10 +7,13 @@ from PySide6.QtWidgets import (
     QFrame,
     QHBoxLayout,
     QLabel,
+    QLayout,
     QLineEdit,
     QPushButton,
     QVBoxLayout,
 )
+
+logger = logging.getLogger(__name__)
 
 
 def create_button(
@@ -34,7 +39,8 @@ def create_button(
         try:
             button.setIcon(QIcon(icon_path))
         except Exception as e:
-            print(f"Error loading icon: {e}")
+            logger.error(f"Error loading icon from '{icon_path}': {e}")
+            # Optionally, you can set a default icon or handle the UI accordingly
     button.setStyleSheet(style)
     if callback:
         button.clicked.connect(callback)
@@ -44,7 +50,7 @@ def create_button(
 def create_input(
     label_text: str,
     placeholder: str,
-    parent_layout: QVBoxLayout,
+    parent_layout: QLayout,
     echo_mode: QLineEdit.EchoMode = QLineEdit.Normal,
 ) -> QLineEdit:
     """
@@ -53,7 +59,7 @@ def create_input(
     Args:
         label_text (str): The text to display as the label for the input field.
         placeholder (str): The placeholder text for the input field.
-        parent_layout (QVBoxLayout): The layout to which the label and input field will be added.
+        parent_layout (QLayout): The layout to which the label and input field will be added.
         echo_mode (QLineEdit.EchoMode): The echo mode of the input field. Default is QLineEdit.Normal.
 
     Returns:
@@ -103,9 +109,11 @@ def create_simple_dialog(
     """
     dialog = QDialog(parent)
     dialog.setWindowTitle(title)
+    dialog.setWindowModality(Qt.ApplicationModal)  # Set the dialog to be modal
     layout = QVBoxLayout()
 
     label = QLabel(message)
+    label.setWordWrap(True)  # Enable word wrap for long messages
     layout.addWidget(label)
 
     button_layout = QHBoxLayout()
