@@ -40,8 +40,6 @@ Before you begin, ensure you have the following installed on your system:
 
 - Python 3.8 or higher
 
-
-
 1. **Clone the Repository**:
 
    ```bash

@@ -1,16 +1,10 @@
-"""
-Main module for the Fortalice application, handling the main application window,
-dialogs, and initialization processes.
-"""
+# main.py
 
 import logging
 import os
 import sys
 import uuid
 
-from blueprints import ButtonFactory, CustomMessageBox
-from password_generation import PasswordGenerationTab
-from password_management import PasswordManagementTab
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
     QApplication,
@@ -27,6 +21,11 @@ from PySide6.QtWidgets import (
 )
 
 from backend.settings import SettingsTab
+from frontend.blueprints import ButtonFactory, CustomMessageBox
+from frontend.passkey_manager_tab import PasskeyManagerTab
+from frontend.password_generation import PasswordGenerationTab
+from frontend.password_management import PasswordManagementTab
+from session_manager import SessionManager
 
 # Add the root directory to sys.path
 sys.path.extend(
@@ -37,7 +36,7 @@ sys.path.extend(
 )
 
 try:
-    from config import DATABASE_DIR, LOG_FILE
+    from backend.config import DATABASE_DIR, LOG_FILE
 except ModuleNotFoundError as error:
     print(f"Error importing config: {error}")
     sys.exit(1)
@@ -141,6 +140,7 @@ class PasswordManager(QMainWindow):
         self.cipher_suite = None
         self.password_generation_tab = None
         self.password_management_tab = None
+        self.passkey_manager_tab = None
         self.settings_tab = None
 
         self.setWindowTitle("Fortalice")
@@ -182,6 +182,14 @@ class PasswordManager(QMainWindow):
         )
         layout.addWidget(self.manage_button)
 
+        # Add the new passkey manager button
+        self.passkey_button = self._create_button(
+            "Manage Passkeys",
+            r"frontend/icons/key.png",  # Make sure this icon exists
+            self.show_passkey_manager,
+        )
+        layout.addWidget(self.passkey_button)
+
         self.settings_button = self._create_button(
             "Visual Settings", r"frontend/icons/settings.png", self.show_settings
         )
@@ -197,27 +205,19 @@ class PasswordManager(QMainWindow):
 
     def initialize_app(self):
         """Initialize the application by setting up the database connection and cipher suite."""
-        from cryptography.fernet import Fernet
-
         from backend.database import (
             create_connection,
             initialize_db,
             is_master_password_set,
-            manage_encryption_key,
         )
 
-        database_name = "DefaultFortalice"
-        key = manage_encryption_key(database_name)
-        self.cipher_suite = Fernet(key)
-        db_path = os.path.join(DATABASE_DIR, f"{database_name}.db")
-        self.conn = create_connection(db_path)
+        # Remove references to db_path since create_connection no longer requires it
+        self.conn = create_connection()
 
         if self.conn:
             key_id = str(uuid.uuid4())
             initialize_db(self.conn, key_id)
-            logger.info(
-                "Database connection successful. {db_path} with key_id: {key_id}"
-            )
+            logger.info("Database connection successful.")
 
             if not is_master_password_set(self.conn):
                 self.set_master_password()
@@ -239,13 +239,13 @@ class PasswordManager(QMainWindow):
     def _setup_tabs(self):
         """Set up the main tabs of the application."""
         self.password_generation_tab = PasswordGenerationTab()
-        self.password_management_tab = PasswordManagementTab(
-            self.conn, self.cipher_suite
-        )
+        self.password_management_tab = PasswordManagementTab()
+        self.passkey_manager_tab = PasskeyManagerTab()
         self.settings_tab = SettingsTab(main_window=self)
 
         self.stacked_widget.addWidget(self.password_generation_tab)
         self.stacked_widget.addWidget(self.password_management_tab)
+        self.stacked_widget.addWidget(self.passkey_manager_tab)
         self.stacked_widget.addWidget(self.settings_tab)
 
         self.show_password_generator()
@@ -257,6 +257,10 @@ class PasswordManager(QMainWindow):
     def show_manage_passwords(self):
         """Show the manage passwords tab."""
         self.stacked_widget.setCurrentWidget(self.password_management_tab)
+
+    def show_passkey_manager(self):
+        """Show the passkey manager tab."""
+        self.stacked_widget.setCurrentWidget(self.passkey_manager_tab)
 
     def show_settings(self):
         """Show the settings tab."""
@@ -333,6 +337,9 @@ class PasswordManager(QMainWindow):
                 password = dialog.get_password()
                 if password and verify_master_password(self.conn, password):
                     logger.info("Master password verified successfully.")
+                    # Store the master password in the session manager
+                    session = SessionManager.get_instance()
+                    session.set_master_password(password)
                     return True
                 else:
                     CustomMessageBox(
@@ -354,6 +361,9 @@ class PasswordManager(QMainWindow):
 
         try:
             set_master_password(self.conn, password)
+            # Store the master password in the session manager
+            session = SessionManager.get_instance()
+            session.set_master_password(password)
             CustomMessageBox(
                 "Info", "Master password set successfully!", QMessageBox.Information
             ).show_message()
@@ -362,6 +372,13 @@ class PasswordManager(QMainWindow):
             CustomMessageBox(
                 "Warning", f"Password validation failed: {ve}", QMessageBox.Warning
             ).show_message()
+
+    def closeEvent(self, event):
+        """Handle the application close event to clear sensitive data."""
+        session = SessionManager.get_instance()
+        session.clear_master_password()
+        logger.info("Application closed. Master password cleared from memory.")
+        event.accept()  # Proceed with the close event
 
     def show_info(self, message):
         """Show an informational message."""
@@ -385,7 +402,9 @@ def main():
     app = QApplication(sys.argv)
 
     # Load stylesheet from style.qss
-    stylesheet_path = os.path.join(os.path.dirname(__file__), 'styles', 'style.qss')
+    stylesheet_path = os.path.join(
+        os.path.dirname(__file__), "frontend", "styles", "style.qss"
+    )
 
     with open(stylesheet_path, "r", encoding="utf-8") as file:
         app.setStyleSheet(file.read())

@@ -5,7 +5,6 @@ import sys
 # Add the backend directory to sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from blueprints import CustomMessageBox  # Import CustomMessageBox for consistency
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QApplication,
@@ -22,6 +21,9 @@ from PySide6.QtWidgets import (
 )
 
 from backend.password_generator import generate_password
+from frontend.blueprints import (
+    CustomMessageBox,  # Import CustomMessageBox for consistency
+)
 
 logger = logging.getLogger(__name__)
 

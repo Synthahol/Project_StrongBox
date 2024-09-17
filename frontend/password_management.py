@@ -1,6 +1,7 @@
+# password_management.py
+
 import logging
 
-from blueprints import ButtonFactory, CustomMessageBox
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
@@ -15,7 +16,6 @@ from PySide6.QtWidgets import (
     QListWidget,
     QMessageBox,
     QPushButton,
-    QSizePolicy,
     QTableWidget,
     QTableWidgetItem,
     QVBoxLayout,
@@ -23,23 +23,26 @@ from PySide6.QtWidgets import (
 )
 
 from backend.database import (
+    check_existing_entry,
+    create_connection,
     delete_password,
     get_all_passwords,
     retrieve_password,
     store_password,
     update_password,
 )
-from backend.master_password import verify_password
+from frontend.blueprints import ButtonFactory, CustomMessageBox
 from backend.utils import create_button, create_horizontal_line, create_input
+from session_manager import SessionManager
 
 logger = logging.getLogger(__name__)
 
 
 class PasswordManagementTab(QWidget):
-    def __init__(self, conn, cipher_suite):
-        super().__init__()
-        self.conn = conn
-        self.cipher_suite = cipher_suite
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.conn = create_connection()
+        self.session = SessionManager.get_instance()
         self.layout = QVBoxLayout(self)
         self.setWindowIcon(QIcon("frontend/icons/encryption.png"))
 
@@ -90,8 +93,8 @@ class PasswordManagementTab(QWidget):
             cursor = self.conn.execute("SELECT DISTINCT service FROM passwords")
             services = [row[0] for row in cursor.fetchall()]
             return services
-        except Exception:
-            logger.error("Error fetching services for autocomplete.")
+        except Exception as e:
+            logger.error(f"Error fetching services for autocomplete: {e}")
             return []
 
     def get_usernames_list(self):
@@ -99,8 +102,8 @@ class PasswordManagementTab(QWidget):
             cursor = self.conn.execute("SELECT DISTINCT username FROM passwords")
             usernames = [row[0] for row in cursor.fetchall()]
             return usernames
-        except Exception:
-            logger.error("Error fetching usernames for autocomplete.")
+        except Exception as e:
+            logger.error(f"Error fetching usernames for autocomplete: {e}")
             return []
 
     def create_password_table(self):
@@ -130,115 +133,106 @@ class PasswordManagementTab(QWidget):
     def load_passwords(self):
         self.password_table.setRowCount(0)
         passwords = get_all_passwords(self.conn)
-        for row_num, (service, username, encrypted_password) in enumerate(passwords):
+        for row_num, (service, username, password) in enumerate(passwords):
             self.password_table.insertRow(row_num)
             self.password_table.setItem(row_num, 0, QTableWidgetItem(service))
             self.password_table.setItem(row_num, 1, QTableWidgetItem(username))
-            self.password_table.setItem(row_num, 2, QTableWidgetItem("******"))
 
-            show_btn = create_button(
-                "Show/Copy", "", lambda ch, r=row_num: self.show_password(r)
+            # Masked Password
+            masked_password = "•" * 8
+            password_item = QTableWidgetItem(masked_password)
+            password_item.setData(Qt.UserRole, password)  # Store actual password
+            self.password_table.setItem(row_num, 2, password_item)
+
+            # Actions (Reveal, Modify)
+            action_layout = QHBoxLayout()
+            reveal_button = QPushButton("Reveal")
+            reveal_button.clicked.connect(
+                lambda checked, row=row_num: self.toggle_password_visibility(row)
             )
-            show_btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-            show_btn.setStyleSheet("padding: 0px; margin: 0px;")
-            self.password_table.setCellWidget(row_num, 3, show_btn)
+            action_layout.addWidget(reveal_button)
 
-            modify_btn = QPushButton("Modify Info")
-            modify_btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-            modify_btn.setStyleSheet("padding: 0px; margin: 0px;")
-            modify_btn.clicked.connect(lambda ch, r=row_num: self.modify_password(r))
-            self.password_table.setCellWidget(row_num, 4, modify_btn)
+            copy_button = QPushButton("Copy")
+            copy_button.clicked.connect(
+                lambda checked, row=row_num: self.copy_password_to_clipboard(row)
+            )
+            action_layout.addWidget(copy_button)
+
+            action_widget = QWidget()
+            action_widget.setLayout(action_layout)
+            self.password_table.setCellWidget(row_num, 3, action_widget)
+
+            modify_button = QPushButton("Modify")
+            modify_button.clicked.connect(
+                lambda checked, row=row_num: self.modify_password(row)
+            )
+            self.password_table.setCellWidget(row_num, 4, modify_button)
+
+        self.password_table.resizeColumnsToContents()
+
+    def toggle_password_visibility(self, row):
+        item = self.password_table.item(row, 2)
+        current_text = item.text()
+        actual_password = item.data(Qt.UserRole)
+        if current_text == "•" * 8:
+            # Reveal the password
+            item.setText(actual_password)
+            # Update the button text
+            action_widget = self.password_table.cellWidget(row, 3)
+            reveal_button = action_widget.findChild(QPushButton, "Reveal")
+            if reveal_button:
+                reveal_button.setText("Hide")
+        else:
+            # Mask the password
+            item.setText("•" * 8)
+            # Update the button text
+            action_widget = self.password_table.cellWidget(row, 3)
+            reveal_button = action_widget.findChild(QPushButton, "Hide")
+            if reveal_button:
+                reveal_button.setText("Reveal")
+
+    def copy_password_to_clipboard(self, row):
+        item = self.password_table.item(row, 2)
+        actual_password = item.data(Qt.UserRole)
+        if actual_password:
+            clipboard = QApplication.clipboard()
+            clipboard.setText(actual_password)
+            self.show_success_message("Password copied to clipboard!")
+        else:
+            self.show_error("Failed to copy password.")
 
     def modify_password(self, row):
-        dialog = MasterPasswordDialog(self.verify_master_password)
-        if dialog.exec() == QDialog.Accepted:
-            service = self.password_table.item(row, 0).text()
-            username = self.password_table.item(row, 1).text()
-
-            cursor = self.conn.execute(
-                "SELECT password FROM passwords WHERE service = ? AND username = ?",
-                (service, username),
-            )
-            encrypted_password = cursor.fetchone()[0]
-
-            modify_dialog = ModifyPasswordDialog(
-                self.conn, self.cipher_suite, service, username, encrypted_password, row
-            )
-            if modify_dialog.exec() == QDialog.Accepted:
-                self.load_passwords()
-
-    def verify_master_password(self, entered_password: str) -> bool:
-        try:
-            cursor = self.conn.execute("SELECT salt, password FROM master_password")
-            row = cursor.fetchone()
-
-            if row is None:
-                logger.error("No master password found in the database.")
-                return False
-
-            stored_salt, stored_password = row
-            return verify_password(stored_password, entered_password, stored_salt)
-        except Exception:
-            logger.error("Error verifying master password.")
-            return False
-
-    def show_password(self, row):
-        main_window = self.window()
-        if not main_window.verify_master_password():
-            logger.debug("Master password verification failed.")
-            return
-
         service = self.password_table.item(row, 0).text()
-        logger.debug("Service selected.")
+        username = self.password_table.item(row, 1).text()
+        password = self.password_table.item(row, 2).data(Qt.UserRole)
 
-        try:
-            cursor = self.conn.execute(
-                "SELECT username FROM passwords WHERE service = ?", (service,)
-            )
-            usernames = [username[0] for username in cursor.fetchall()]
+        modify_dialog = ModifyPasswordDialog(
+            self.conn, service, username, password, row
+        )
+        if modify_dialog.exec() == QDialog.Accepted:
+            self.load_passwords()
 
-            if not usernames:
-                logger.warning("No usernames found.")
-                CustomMessageBox(
-                    "Error",
-                    "No usernames found for the selected service.",
-                    QMessageBox.Warning,
-                ).show_message()
-                return
+    def delete_password(self, row):
+        service = self.password_table.item(row, 0).text()
+        username = self.password_table.item(row, 1).text()
+        reply = QMessageBox.question(
+            self,
+            "Delete Confirmation",
+            f"Are you sure you want to delete the password for {service}?",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No,
+        )
+        if reply == QMessageBox.Yes:
+            try:
+                delete_password(self.conn, service, username)
+                QMessageBox.information(
+                    self, "Success", "Password deleted successfully."
+                )
+                self.load_passwords()
+            except Exception as e:
+                QMessageBox.critical(self, "Error", f"Failed to delete password: {e}")
 
-            if len(usernames) > 1:
-                dialog = UsernameSelectionDialog(usernames)
-                if dialog.exec():
-                    selected_username = dialog.selected_username
-                else:
-                    logger.info("Username selection canceled.")
-                    return
-            else:
-                selected_username = usernames[0]
-
-            username, encrypted_password = retrieve_password(
-                self.conn, service, selected_username, self.cipher_suite
-            )
-            logger.debug("Username and encrypted password retrieved.")
-
-            if username and encrypted_password:
-                decrypted_password = self.cipher_suite.decrypt(
-                    encrypted_password.encode()
-                ).decode()
-                logger.debug("Password decrypted successfully.")
-                self.show_password_details_dialog(service, username, decrypted_password)
-            else:
-                logger.warning("Failed to retrieve password details.")
-                CustomMessageBox(
-                    "Error", "Failed to retrieve password details.", QMessageBox.Warning
-                ).show_message()
-        except Exception:
-            logger.error("Error during password retrieval.")
-            CustomMessageBox(
-                "Error", "Failed to retrieve password.", QMessageBox.Critical
-            ).show_message()
-
-    def show_password_details_dialog(self, service, username, decrypted_password):
+    def show_password_details_dialog(self, service, username, password):
         details_dialog = QDialog(self)
         details_dialog.setWindowTitle("Password Details")
         details_dialog.setWindowIcon(QIcon("frontend/icons/encryption.png"))
@@ -268,14 +262,12 @@ class PasswordManagementTab(QWidget):
         layout.addLayout(username_layout)
 
         password_layout = QHBoxLayout()
-        password_label = QLabel(f"Password: {decrypted_password}")
+        password_label = QLabel(f"Password: {password}")
         password_layout.addWidget(password_label)
         password_layout.addStretch()
         copy_password_button = QPushButton("Copy Password")
         copy_password_button.setFixedWidth(self.width() * 0.15)
-        copy_password_button.clicked.connect(
-            lambda: self.copy_to_clipboard(decrypted_password)
-        )
+        copy_password_button.clicked.connect(lambda: self.copy_to_clipboard(password))
         password_layout.addWidget(copy_password_button)
         layout.addLayout(password_layout)
 
@@ -307,27 +299,57 @@ class PasswordManagementTab(QWidget):
             return
 
         try:
-            store_password(self.conn, service, username, password, self.cipher_suite)
+            if check_existing_entry(self.conn, service, username):
+                self.show_error("This service and username already exist.")
+                return
+
+            store_password(self.conn, service, username, password)
             logger.info("Password stored successfully.")
             self.show_success_message("Password stored successfully.")
             self.load_passwords()
             self.service_input.clear()
             self.username_input.clear()
             self.password_input.clear()
-        except Exception:
-            logger.error("Failed to store password.")
+        except Exception as e:
+            logger.error(f"Failed to store password: {e}")
             self.show_error("Failed to store password.")
+
+    def show_password(self, row):
+        main_window = self.window()
+        if not main_window.verify_master_password():
+            logger.debug("Master password verification failed.")
+            return
+
+        service = self.password_table.item(row, 0).text()
+        username = self.password_table.item(row, 1).text()
+
+        try:
+            username, password = retrieve_password(self.conn, service, username)
+            if username and password:
+                # Password is already decrypted by retrieve_password
+                self.show_password_details_dialog(service, username, password)
+            else:
+                logger.warning("Failed to retrieve password details.")
+                QMessageBox.warning(
+                    self, "Error", "Failed to retrieve password details."
+                )
+        except Exception as e:
+            logger.error(f"Error during password retrieval: {e}")
+            QMessageBox.critical(self, "Error", "Failed to retrieve password.")
+
+    def verify_master_password(self):
+        # Implement this method if needed
+        pass
 
 
 class ModifyPasswordDialog(QDialog):
-    def __init__(self, conn, cipher_suite, service, username, encrypted_password, row):
+    def __init__(self, conn, service, username, password, row):
         super().__init__()
 
         self.conn = conn
-        self.cipher_suite = cipher_suite
         self.service = service
         self.username = username
-        self.encrypted_password = encrypted_password
+        self.password = password
         self.row = row
 
         self.setWindowTitle("Modify Service, Username, or Password")
@@ -338,23 +360,15 @@ class ModifyPasswordDialog(QDialog):
         self.layout = QGridLayout()
 
         self.layout.addWidget(QLabel("Service:"), 0, 0)
-        self.service_input = QLineEdit(service)
+        self.service_input = QLineEdit(self.service)
         self.layout.addWidget(self.service_input, 0, 1)
 
         self.layout.addWidget(QLabel("Username:"), 1, 0)
-        self.username_input = QLineEdit(username)
+        self.username_input = QLineEdit(self.username)
         self.layout.addWidget(self.username_input, 1, 1)
 
-        try:
-            decrypted_password = self.cipher_suite.decrypt(
-                encrypted_password.encode()
-            ).decode()
-        except Exception:
-            logger.error("Failed to decrypt password.")
-            decrypted_password = ""
-
         self.layout.addWidget(QLabel("Password:"), 2, 0)
-        self.password_input = QLineEdit(decrypted_password)
+        self.password_input = QLineEdit(self.password)
         self.password_input.setEchoMode(QLineEdit.Password)
         self.layout.addWidget(self.password_input, 2, 1)
 
@@ -383,66 +397,45 @@ class ModifyPasswordDialog(QDialog):
         new_username = self.username_input.text()
         new_password = self.password_input.text()
 
-        update_password(
-            self.conn,
-            self.service,
-            self.username,
-            self.encrypted_password,
-            new_service,
-            new_username,
-            new_password,
-            self.cipher_suite,
-        )
-        CustomMessageBox(
-            "Success", "Password updated successfully!", QMessageBox.Information
-        ).show_message()
-        self.accept()
+        try:
+            update_password(
+                self.conn,
+                self.service,
+                self.username,
+                new_service,
+                new_username,
+                new_password,
+            )
+            CustomMessageBox(
+                "Success", "Password updated successfully!", QMessageBox.Information
+            ).show_message()
+            self.accept()
+        except Exception as e:
+            logger.error(f"Failed to update password: {e}")
+            CustomMessageBox(
+                "Error", "Failed to update password.", QMessageBox.Critical
+            ).show_message()
 
     def delete_password(self):
-        delete_password(self.conn, self.service, self.username, self.cipher_suite)
-        CustomMessageBox(
-            "Deleted", "Password deleted successfully!", QMessageBox.Information
-        ).show_message()
-        self.accept()
-
-
-class MasterPasswordDialog(QDialog):
-    def __init__(self, verify_master_password_callback, parent=None):
-        super().__init__(parent)
-        self.verify_master_password_callback = verify_master_password_callback
-        self.setWindowTitle("Enter Master Password")
-        self.setMinimumWidth(400)
-        self.setWindowIcon(QIcon("frontend/icons/encryption.png"))
-
-        layout = QVBoxLayout(self)
-
-        self.label = QLabel("Please enter the master password:")
-        layout.addWidget(self.label)
-
-        self.password_input = QLineEdit()
-        self.password_input.setEchoMode(QLineEdit.Password)
-        layout.addWidget(self.password_input)
-
-        # Use ButtonFactory to create a consistent button layout
-        button_factory = ButtonFactory(self)
-        buttons = [("OK", 100, self.check_password), ("Cancel", 100, self.reject)]
-        button_layout = button_factory.create_buttons_with_spacing(buttons)
-
-        layout.addLayout(button_layout)
-        self.setLayout(layout)
-
-    def check_password(self):
-        entered_password = self.password_input.text()
-        if self.verify_master_password_callback(entered_password):
-            self.accept()
-        else:
-            msg_box = CustomMessageBox(
-                title="Incorrect Password",
-                message="The password you entered is incorrect.",
-                icon=QMessageBox.Warning,
-            )
-            msg_box.show_message()
-            self.password_input.clear()
+        reply = QMessageBox.question(
+            self,
+            "Delete Confirmation",
+            f"Are you sure you want to delete the password for {self.service}?",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No,
+        )
+        if reply == QMessageBox.Yes:
+            try:
+                delete_password(self.conn, self.service, self.username)
+                CustomMessageBox(
+                    "Deleted", "Password deleted successfully!", QMessageBox.Information
+                ).show_message()
+                self.accept()
+            except Exception as e:
+                logger.error(f"Failed to delete password: {e}")
+                CustomMessageBox(
+                    "Error", "Failed to delete password.", QMessageBox.Critical
+                ).show_message()
 
 
 class UsernameSelectionDialog(QDialog):

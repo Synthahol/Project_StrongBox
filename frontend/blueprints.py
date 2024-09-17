@@ -1,5 +1,17 @@
+# blueprints.py
+
+from typing import Callable, List, Tuple
+
 from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import QHBoxLayout, QLabel, QMessageBox, QPushButton
+from PySide6.QtWidgets import (
+    QDialog,
+    QHBoxLayout,
+    QLabel,
+    QMessageBox,
+    QPushButton,
+    QStyle,  # Import QStyle to use standard icons
+    QVBoxLayout,
+)
 
 
 class ButtonFactory:
@@ -26,7 +38,7 @@ class ButtonFactory:
         Returns:
             QPushButton: The created button.
         """
-        button = QPushButton(button_text)
+        button = QPushButton(button_text, parent=self.parent)
         button.setFixedWidth(button_width)
         button.clicked.connect(button_callback)
         return button
@@ -58,7 +70,7 @@ class ButtonFactory:
         return layout
 
     def create_buttons_with_spacing(
-        self, buttons: list[tuple[str, int, callable]]
+        self, buttons: List[Tuple[str, int, Callable]]
     ) -> QHBoxLayout:
         """
         Create multiple buttons with spacing between them.
@@ -81,7 +93,7 @@ class ButtonFactory:
         return layout
 
 
-class CustomMessageBox(QMessageBox):
+class CustomMessageBox(QDialog):
     def __init__(
         self,
         title: str,
@@ -102,34 +114,43 @@ class CustomMessageBox(QMessageBox):
         """
         super().__init__(parent)
         self.setWindowTitle(title)
-        self.setText(message)
-        self.setIcon(icon)
-        self.setStandardButtons(QMessageBox.Ok)
         self.setWindowIcon(QIcon("frontend/icons/encryption.png"))
+        self.setMinimumSize(300, 150)  # Adjust size as needed
 
-        # Customize the "OK" button text and width
-        ok_button = self.button(QMessageBox.Ok)
-        ok_button.setText(button_text)
-        ok_button.setMinimumWidth(100)
+        layout = QVBoxLayout(self)
 
-        # Create a new layout to center the button
-        centered_layout = QHBoxLayout()
-        centered_layout.addStretch(1)
-        centered_layout.addWidget(ok_button)
-        centered_layout.addStretch(1)
+        # Icon and message
+        message_layout = QHBoxLayout()
+        icon_label = QLabel()
 
-        # Get the existing layout of the QMessageBox and find the button box row
-        layout = self.layout()
-        button_row = layout.rowCount() - 1  # Assuming buttons are in the last row
+        # Map QMessageBox.Icon to QStyle.StandardPixmap
+        standard_icon = QStyle.SP_MessageBoxInformation  # Default to Information icon
+        if icon == QMessageBox.Warning:
+            standard_icon = QStyle.SP_MessageBoxWarning
+        elif icon == QMessageBox.Critical:
+            standard_icon = QStyle.SP_MessageBoxCritical
+        elif icon == QMessageBox.Question:
+            standard_icon = QStyle.SP_MessageBoxQuestion
 
-        # Remove the original button and add the centered layout
-        for i in range(layout.columnCount()):
-            item = layout.itemAtPosition(button_row, i)
-            if item and item.widget() == ok_button:
-                layout.removeItem(item)
-                break
+        icon_pixmap = self.style().standardIcon(standard_icon).pixmap(48, 48)
+        icon_label.setPixmap(icon_pixmap)
+        message_label = QLabel(message)
+        message_layout.addWidget(icon_label)
+        message_layout.addWidget(message_label)
+        layout.addLayout(message_layout)
 
-        layout.addLayout(centered_layout, button_row, 0, 1, layout.columnCount())
+        # Spacer
+        layout.addStretch()
+
+        # Centered button
+        button_layout = QHBoxLayout()
+        button_layout.addStretch()
+        ok_button = QPushButton(button_text)
+        ok_button.setFixedWidth(100)
+        ok_button.clicked.connect(self.accept)
+        button_layout.addWidget(ok_button)
+        button_layout.addStretch()
+        layout.addLayout(button_layout)
 
     def show_message(self):
         """Display the message box."""
