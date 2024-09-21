@@ -5,7 +5,8 @@ import os
 import sys
 import uuid
 
-from PySide6.QtGui import QIcon
+from PySide6.QtCore import QEasingCurve, QPropertyAnimation, QSize, Qt
+from PySide6.QtGui import QFont, QFontDatabase, QIcon  # Imported QFont
 from PySide6.QtWidgets import (
     QApplication,
     QDialog,
@@ -59,10 +60,12 @@ class CustomInputDialog(QDialog):
     def __init__(self, title, label, echo_mode=QLineEdit.Normal, parent=None):
         super().__init__(parent)
         self.setWindowTitle(title)
+        self.setWindowIcon(QIcon(r"frontend/icons/encryption.png"))
         layout = QVBoxLayout(self)
 
         # Add the label and input field
         self.label = QLabel(label)
+        self.label.setWordWrap(True)
         layout.addWidget(self.label)
 
         self.input_field = QLineEdit()
@@ -92,6 +95,7 @@ class WelcomeDialog(QDialog):
 
         layout = QVBoxLayout()
         label = QLabel("Welcome to Fortalice! Click OK to proceed.")
+        label.setAlignment(Qt.AlignCenter)
         layout.addWidget(label)
 
         button_factory = ButtonFactory(self)
@@ -102,6 +106,15 @@ class WelcomeDialog(QDialog):
 
         self.setLayout(layout)
 
+        # Setup fade-in animation
+        self.setWindowOpacity(0)
+        self.animation = QPropertyAnimation(self, b"windowOpacity")
+        self.animation.setDuration(1000)  # 1 second
+        self.animation.setStartValue(0)
+        self.animation.setEndValue(1)
+        self.animation.setEasingCurve(QEasingCurve.InOutQuad)
+        self.animation.start()
+
 
 class VerifyMasterPasswordDialog(QDialog):
     """Dialog for verifying the master password input by the user."""
@@ -109,7 +122,8 @@ class VerifyMasterPasswordDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Verify Master Password")
-        self.setMinimumSize(400, 100)
+        self.setWindowIcon(QIcon(r"frontend/icons/encryption.png"))
+        self.setMinimumSize(400, 150)
 
         layout = QVBoxLayout(self)
         self.label = QLabel("Enter master password:")
@@ -127,7 +141,7 @@ class VerifyMasterPasswordDialog(QDialog):
         self.setLayout(layout)
 
     def get_password(self):
-        """Return the entered master password."""
+        """Return the password entered by the user."""
         return self.password_input.text()
 
 
@@ -144,24 +158,33 @@ class PasswordManager(QMainWindow):
         self.settings_tab = None
 
         self.setWindowTitle("Fortalice")
-        self.setGeometry(300, 300, 800, 600)
+        self.setGeometry(
+            300, 300, 1200, 800
+        )  # Increased default size for better visibility
         self.setWindowIcon(QIcon(r"frontend/icons/encryption.png"))
 
         self.main_widget = QWidget(self)
         self.setCentralWidget(self.main_widget)
 
         main_layout = QHBoxLayout(self.main_widget)
+        main_layout.setContentsMargins(20, 20, 20, 20)
+        main_layout.setSpacing(20)
 
+        # Left Column for Navigation Buttons
         left_column = QVBoxLayout()
+        left_column.setObjectName("leftColumn")  # Assign object name for styling
         left_column.setContentsMargins(10, 10, 10, 10)
+        left_column.setSpacing(20)
 
         self._setup_buttons(left_column)
 
-        left_column.addStretch()
+        left_column.addStretch()  # Push buttons to the top
+
+        # Right Column for Content
         self.stacked_widget = QStackedWidget()
 
-        main_layout.addLayout(left_column)
-        main_layout.addWidget(self.stacked_widget)
+        main_layout.addLayout(left_column, 1)  # Left column takes less space
+        main_layout.addWidget(self.stacked_widget, 4)  # Right column takes more space
 
         self.initialize_app()
         self.showMaximized()
@@ -199,7 +222,14 @@ class PasswordManager(QMainWindow):
     def _create_button(self, text, icon_path, callback):
         """Create a button with text, icon, and a callback function."""
         button = QPushButton(text)
-        button.setIcon(QIcon(icon_path))
+        if os.path.exists(icon_path):
+            button.setIcon(QIcon(icon_path))
+            button.setIconSize(QSize(24, 24))
+        else:
+            logger.warning(
+                f"Icon not found at {icon_path}. Button will be created without an icon."
+            )
+        button.setCursor(Qt.PointingHandCursor)  # Change cursor on hover
         button.clicked.connect(callback)
         return button
 
@@ -241,7 +271,9 @@ class PasswordManager(QMainWindow):
         self.password_generation_tab = PasswordGenerationTab()
         self.password_management_tab = PasswordManagementTab()
         self.passkey_manager_tab = PasskeyManagerTab()
-        self.settings_tab = SettingsTab(main_window=self)
+        self.settings_tab = SettingsTab(
+            main_window=self
+        )  # SettingsTab applies global styles
 
         self.stacked_widget.addWidget(self.password_generation_tab)
         self.stacked_widget.addWidget(self.password_management_tab)
@@ -274,7 +306,7 @@ class PasswordManager(QMainWindow):
                 "<p>Enter a master password. It must contain lowercase, uppercase, number, "
                 "special character and be at least 8 characters long.</p>"
                 "<p>Hint: use a unique passphrase like ILoveMyDog!2024.</p>"
-                "<p>Or make it whatever you want. You do you booboo. Just make sure it is unique to this program and very easy for you to remember because it cannot be recovered if forgotten or lost.</p>"
+                "<p>Or make it whatever you want. You do you! Just make sure it is unique to this program and very easy for you to remember because it cannot be recovered if forgotten or lost.</p>"
             )
 
             # Prompt the user to enter a master password
@@ -286,7 +318,7 @@ class PasswordManager(QMainWindow):
             )
             if dialog.exec() == QDialog.Accepted:
                 password = dialog.get_input()
-                if password:
+                if self.validate_master_password(password):
                     # Prompt the user to confirm the master password
                     confirm_dialog = CustomInputDialog(
                         "Confirm Master Password",
@@ -308,7 +340,7 @@ class PasswordManager(QMainWindow):
                 else:
                     CustomMessageBox(
                         "Warning",
-                        "Master password is required to proceed.",
+                        "Password does not meet the required criteria. Please try again.",
                         QMessageBox.Warning,
                     ).show_message()
             else:
@@ -318,6 +350,22 @@ class PasswordManager(QMainWindow):
                     QMessageBox.Warning,
                 ).show_message()
                 break
+
+    def validate_master_password(self, password):
+        """Validate the master password against security criteria."""
+        import re
+
+        if len(password) < 8:
+            return False
+        if not re.search(r"[a-z]", password):
+            return False
+        if not re.search(r"[A-Z]", password):
+            return False
+        if not re.search(r"\d", password):
+            return False
+        if not re.search(r"[^\w\s]", password):
+            return False
+        return True
 
     def _prompt_password_input(self, title, label):
         """Prompt the user for a password input."""
@@ -401,13 +449,43 @@ def main():
     """Main entry point of the Fortalice application."""
     app = QApplication(sys.argv)
 
-    # Load stylesheet from style.qss
+    # Load stylesheet from style.qss first
     stylesheet_path = os.path.join(
         os.path.dirname(__file__), "frontend", "styles", "style.qss"
     )
 
-    with open(stylesheet_path, "r", encoding="utf-8") as file:
-        app.setStyleSheet(file.read())
+    if os.path.exists(stylesheet_path):
+        with open(stylesheet_path, "r", encoding="utf-8") as file:
+            app.setStyleSheet(file.read())
+            logger.info("Stylesheet loaded successfully.")
+    else:
+        logger.error(
+            f"Stylesheet not found at {stylesheet_path}. Proceeding without styling."
+        )
+
+    # Load custom fonts after applying stylesheet to ensure QFont isn't overridden
+    font_path = os.path.join(
+        os.path.dirname(__file__), "frontend", "fonts", "Roboto-Regular.ttf"
+    )
+    if os.path.exists(font_path):
+        font_id = QFontDatabase.addApplicationFont(font_path)
+        if font_id != -1:
+            font_families = QFontDatabase.applicationFontFamilies(font_id)
+            if font_families:
+                font_family = font_families[0]
+                app_font = QFont(font_family, 20)  # Set font size to 20
+                app.setFont(app_font)
+                logger.info(
+                    f"Custom font '{font_family}' loaded successfully with size 20."
+                )
+            else:
+                logger.warning(
+                    "No font families found in the custom font. Using default font."
+                )
+        else:
+            logger.warning("Failed to load custom font. Using default font.")
+    else:
+        logger.warning(f"Font file not found at {font_path}. Using default font.")
 
     welcome_dialog = WelcomeDialog()
     welcome_dialog.exec()

@@ -1,3 +1,5 @@
+# settings.py
+
 import json
 import logging
 import os
@@ -33,8 +35,8 @@ class SettingsTab(QWidget):
 
         # Default settings
         self.default_settings = {
-            "font_size": 14,
-            "font_family": "Arial",
+            "font_size": 20,
+            "font_family": "Roboto",
             "button_color": "#00A36C",  # Primary button color
             "background_color": "#232430",  # Background color
         }
@@ -46,6 +48,9 @@ class SettingsTab(QWidget):
         self.local_settings = self.current_settings.copy()
 
         self.create_ui()
+
+        # Apply settings globally upon initialization
+        self.apply_settings_globally()
 
     def create_ui(self):
         # Font size slider
@@ -97,6 +102,7 @@ class SettingsTab(QWidget):
     def get_available_fonts(self):
         """Returns a list of available fonts for the font dropdown."""
         return [
+            "Roboto"
             "Arial",
             "Verdana",
             "Helvetica",
@@ -217,11 +223,17 @@ class SettingsTab(QWidget):
         )
 
         self.main_window.setStyleSheet(global_stylesheet)
+        logging.info(
+            "Global stylesheet applied successfully with font size "
+            f"{self.current_settings['font_size']}px and font family "
+            f"{self.current_settings['font_family']}."
+        )
 
     def reset_settings(self):
         """Reset settings to default values."""
         self.local_settings = self.default_settings.copy()
         self.apply_settings(settings_to_apply={"font_size", "font_family", "colors"})
+        self.apply_settings_globally()
         self.font_size_slider.setValue(self.default_settings["font_size"])
         self.font_dropdown.setCurrentText(self.default_settings["font_family"])
         logging.info("Settings have been reset to default.")
