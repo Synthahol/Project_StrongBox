@@ -5,6 +5,7 @@ import os
 import sys
 import uuid
 
+from PySide6.QtGui import QGuiApplication
 from PySide6.QtCore import QEasingCurve, QPropertyAnimation, QSize, Qt
 from PySide6.QtGui import QFont, QFontDatabase, QIcon
 from PySide6.QtWidgets import (
@@ -81,9 +82,23 @@ class CustomInputDialog(QDialog):
         # Ensure the button layout is horizontal
         layout.addLayout(button_layout)
 
+        # Set fixed size to prevent resizing issues
+        self.setFixedSize(self.sizeHint())
+
+        # Center the dialog
+        self.center()
+
     def get_input(self):
         """Return the input from the line edit."""
         return self.input_field.text()
+
+    def center(self):
+        """Center the dialog on the screen."""
+        screen = QGuiApplication.primaryScreen()
+        screen_geometry = screen.availableGeometry()
+        x = (screen_geometry.width() - self.width()) // 2
+        y = (screen_geometry.height() - self.height()) // 2
+        self.move(x, y)
 
 
 class WelcomeDialog(QDialog):
@@ -107,6 +122,12 @@ class WelcomeDialog(QDialog):
 
         self.setLayout(layout)
 
+        # Set fixed size to prevent resizing issues
+        self.setFixedSize(self.sizeHint())
+
+        # Center the dialog
+        self.center()
+
         # Setup fade-in animation
         self.setWindowOpacity(0)
         self.animation = QPropertyAnimation(self, b"windowOpacity")
@@ -115,6 +136,14 @@ class WelcomeDialog(QDialog):
         self.animation.setEndValue(1)
         self.animation.setEasingCurve(QEasingCurve.InOutQuad)
         self.animation.start()
+
+    def center(self):
+        """Center the dialog on the screen."""
+        screen = QGuiApplication.primaryScreen()
+        screen_geometry = screen.availableGeometry()
+        x = (screen_geometry.width() - self.width()) // 2
+        y = (screen_geometry.height() - self.height()) // 2
+        self.move(x, y)
 
 
 class VerifyMasterPasswordDialog(QDialog):
@@ -141,9 +170,23 @@ class VerifyMasterPasswordDialog(QDialog):
         layout.addLayout(button_layout)
         self.setLayout(layout)
 
+        # Set fixed size to prevent resizing issues
+        self.setFixedSize(self.sizeHint())
+
+        # Center the dialog
+        self.center()
+
     def get_password(self):
         """Return the password entered by the user."""
         return self.password_input.text()
+
+    def center(self):
+        """Center the dialog on the screen."""
+        screen = QGuiApplication.primaryScreen()
+        screen_geometry = screen.availableGeometry()
+        x = (screen_geometry.width() - self.width()) // 2
+        y = (screen_geometry.height() - self.height()) // 2
+        self.move(x, y)
 
 
 class PasswordManager(QMainWindow):

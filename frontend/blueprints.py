@@ -3,6 +3,7 @@
 import os
 from typing import Callable, List, Optional, Tuple
 
+from PySide6.QtGui import QGuiApplication
 from PySide6.QtCore import QSize
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
@@ -140,6 +141,20 @@ class CustomMessageBox(QDialog):
         button_layout.addStretch()
         layout.addLayout(button_layout)
 
+        # Set fixed size to prevent resizing issues
+        self.setFixedSize(self.sizeHint())
+
+        # Center the dialog
+        self.center()
+
     def show_message(self):
         """Display the message box."""
         self.exec()
+
+    def center(self):
+        """Center the message box on the screen."""
+        screen = QGuiApplication.primaryScreen()
+        screen_geometry = screen.availableGeometry()
+        x = (screen_geometry.width() - self.width()) // 2
+        y = (screen_geometry.height() - self.height()) // 2
+        self.move(x, y)

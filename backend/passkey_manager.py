@@ -11,7 +11,7 @@ from cryptography.hazmat.primitives.kdf.scrypt import Scrypt
 from backend.config import DATABASE_DIR
 from session_manager import SessionManager
 
-DATABASE_NAME = "DefaultFortalice"
+DATABASE_NAME = "UserDatabase"
 DATABASE_PATH = os.path.join(DATABASE_DIR, f"{DATABASE_NAME}.db")
 
 # Ensure the directory for the database exists

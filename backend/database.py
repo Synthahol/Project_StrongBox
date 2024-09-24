@@ -4,17 +4,12 @@ import logging
 import os
 import sqlite3
 
+import bcrypt
 import keyring
 from cryptography.fernet import Fernet
 from dotenv import load_dotenv
 
 from backend.config import DATABASE_DIR
-from backend.master_password import (
-    generate_salt,
-    hash_password,
-    validate_master_password,
-    verify_password,
-)
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -26,7 +21,7 @@ load_dotenv(dotenv_path=env_path)
 
 # Constants
 SERVICE_ID = "my_fortalice_app"
-DATABASE_NAME = "DefaultFortalice"
+DATABASE_NAME = "UserDatabase"
 DATABASE_PATH = os.path.join(DATABASE_DIR, f"{DATABASE_NAME}.db")
 cipher_suite = None
 
@@ -98,7 +93,6 @@ def initialize_db(conn: sqlite3.Connection, key_id: str):
             conn.execute(
                 """CREATE TABLE IF NOT EXISTS master_password (
                     id INTEGER PRIMARY KEY,
-                    salt BLOB NOT NULL,
                     password BLOB NOT NULL
                 );"""
             )
@@ -134,18 +128,44 @@ def is_master_password_set(conn: sqlite3.Connection) -> bool:
         return False
 
 
+def hash_password(password: str) -> bytes:
+    """Hash the password using bcrypt."""
+    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
+
+
+def verify_password(hashed_password: bytes, password: str) -> bool:
+    """Verify the password against the hashed password."""
+    return bcrypt.checkpw(password.encode("utf-8"), hashed_password)
+
+
+def validate_master_password(master_password: str) -> bool:
+    """Validate the master password against security criteria."""
+    import re
+
+    if len(master_password) < 8:
+        return False
+    if not re.search(r"[a-z]", master_password):
+        return False
+    if not re.search(r"[A-Z]", master_password):
+        return False
+    if not re.search(r"\d", master_password):
+        return False
+    if not re.search(r"[^\w\s]", master_password):
+        return False
+    return True
+
+
 def set_master_password(conn: sqlite3.Connection, master_password: str):
     """Set the master password in the database."""
     if not validate_master_password(master_password):
         logger.error("Master password validation failed.")
         raise ValueError("Master password does not meet security requirements.")
     try:
-        salt = generate_salt()
-        hashed_password = hash_password(master_password, salt)
+        hashed_password = hash_password(master_password)
         with conn:
             conn.execute(
-                "INSERT INTO master_password (id, salt, password) VALUES (1, ?, ?)",
-                (salt, hashed_password),
+                "INSERT INTO master_password (id, password) VALUES (1, ?)",
+                (hashed_password,),
             )
         logger.info("Master password set in the database.")
     except sqlite3.IntegrityError:
@@ -159,11 +179,11 @@ def set_master_password(conn: sqlite3.Connection, master_password: str):
 def verify_master_password(conn: sqlite3.Connection, master_password: str) -> bool:
     """Verify the provided master password against the stored hash."""
     try:
-        cursor = conn.execute("SELECT salt, password FROM master_password WHERE id = 1")
+        cursor = conn.execute("SELECT password FROM master_password WHERE id = 1")
         row = cursor.fetchone()
         if row:
-            salt, stored_password = row
-            is_verified = verify_password(stored_password, master_password, salt)
+            stored_password = row[0]
+            is_verified = verify_password(stored_password, master_password)
             logger.info("Verified master password.")
             return is_verified
         return False
@@ -176,14 +196,16 @@ def store_password(
     conn: sqlite3.Connection, service: str, username: str, password: str
 ):
     """Store a new password entry in the database."""
+    encrypted_service = encrypt_data(service)
+    encrypted_username = encrypt_data(username)
     encrypted_password = encrypt_data(password)
     try:
         with conn:
             conn.execute(
                 "INSERT INTO passwords (service, username, password) VALUES (?, ?, ?)",
-                (service, username, encrypted_password),
+                (encrypted_service, encrypted_username, encrypted_password),
             )
-        logger.info(f"Stored password for service: {service}")
+        logger.info("Stored password for a service.")
     except sqlite3.Error as e:
         logger.error(f"Error storing password: {e}")
         raise Exception("Failed to store password.")
@@ -191,15 +213,17 @@ def store_password(
 
 def retrieve_password(conn: sqlite3.Connection, service: str, username: str):
     """Retrieve a specific password entry from the database."""
+    encrypted_service = encrypt_data(service)
+    encrypted_username = encrypt_data(username)
     try:
         cursor = conn.execute(
             "SELECT password FROM passwords WHERE service = ? AND username = ?",
-            (service, username),
+            (encrypted_service, encrypted_username),
         )
         row = cursor.fetchone()
         if row:
             decrypted_password = decrypt_data(row[0])
-            logger.info(f"Retrieved password for service: {service}")
+            logger.info("Retrieved password for a service.")
             return decrypted_password
         else:
             logger.info("No password found for the specified service and username.")
@@ -211,13 +235,15 @@ def retrieve_password(conn: sqlite3.Connection, service: str, username: str):
 
 def check_existing_entry(conn: sqlite3.Connection, service: str, username: str) -> bool:
     """Check if a password entry already exists for a given service and username."""
+    encrypted_service = encrypt_data(service)
+    encrypted_username = encrypt_data(username)
     try:
         cursor = conn.execute(
             "SELECT 1 FROM passwords WHERE service=? AND username=?",
-            (service, username),
+            (encrypted_service, encrypted_username),
         )
         exists = cursor.fetchone() is not None
-        logger.info(f"Checked existing entry for service: {service}")
+        logger.info("Checked existing entry for a service.")
         return exists
     except sqlite3.Error as e:
         logger.error(f"Error checking existing entry: {e}")
@@ -229,12 +255,18 @@ def get_all_passwords(conn: sqlite3.Connection) -> list:
     try:
         cursor = conn.execute("SELECT service, username, password FROM passwords")
         entries = []
-        for service, username, encrypted_password in cursor.fetchall():
+        for (
+            encrypted_service,
+            encrypted_username,
+            encrypted_password,
+        ) in cursor.fetchall():
             try:
+                service = decrypt_data(encrypted_service)
+                username = decrypt_data(encrypted_username)
                 password = decrypt_data(encrypted_password)
                 entries.append((service, username, password))
             except Exception as e:
-                logger.error(f"Error decrypting password for {service}: {e}")
+                logger.error(f"Error decrypting entry: {e}")
         logger.info("Retrieved all passwords.")
         return entries
     except sqlite3.Error as e:
@@ -251,6 +283,10 @@ def update_password(
     new_password,
 ):
     """Update an existing password entry in the database."""
+    encrypted_old_service = encrypt_data(old_service)
+    encrypted_old_username = encrypt_data(old_username)
+    encrypted_new_service = encrypt_data(new_service)
+    encrypted_new_username = encrypt_data(new_username)
     encrypted_password = encrypt_data(new_password)
     try:
         with conn:
@@ -261,16 +297,14 @@ def update_password(
                 WHERE service = ? AND username = ?
                 """,
                 (
-                    new_service,
-                    new_username,
+                    encrypted_new_service,
+                    encrypted_new_username,
                     encrypted_password,
-                    old_service,
-                    old_username,
+                    encrypted_old_service,
+                    encrypted_old_username,
                 ),
             )
-        logger.info(
-            f"Updated password for service: {old_service} to {new_service}, username: {old_username} to {new_username}"
-        )
+        logger.info("Updated password for a service.")
     except sqlite3.Error as e:
         logger.error(f"Failed to update password: {e}")
         raise Exception("Failed to update password.")
@@ -278,13 +312,15 @@ def update_password(
 
 def delete_password(conn, service, username):
     """Delete a specific password entry from the database."""
+    encrypted_service = encrypt_data(service)
+    encrypted_username = encrypt_data(username)
     try:
         with conn:
             conn.execute(
                 "DELETE FROM passwords WHERE service = ? AND username = ?",
-                (service, username),
+                (encrypted_service, encrypted_username),
             )
-        logger.info(f"Deleted password for service: {service}, username: {username}")
+        logger.info("Deleted password for a service.")
     except sqlite3.Error as e:
         logger.error(f"Failed to delete password: {e}")
         raise Exception("Failed to delete password.")
@@ -297,7 +333,7 @@ def execute_query(conn: sqlite3.Connection, query: str, params: tuple = None) ->
         cursor.execute(query, params or ())
         conn.commit()
         results = cursor.fetchall()
-        logger.debug(f"Executed query: {query} | Params: {params} | Results: {results}")
+        logger.debug(f"Executed query: {query} | Params: {params}")
         return results
     except sqlite3.Error as e:
         logger.error(f"Error executing query: {e} | Query: {query}")
@@ -311,7 +347,7 @@ def fetch_one(conn: sqlite3.Connection, query: str, params: tuple = None) -> tup
         cursor.execute(query, params or ())
         conn.commit()
         result = cursor.fetchone()
-        logger.debug(f"Executed query: {query} | Params: {params} | Result: {result}")
+        logger.debug(f"Executed query: {query} | Params: {params}")
         return result if result else ()
     except sqlite3.Error as e:
         logger.error(f"Error executing query: {e} | Query: {query}")
@@ -325,7 +361,7 @@ def fetch_all(conn: sqlite3.Connection, query: str, params: tuple = None) -> lis
         cursor.execute(query, params or ())
         conn.commit()
         results = cursor.fetchall()
-        logger.debug(f"Executed query: {query} | Params: {params} | Results: {results}")
+        logger.debug(f"Executed query: {query} | Params: {params}")
         return results
     except sqlite3.Error as e:
         logger.error(f"Error executing query: {e} | Query: {query}")
