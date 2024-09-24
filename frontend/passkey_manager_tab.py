@@ -66,12 +66,11 @@ class PasskeyManagerTab(QWidget):
                 self.passkey_table.setItem(i, 2, QTableWidgetItem(description))
 
                 # Actions (Reveal Button)
-                reveal_button = QPushButton("Reveal")
+                reveal_button = QPushButton("Show")
                 reveal_button.clicked.connect(
                     lambda checked, row=i: self.toggle_passkey_visibility(row)
                 )
                 self.passkey_table.setCellWidget(i, 3, reveal_button)
-
 
         except ValueError as ve:
             QMessageBox.warning(self, "Warning", str(ve))

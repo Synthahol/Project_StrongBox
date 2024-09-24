@@ -1,95 +1,97 @@
 # blueprints.py
 
-from typing import Callable, List, Tuple
+import os
+from typing import Callable, List, Optional, Tuple
 
+from PySide6.QtCore import QSize
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
     QDialog,
+    QFrame,
     QHBoxLayout,
     QLabel,
     QMessageBox,
     QPushButton,
-    QStyle,  # Import QStyle to use standard icons
+    QStyle,
     QVBoxLayout,
 )
 
 
 class ButtonFactory:
-    def __init__(self, parent):
-        """
-        Initialize ButtonFactory with a parent widget.
-
-        Args:
-            parent: The parent widget where buttons will be placed.
-        """
+    def __init__(self, parent=None):
         self.parent = parent
 
     def create_button(
-        self, button_text: str, button_width: int, button_callback
+        self,
+        button_text: str,
+        button_width: int,
+        button_callback: Callable,
+        icon_path: Optional[str] = None,
+        tooltip: Optional[str] = None,
+        object_name: Optional[str] = None,
     ) -> QPushButton:
-        """
-        Create a QPushButton with specified text, width, and callback.
-
-        Args:
-            button_text (str): The text to display on the button.
-            button_width (int): The width of the button.
-            button_callback (callable): The function to call when the button is clicked.
-
-        Returns:
-            QPushButton: The created button.
-        """
+        """Create a QPushButton with specified properties."""
         button = QPushButton(button_text, parent=self.parent)
         button.setFixedWidth(button_width)
+        if icon_path and os.path.exists(icon_path):
+            button.setIcon(QIcon(icon_path))
+            button.setIconSize(QSize(24, 24))
+        if tooltip:
+            button.setToolTip(tooltip)
+        if object_name:
+            button.setObjectName(object_name)
         button.clicked.connect(button_callback)
+        button.setStyleSheet("QPushButton { text-align: center; padding: 5px; }")
         return button
 
+    def create_buttons_with_spacing(self, action_buttons: List[Tuple]) -> QHBoxLayout:
+        """Create a horizontal layout with buttons spaced evenly."""
+        layout = QHBoxLayout()
+        layout.setSpacing(20)
+        for btn in action_buttons:
+            button_text = btn[0]
+            button_width = btn[1]
+            button_callback = btn[2]
+            icon_path = btn[3] if len(btn) > 3 else None
+            tooltip = btn[4] if len(btn) > 4 else None
+            object_name = btn[5] if len(btn) > 5 else None
+            button = self.create_button(
+                button_text,
+                button_width,
+                button_callback,
+                icon_path,
+                tooltip,
+                object_name,
+            )
+            layout.addWidget(button)
+        layout.addStretch()
+        return layout
+
+    def create_horizontal_line(self) -> QFrame:
+        """Create a horizontal line using QFrame."""
+        line = QFrame()
+        line.setFrameShape(QFrame.HLine)
+        line.setFrameShadow(QFrame.Sunken)
+        return line
+
     def create_button_with_layout(
-        self, label_text: str, button_text: str, button_width: int, button_callback
+        self,
+        label_text: str,
+        button_text: str,
+        button_width: int,
+        button_callback: Callable,
+        icon_path: Optional[str] = None,
     ) -> QHBoxLayout:
-        """
-        Create a button within a QHBoxLayout with optional label.
-
-        Args:
-            label_text (str): The text for the label next to the button.
-            button_text (str): The text to display on the button.
-            button_width (int): The width of the button.
-            button_callback (callable): The function to call when the button is clicked.
-
-        Returns:
-            QHBoxLayout: A horizontal layout containing the label and button.
-        """
+        """Create a button within a QHBoxLayout with optional label and icon."""
         layout = QHBoxLayout()
         if label_text:
             layout.addWidget(QLabel(label_text))
-
-        button = self.create_button(button_text, button_width, button_callback)
+        button = self.create_button(
+            button_text, button_width, button_callback, icon_path
+        )
         layout.addStretch()
         layout.addWidget(button)
         layout.addStretch()
-
-        return layout
-
-    def create_buttons_with_spacing(
-        self, buttons: List[Tuple[str, int, Callable]]
-    ) -> QHBoxLayout:
-        """
-        Create multiple buttons with spacing between them.
-
-        Args:
-            buttons (list of tuples): Each tuple contains button text, width, and callback function.
-
-        Returns:
-            QHBoxLayout: A horizontal layout containing the buttons.
-        """
-        layout = QHBoxLayout()
-        layout.addStretch(1)
-
-        for button_text, button_width, button_callback in buttons:
-            button = self.create_button(button_text, button_width, button_callback)
-            layout.addWidget(button)
-            layout.addSpacing(20)
-
-        layout.addStretch(1)
         return layout
 
 
@@ -102,47 +104,33 @@ class CustomMessageBox(QDialog):
         button_text: str = "OK",
         parent=None,
     ):
-        """
-        Initialize a custom message box with a centered button.
-
-        Args:
-            title (str): The title of the message box.
-            message (str): The message to display.
-            icon (QMessageBox.Icon): The icon to display (default is Information).
-            button_text (str): The text for the OK button (default is "OK").
-            parent: The parent widget (optional).
-        """
+        """Initialize a custom message box with a centered button."""
         super().__init__(parent)
         self.setWindowTitle(title)
         self.setWindowIcon(QIcon("frontend/icons/encryption.png"))
-        self.setMinimumSize(300, 150)  # Adjust size as needed
-
+        self.setMinimumSize(300, 150)
         layout = QVBoxLayout(self)
 
         # Icon and message
         message_layout = QHBoxLayout()
         icon_label = QLabel()
-
-        # Map QMessageBox.Icon to QStyle.StandardPixmap
-        standard_icon = QStyle.SP_MessageBoxInformation  # Default to Information icon
-        if icon == QMessageBox.Warning:
-            standard_icon = QStyle.SP_MessageBoxWarning
-        elif icon == QMessageBox.Critical:
-            standard_icon = QStyle.SP_MessageBoxCritical
-        elif icon == QMessageBox.Question:
-            standard_icon = QStyle.SP_MessageBoxQuestion
-
+        icon_map = {
+            QMessageBox.Warning: QStyle.SP_MessageBoxWarning,
+            QMessageBox.Critical: QStyle.SP_MessageBoxCritical,
+            QMessageBox.Question: QStyle.SP_MessageBoxQuestion,
+            QMessageBox.Information: QStyle.SP_MessageBoxInformation,
+        }
+        standard_icon = icon_map.get(icon, QStyle.SP_MessageBoxInformation)
         icon_pixmap = self.style().standardIcon(standard_icon).pixmap(48, 48)
         icon_label.setPixmap(icon_pixmap)
         message_label = QLabel(message)
+        message_label.setWordWrap(True)
         message_layout.addWidget(icon_label)
         message_layout.addWidget(message_label)
         layout.addLayout(message_layout)
 
-        # Spacer
-        layout.addStretch()
-
         # Centered button
+        layout.addStretch()
         button_layout = QHBoxLayout()
         button_layout.addStretch()
         ok_button = QPushButton(button_text)

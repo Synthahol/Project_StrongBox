@@ -6,7 +6,7 @@ import sys
 import uuid
 
 from PySide6.QtCore import QEasingCurve, QPropertyAnimation, QSize, Qt
-from PySide6.QtGui import QFont, QFontDatabase, QIcon  # Imported QFont
+from PySide6.QtGui import QFont, QFontDatabase, QIcon
 from PySide6.QtWidgets import (
     QApplication,
     QDialog,
@@ -26,6 +26,7 @@ from frontend.blueprints import ButtonFactory, CustomMessageBox
 from frontend.passkey_manager_tab import PasskeyManagerTab
 from frontend.password_generation import PasswordGenerationTab
 from frontend.password_management import PasswordManagementTab
+from frontend.secure_notes_tab import SecureNotesTab
 from session_manager import SessionManager
 
 # Add the root directory to sys.path
@@ -155,6 +156,7 @@ class PasswordManager(QMainWindow):
         self.password_generation_tab = None
         self.password_management_tab = None
         self.passkey_manager_tab = None
+        self.secure_notes_tab = None
         self.settings_tab = None
 
         self.setWindowTitle("Fortalice")
@@ -196,6 +198,7 @@ class PasswordManager(QMainWindow):
             r"frontend/icons/magic-wand.png",
             self.show_password_generator,
         )
+        self.generator_button.setStyleSheet("text-align: left; padding-left: 0px;")
         layout.addWidget(self.generator_button)
 
         self.manage_button = self._create_button(
@@ -203,15 +206,26 @@ class PasswordManager(QMainWindow):
             r"frontend/icons/safe-box.png",
             self.show_manage_passwords,
         )
+        self.manage_button.setStyleSheet("text-align: left; padding-left: 0px;")
         layout.addWidget(self.manage_button)
 
         # Add the new passkey manager button
         self.passkey_button = self._create_button(
             "Manage Passkeys",
-            r"frontend/icons/passkey.png",  # Make sure this icon exists
+            r"frontend/icons/passkey.png",
             self.show_passkey_manager,
         )
+        self.passkey_button.setStyleSheet("text-align: left; padding-left: 0px;")
         layout.addWidget(self.passkey_button)
+
+        # Add the Secure Notes button
+        self.secure_notes_button = self._create_button(
+            "Secure Notes",
+            r"frontend/icons/notepad.png",
+            self.show_secure_notes,
+        )
+        self.secure_notes_button.setStyleSheet("text-align: left; padding-left: 0px;")
+        layout.addWidget(self.secure_notes_button)
 
         self.settings_button = self._create_button(
             "Visual Settings", r"frontend/icons/settings.png", self.show_settings
@@ -240,14 +254,17 @@ class PasswordManager(QMainWindow):
             initialize_db,
             is_master_password_set,
         )
+        from backend.secure_notes import create_secure_notes_table
 
-        # Remove references to db_path since create_connection no longer requires it
         self.conn = create_connection()
 
         if self.conn:
             key_id = str(uuid.uuid4())
             initialize_db(self.conn, key_id)
             logger.info("Database connection successful.")
+
+            # Ensure the secure_notes table is created
+            create_secure_notes_table(self.conn)
 
             if not is_master_password_set(self.conn):
                 self.set_master_password()
@@ -271,13 +288,13 @@ class PasswordManager(QMainWindow):
         self.password_generation_tab = PasswordGenerationTab()
         self.password_management_tab = PasswordManagementTab()
         self.passkey_manager_tab = PasskeyManagerTab()
-        self.settings_tab = SettingsTab(
-            main_window=self
-        )  # SettingsTab applies global styles
+        self.secure_notes_tab = SecureNotesTab(self.conn)
+        self.settings_tab = SettingsTab(main_window=self)
 
         self.stacked_widget.addWidget(self.password_generation_tab)
         self.stacked_widget.addWidget(self.password_management_tab)
         self.stacked_widget.addWidget(self.passkey_manager_tab)
+        self.stacked_widget.addWidget(self.secure_notes_tab)
         self.stacked_widget.addWidget(self.settings_tab)
 
         self.show_password_generator()
@@ -294,6 +311,10 @@ class PasswordManager(QMainWindow):
         """Show the passkey manager tab."""
         self.stacked_widget.setCurrentWidget(self.passkey_manager_tab)
 
+    def show_secure_notes(self):
+        """Show the secure notes tab."""
+        self.stacked_widget.setCurrentWidget(self.secure_notes_tab)
+
     def show_settings(self):
         """Show the settings tab."""
         self.stacked_widget.setCurrentWidget(self.settings_tab)
@@ -301,7 +322,6 @@ class PasswordManager(QMainWindow):
     def set_master_password(self):
         """Prompt the user to set the master password using a custom input dialog."""
         while True:
-            # Format the dialog text using HTML to separate each sentence into its own paragraph
             dialog_text = (
                 "<p>Enter a master password. It must contain lowercase, uppercase, number, "
                 "special character and be at least 8 characters long.</p>"
@@ -309,7 +329,6 @@ class PasswordManager(QMainWindow):
                 "<p>Or make it whatever you want. You do you! Just make sure it is unique to this program and very easy for you to remember because it cannot be recovered if forgotten or lost.</p>"
             )
 
-            # Prompt the user to enter a master password
             dialog = CustomInputDialog(
                 "Set Master Password",
                 dialog_text,
@@ -319,7 +338,6 @@ class PasswordManager(QMainWindow):
             if dialog.exec() == QDialog.Accepted:
                 password = dialog.get_input()
                 if self.validate_master_password(password):
-                    # Prompt the user to confirm the master password
                     confirm_dialog = CustomInputDialog(
                         "Confirm Master Password",
                         "Confirm master password:",
@@ -337,6 +355,12 @@ class PasswordManager(QMainWindow):
                                 "Passwords do not match. Please try again.",
                                 QMessageBox.Warning,
                             ).show_message()
+                    else:
+                        CustomMessageBox(
+                            "Warning",
+                            "Confirmation cancelled. Please try again.",
+                            QMessageBox.Warning,
+                        ).show_message()
                 else:
                     CustomMessageBox(
                         "Warning",
@@ -367,26 +391,18 @@ class PasswordManager(QMainWindow):
             return False
         return True
 
-    def _prompt_password_input(self, title, label):
-        """Prompt the user for a password input."""
-        dialog = CustomInputDialog(title, label, QLineEdit.Password, self)
-        if dialog.exec() == QDialog.Accepted:
-            return dialog.get_input()
-        return ""
-
     def verify_master_password(self):
         """Verify the entered master password using a custom input dialog."""
         from backend.database import verify_master_password
 
         while True:
-            # Prompt the user to enter the master password for verification
             dialog = VerifyMasterPasswordDialog(self)
             if dialog.exec() == QDialog.Accepted:
                 password = dialog.get_password()
                 if password and verify_master_password(self.conn, password):
                     logger.info("Master password verified successfully.")
                     # Store the master password in the session manager
-                    session = SessionManager.get_instance()
+                    session = SessionManager()
                     session.set_master_password(password)
                     return True
                 else:
@@ -410,7 +426,7 @@ class PasswordManager(QMainWindow):
         try:
             set_master_password(self.conn, password)
             # Store the master password in the session manager
-            session = SessionManager.get_instance()
+            session = SessionManager()
             session.set_master_password(password)
             CustomMessageBox(
                 "Info", "Master password set successfully!", QMessageBox.Information
@@ -423,10 +439,10 @@ class PasswordManager(QMainWindow):
 
     def closeEvent(self, event):
         """Handle the application close event to clear sensitive data."""
-        session = SessionManager.get_instance()
+        session = SessionManager()
         session.clear_master_password()
         logger.info("Application closed. Master password cleared from memory.")
-        event.accept()  # Proceed with the close event
+        event.accept()
 
     def show_info(self, message):
         """Show an informational message."""
