@@ -3,9 +3,8 @@
 import os
 from typing import Callable, List, Optional, Tuple
 
-from PySide6.QtGui import QGuiApplication
 from PySide6.QtCore import QSize
-from PySide6.QtGui import QIcon
+from PySide6.QtGui import QGuiApplication, QIcon
 from PySide6.QtWidgets import (
     QDialog,
     QFrame,
@@ -158,3 +157,35 @@ class CustomMessageBox(QDialog):
         x = (screen_geometry.width() - self.width()) // 2
         y = (screen_geometry.height() - self.height()) // 2
         self.move(x, y)
+
+
+class PasswordHealthReportDialog(QDialog):
+    def __init__(self, report_text, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Password Health Report")
+        self.setMinimumSize(500, 400)  # You can adjust the size if needed
+
+        # Create a layout for the dialog
+        layout = QVBoxLayout()
+
+        # Create a QScrollArea
+        scroll_area = QScrollArea(self)
+        scroll_area.setWidgetResizable(True)
+
+        # Create a container for the scroll content
+        scroll_content = QFrame()
+        scroll_layout = QVBoxLayout(scroll_content)
+
+        # Create QLabel for the report and add it to the scrollable content
+        report_label = QLabel(report_text)
+        report_label.setWordWrap(True)  # Ensure text wraps inside the label
+        scroll_layout.addWidget(report_label)
+
+        # Set the scroll content and add it to the scroll area
+        scroll_area.setWidget(scroll_content)
+
+        # Add the scroll area to the dialog layout
+        layout.addWidget(scroll_area)
+
+        # Set the main layout
+        self.setLayout(layout)

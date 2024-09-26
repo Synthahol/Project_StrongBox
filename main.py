@@ -5,9 +5,8 @@ import os
 import sys
 import uuid
 
-from PySide6.QtGui import QGuiApplication
 from PySide6.QtCore import QEasingCurve, QPropertyAnimation, QSize, Qt
-from PySide6.QtGui import QFont, QFontDatabase, QIcon
+from PySide6.QtGui import QFont, QFontDatabase, QGuiApplication, QIcon
 from PySide6.QtWidgets import (
     QApplication,
     QDialog,
@@ -22,6 +21,12 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from backend.database import decrypt_data
+from backend.password_health import (
+    check_password_pwned,
+    check_password_strength,
+    get_password_feedback,
+)
 from backend.settings import SettingsTab
 from frontend.blueprints import ButtonFactory, CustomMessageBox
 from frontend.passkey_manager_tab import PasskeyManagerTab
@@ -236,6 +241,7 @@ class PasswordManager(QMainWindow):
 
     def _setup_buttons(self, layout):
         """Set up the buttons for navigating different tabs."""
+        # Password generator button
         self.generator_button = self._create_button(
             "Password Generator",
             r"frontend/icons/magic-wand.png",
@@ -244,6 +250,7 @@ class PasswordManager(QMainWindow):
         self.generator_button.setStyleSheet("text-align: left; padding-left: 0px;")
         layout.addWidget(self.generator_button)
 
+        # Password manager button
         self.manage_button = self._create_button(
             "Manage Passwords",
             r"frontend/icons/safe-box.png",
@@ -252,7 +259,7 @@ class PasswordManager(QMainWindow):
         self.manage_button.setStyleSheet("text-align: left; padding-left: 0px;")
         layout.addWidget(self.manage_button)
 
-        # Add the new passkey manager button
+        # Passkey manager button
         self.passkey_button = self._create_button(
             "Manage Passkeys",
             r"frontend/icons/passkey.png",
@@ -261,7 +268,7 @@ class PasswordManager(QMainWindow):
         self.passkey_button.setStyleSheet("text-align: left; padding-left: 0px;")
         layout.addWidget(self.passkey_button)
 
-        # Add the Secure Notes button
+        # Secure Notes button
         self.secure_notes_button = self._create_button(
             "Secure Notes",
             r"frontend/icons/notepad.png",
@@ -270,6 +277,16 @@ class PasswordManager(QMainWindow):
         self.secure_notes_button.setStyleSheet("text-align: left; padding-left: 0px;")
         layout.addWidget(self.secure_notes_button)
 
+        # Password Health button
+        self.health_button = self._create_button(
+            "Password Health",
+            r"frontend/icons/health.png",  # Ensure the icon exists
+            self.show_password_health,
+        )
+        self.health_button.setStyleSheet("text-align: left; padding-left: 0px;")
+        layout.addWidget(self.health_button)
+
+        # Visual Settings Button
         self.settings_button = self._create_button(
             "Visual Settings", r"frontend/icons/settings.png", self.show_settings
         )
@@ -334,13 +351,124 @@ class PasswordManager(QMainWindow):
         self.secure_notes_tab = SecureNotesTab(self.conn)
         self.settings_tab = SettingsTab(main_window=self)
 
+        # Password Health Tab
+        self.password_health_tab = QWidget()
+        self._setup_password_health_tab()
+
+        # Add the tabs to the stacked widget
         self.stacked_widget.addWidget(self.password_generation_tab)
         self.stacked_widget.addWidget(self.password_management_tab)
         self.stacked_widget.addWidget(self.passkey_manager_tab)
         self.stacked_widget.addWidget(self.secure_notes_tab)
         self.stacked_widget.addWidget(self.settings_tab)
 
+        self.stacked_widget.addWidget(self.password_health_tab)
+
         self.show_password_generator()
+
+    def _setup_password_health_tab(self):
+        # Set up the password health tab layout
+        layout = QVBoxLayout()
+
+        # Existing part: Create label and input field for manual password check
+        self.password_input_label = QLabel("Enter Password to Check Health:")
+        self.password_input = QLineEdit()
+
+        # Existing part: Create button to check password health manually
+        self.check_health_button = QPushButton("Check Password Health")
+        self.check_health_button.clicked.connect(self._check_password_health)
+
+        # Add existing widgets to layout
+        layout.addWidget(self.password_input_label)
+        layout.addWidget(self.password_input)
+        layout.addWidget(self.check_health_button)
+
+        # New part: Create button to check all passwords in the database
+        self.check_all_passwords_button = QPushButton("Check All Passwords in Database")
+        self.check_all_passwords_button.clicked.connect(
+            self._check_all_passwords_in_database
+        )
+
+        # Add the new button to the layout
+        layout.addWidget(self.check_all_passwords_button)
+
+        # Set layout to password health tab
+        self.password_health_tab.setLayout(layout)
+
+    def _check_password_health(self):
+        password = self.password_input.text()
+        if not password:
+            QMessageBox.warning(self, "Error", "Please enter a password")
+            return
+
+        try:
+            compromised_count = check_password_pwned(password)
+            if compromised_count > 0:
+                QMessageBox.information(
+                    self,
+                    "Password Health",
+                    f"Password has been compromised {compromised_count} times.",
+                )
+            else:
+                QMessageBox.information(
+                    self, "Password Health", "Password is safe and not compromised."
+                )
+        except Exception as e:
+            QMessageBox.critical(self, "Error", str(e))
+
+    def _check_all_passwords_in_database(self):
+        # Fetch passwords from the database
+        passwords = self._fetch_passwords_from_database()
+
+        compromised_passwords = []
+        weak_passwords = []
+
+        for password in passwords:
+            # Check if the password has been compromised
+            compromised_count = check_password_pwned(password)
+            if compromised_count > 0:
+                compromised_passwords.append((password, compromised_count))
+
+            # Check if the password meets the strength requirements
+            is_strong, rules = check_password_strength(password)
+            if not is_strong:
+                feedback = get_password_feedback(is_strong, rules)
+                weak_passwords.append((password, feedback))
+
+        # Show results in a message box
+        message = "Password Health Report:\n\n"
+
+        if compromised_passwords:
+            message += "Compromised Passwords:\n"
+            for password, count in compromised_passwords:
+                message += f"Password - {password}: has been compromised {count} times. You should change it.\n"
+        else:
+            message += "No compromised passwords found.\n"
+
+        if weak_passwords:
+            message += "\nWeak Passwords:\n"
+            for password, feedback in weak_passwords:
+                message += f"- {password}: {' '.join(feedback)}\n"
+        else:
+            message += "\nAll passwords meet strength requirements.\n"
+
+        QMessageBox.information(self, "Password Health Report", message)
+
+    # Helper method to fetch passwords from the database
+    def _fetch_passwords_from_database(self):
+        """Fetch and decrypt passwords from the database."""
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT password FROM passwords")  # Updated table name
+
+        encrypted_passwords = [row[0] for row in cursor.fetchall()]
+
+        # Decrypt each password
+        decrypted_passwords = [
+            decrypt_data(encrypted_password)
+            for encrypted_password in encrypted_passwords
+        ]
+
+        return decrypted_passwords
 
     def show_password_generator(self):
         """Show the password generation tab."""
@@ -357,6 +485,10 @@ class PasswordManager(QMainWindow):
     def show_secure_notes(self):
         """Show the secure notes tab."""
         self.stacked_widget.setCurrentWidget(self.secure_notes_tab)
+
+    def show_password_health(self):
+        """Show the password health tab."""
+        self.stacked_widget.setCurrentWidget(self.password_health_tab)
 
     def show_settings(self):
         """Show the settings tab."""
