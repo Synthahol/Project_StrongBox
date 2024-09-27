@@ -4,7 +4,7 @@ import os
 from functools import partial
 from typing import Callable, List, Optional, Tuple
 
-from PySide6.QtCore import QSize
+from PySide6.QtCore import QSize, Qt
 from PySide6.QtGui import QGuiApplication, QIcon
 from PySide6.QtWidgets import (
     QDialog,
@@ -273,24 +273,30 @@ def display_password_health_table(password_health_data, parent=None):
         compromised_icon_widget = QLabel()
         if is_compromised:
             compromised_icon_widget.setPixmap(
-                danger_icon.pixmap(24, 24)
-            )  # Show danger icon
+                danger_icon.pixmap(32, 32)
+            )  # Resize icon to fill cell (e.g., 32x32)
         else:
             compromised_icon_widget.setPixmap(
-                safe_icon.pixmap(24, 24)
-            )  # Show safe icon
+                safe_icon.pixmap(32, 32)
+            )  # Resize icon to fill cell (e.g., 32x32)
+
+        # Center the icon in the cell
+        compromised_icon_widget.setAlignment(Qt.AlignCenter)
         table_widget.setCellWidget(row, 1, compromised_icon_widget)
 
         # Health column: display safe or danger icon based on password strength
         health_icon_widget = QLabel()
         if is_strong:
             health_icon_widget.setPixmap(
-                safe_icon.pixmap(24, 24)
-            )  # Show safe icon if password is strong
+                safe_icon.pixmap(32, 32)
+            )  # Resize icon to fill cell (e.g., 32x32)
         else:
             health_icon_widget.setPixmap(
-                danger_icon.pixmap(24, 24)
-            )  # Show danger icon if password is weak
+                danger_icon.pixmap(32, 32)
+            )  # Resize icon to fill cell (e.g., 32x32)
+
+        # Center the icon in the cell
+        health_icon_widget.setAlignment(Qt.AlignCenter)
         table_widget.setCellWidget(row, 2, health_icon_widget)
 
         # Status Report column with a button to show detailed feedback
@@ -323,6 +329,9 @@ def display_password_health_table(password_health_data, parent=None):
     table_widget.setColumnWidth(1, 100)  # Compromised column width
     table_widget.setColumnWidth(2, 100)  # Health column width
     table_widget.setColumnWidth(3, 120)  # Status Report column width
+
+    # Set a minimum width for the Password column
+    header.setMinimumSectionSize(150)  # Set minimum width for the Password column
 
     # Create a scrollable area for the table
     scroll_area = QScrollArea()
