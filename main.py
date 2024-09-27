@@ -2,8 +2,10 @@
 
 import logging
 import os
+import re
 import sys
 import uuid
+from typing import Callable, List, Optional
 
 from PySide6.QtCore import QEasingCurve, QPropertyAnimation, QSize, Qt
 from PySide6.QtGui import QFont, QFontDatabase, QGuiApplication, QIcon
@@ -21,7 +23,14 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from backend.database import decrypt_data
+from backend.database import (
+    create_connection,
+    decrypt_data,
+    initialize_db,
+    is_master_password_set,
+    set_master_password,
+    verify_master_password,
+)
 from backend.password_health import (
     check_password_pwned,
     check_password_strength,
@@ -39,13 +48,12 @@ from frontend.password_management import PasswordManagementTab
 from frontend.secure_notes_tab import SecureNotesTab
 from session_manager import SessionManager
 
-# Add the root directory to sys.path
-sys.path.extend(
-    [
-        os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")),
-        os.path.abspath(os.path.join(os.path.dirname(__file__), "..")),
-    ]
-)
+# Add the root directory to sys.path using a safer approach
+# Assuming this script is part of a package, adjust accordingly
+PACKAGE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+if PACKAGE_DIR not in sys.path:
+    sys.path.insert(0, PACKAGE_DIR)
+
 
 try:
     from backend.config import DATABASE_DIR, LOG_FILE
@@ -58,9 +66,12 @@ os.makedirs(DATABASE_DIR, exist_ok=True)
 
 # Configure logging
 logging.basicConfig(
-    level=logging.DEBUG,
+    level=logging.INFO,  # Changed to INFO to avoid verbose DEBUG logs in production
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    handlers=[logging.FileHandler(LOG_FILE), logging.StreamHandler()],
+    handlers=[
+        logging.FileHandler(LOG_FILE),
+        logging.StreamHandler(sys.stdout),
+    ],
 )
 logger = logging.getLogger(__name__)
 
@@ -68,7 +79,13 @@ logger = logging.getLogger(__name__)
 class CustomInputDialog(QDialog):
     """Custom input dialog for user input with customizable title and label."""
 
-    def __init__(self, title, label, echo_mode=QLineEdit.Normal, parent=None):
+    def __init__(
+        self,
+        title: str,
+        label: str,
+        echo_mode: QLineEdit.EchoMode = QLineEdit.Normal,
+        parent: Optional[QWidget] = None,
+    ):
         super().__init__(parent)
         self.setWindowTitle(title)
         self.setWindowIcon(QIcon(r"frontend/icons/encryption.png"))
@@ -97,7 +114,7 @@ class CustomInputDialog(QDialog):
         # Center the dialog
         self.center()
 
-    def get_input(self):
+    def get_input(self) -> str:
         """Return the input from the line edit."""
         return self.input_field.text()
 
@@ -158,7 +175,7 @@ class WelcomeDialog(QDialog):
 class VerifyMasterPasswordDialog(QDialog):
     """Dialog for verifying the master password input by the user."""
 
-    def __init__(self, parent=None):
+    def __init__(self, parent: Optional[QWidget] = None):
         super().__init__(parent)
         self.setWindowTitle("Verify Master Password")
         self.setWindowIcon(QIcon(r"frontend/icons/encryption.png"))
@@ -185,7 +202,7 @@ class VerifyMasterPasswordDialog(QDialog):
         # Center the dialog
         self.center()
 
-    def get_password(self):
+    def get_password(self) -> str:
         """Return the password entered by the user."""
         return self.password_input.text()
 
@@ -203,13 +220,14 @@ class PasswordManager(QMainWindow):
 
     def __init__(self):
         super().__init__()
-        self.conn = None
-        self.cipher_suite = None
-        self.password_generation_tab = None
-        self.password_management_tab = None
-        self.passkey_manager_tab = None
-        self.secure_notes_tab = None
-        self.settings_tab = None
+        self.conn: Optional[object] = None
+        self.cipher_suite: Optional[object] = None  # Clarify type if possible
+        self.password_generation_tab: Optional[PasswordGenerationTab] = None
+        self.password_management_tab: Optional[PasswordManagementTab] = None
+        self.passkey_manager_tab: Optional[PasskeyManagerTab] = None
+        self.secure_notes_tab: Optional[SecureNotesTab] = None
+        self.settings_tab: Optional[SettingsTab] = None
+        self.password_health_tab: Optional[QWidget] = None
 
         self.setWindowTitle("Fortalice")
         self.setGeometry(
@@ -245,62 +263,58 @@ class PasswordManager(QMainWindow):
         self.initialize_app()
         self.showMaximized()
 
-    def _setup_buttons(self, layout):
+    def _setup_buttons(self, layout: QVBoxLayout):
         """Set up the buttons for navigating different tabs."""
         # Password generator button
-        self.generator_button = self._create_button(
+        self.generator_button = self._create_navigation_button(
             "Password Generator",
             r"frontend/icons/magic-wand.png",
             self.show_password_generator,
         )
-        self.generator_button.setStyleSheet("text-align: left; padding-left: 0px;")
         layout.addWidget(self.generator_button)
 
         # Password manager button
-        self.manage_button = self._create_button(
+        self.manage_button = self._create_navigation_button(
             "Manage Passwords",
             r"frontend/icons/safe-box.png",
             self.show_manage_passwords,
         )
-        self.manage_button.setStyleSheet("text-align: left; padding-left: 0px;")
         layout.addWidget(self.manage_button)
 
         # Passkey manager button
-        self.passkey_button = self._create_button(
+        self.passkey_button = self._create_navigation_button(
             "Manage Passkeys",
             r"frontend/icons/passkey.png",
             self.show_passkey_manager,
         )
-        self.passkey_button.setStyleSheet("text-align: left; padding-left: 0px;")
         layout.addWidget(self.passkey_button)
 
         # Secure Notes button
-        self.secure_notes_button = self._create_button(
+        self.secure_notes_button = self._create_navigation_button(
             "Secure Notes",
             r"frontend/icons/notepad.png",
             self.show_secure_notes,
         )
-        self.secure_notes_button.setStyleSheet("text-align: left; padding-left: 0px;")
         layout.addWidget(self.secure_notes_button)
 
         # Password Health button
-        self.health_button = self._create_button(
+        self.health_button = self._create_navigation_button(
             "Password Health",
             r"frontend/icons/health.png",  # Ensure the icon exists
             self.show_password_health,
         )
-        self.health_button.setStyleSheet("text-align: left; padding-left: 0px;")
         layout.addWidget(self.health_button)
 
         # Visual Settings Button
-        self.settings_button = self._create_button(
+        self.settings_button = self._create_navigation_button(
             "Visual Settings", r"frontend/icons/settings.png", self.show_settings
         )
-        self.settings_button.setStyleSheet("text-align: left; padding-left: 0px;")
         layout.addWidget(self.settings_button)
 
-    def _create_button(self, text, icon_path, callback):
-        """Create a button with text, icon, and a callback function."""
+    def _create_navigation_button(
+        self, text: str, icon_path: str, callback: Callable
+    ) -> QPushButton:
+        """Create a navigation button with text, icon, and a callback function."""
         button = QPushButton(text)
         if os.path.exists(icon_path):
             button.setIcon(QIcon(icon_path))
@@ -310,18 +324,14 @@ class PasswordManager(QMainWindow):
                 f"Icon not found at {icon_path}. Button will be created without an icon."
             )
         button.setCursor(Qt.PointingHandCursor)  # Change cursor on hover
+        button.setStyleSheet(
+            "text-align: left; padding-left: 10px;"
+        )  # Adjust padding for alignment
         button.clicked.connect(callback)
         return button
 
     def initialize_app(self):
         """Initialize the application by setting up the database connection and cipher suite."""
-        from backend.database import (
-            create_connection,
-            initialize_db,
-            is_master_password_set,
-        )
-        from backend.secure_notes import create_secure_notes_table
-
         self.conn = create_connection()
 
         if self.conn:
@@ -330,7 +340,9 @@ class PasswordManager(QMainWindow):
             logger.info("Database connection successful.")
 
             # Ensure the secure_notes table is created
-            create_secure_notes_table(self.conn)
+            # Assuming `SecureNotesTab` handles its own table creation
+            # Else, uncomment the following line if necessary:
+            # create_secure_notes_table(self.conn)
 
             if not is_master_password_set(self.conn):
                 self.set_master_password()
@@ -340,7 +352,7 @@ class PasswordManager(QMainWindow):
                     "Master password verification failed.",
                     QMessageBox.Critical,
                 ).show_message()
-                return
+                sys.exit(1)  # Exit if verification fails
 
             self._setup_tabs()
         else:
@@ -348,6 +360,7 @@ class PasswordManager(QMainWindow):
                 "Error", "Failed to connect to the database.", QMessageBox.Critical
             ).show_message()
             logger.error("Failed to connect to the database.")
+            sys.exit(1)
 
     def _setup_tabs(self):
         """Set up the main tabs of the application."""
@@ -367,29 +380,28 @@ class PasswordManager(QMainWindow):
         self.stacked_widget.addWidget(self.passkey_manager_tab)
         self.stacked_widget.addWidget(self.secure_notes_tab)
         self.stacked_widget.addWidget(self.settings_tab)
-
         self.stacked_widget.addWidget(self.password_health_tab)
 
         self.show_password_generator()
 
     def _setup_password_health_tab(self):
-        # Set up the password health tab layout
+        """Set up the password health tab layout."""
         layout = QVBoxLayout()
 
-        # Existing part: Create label and input field for manual password check
+        # Create label and input field for manual password check
         self.password_input_label = QLabel("Enter Password to Check Health:")
         self.password_input = QLineEdit()
 
-        # Existing part: Create button to check password health manually
+        # Create button to check password health manually
         self.check_health_button = QPushButton("Check Password Health")
         self.check_health_button.clicked.connect(self._check_password_health)
 
-        # Add existing widgets to layout
+        # Add widgets to layout
         layout.addWidget(self.password_input_label)
         layout.addWidget(self.password_input)
         layout.addWidget(self.check_health_button)
 
-        # New part: Create button to check all passwords in the database
+        # Create button to check all passwords in the database
         self.check_all_passwords_button = QPushButton("Check All Passwords in Database")
         self.check_all_passwords_button.clicked.connect(
             self._check_all_passwords_in_database
@@ -402,6 +414,7 @@ class PasswordManager(QMainWindow):
         self.password_health_tab.setLayout(layout)
 
     def _check_password_health(self):
+        """Check the health of a single password entered by the user."""
         password = self.password_input.text()
         if not password:
             QMessageBox.warning(self, "Error", "Please enter a password")
@@ -420,15 +433,15 @@ class PasswordManager(QMainWindow):
                     self, "Password Health", "Password is safe and not compromised."
                 )
         except Exception as e:
-            QMessageBox.critical(self, "Error", str(e))
+            logger.error(f"Error checking password health: {e}")
+            QMessageBox.critical(
+                self, "Error", "An error occurred while checking password health."
+            )
 
     def _check_all_passwords_in_database(self):
         """
         Check all passwords in the database for compromise and strength.
-        Display the results in a scrollable table with two sections:
-        - Compromised passwords
-        - Weak passwords
-        - Strong and uncompromised passwords are also displayed.
+        Display the results in a scrollable table.
         """
         # Fetch all passwords from the database
         passwords = self._fetch_passwords_from_database()
@@ -458,28 +471,33 @@ class PasswordManager(QMainWindow):
                 }
             )
 
-        # Corrected: Pass parent only once
+        # Display the password health data using the class-based dialog
         results_widget = display_password_health_table(
             password_health_data, parent=self
         )
 
-        # Add the results widget to the main layout (right-hand side)
+        # Add the results widget to the stacked widget and display it
         self.stacked_widget.addWidget(results_widget)
         self.stacked_widget.setCurrentWidget(results_widget)
 
-    # Helper method to fetch passwords from the database
-    def _fetch_passwords_from_database(self):
+    def _fetch_passwords_from_database(self) -> List[str]:
         """Fetch and decrypt passwords from the database."""
         cursor = self.conn.cursor()
-        cursor.execute("SELECT password FROM passwords")  # Updated table name
+        cursor.execute(
+            "SELECT password FROM passwords"
+        )  # Ensure the table name is correct
 
         encrypted_passwords = [row[0] for row in cursor.fetchall()]
 
         # Decrypt each password
-        decrypted_passwords = [
-            decrypt_data(encrypted_password)
-            for encrypted_password in encrypted_passwords
-        ]
+        decrypted_passwords = []
+        for encrypted_password in encrypted_passwords:
+            try:
+                decrypted = decrypt_data(encrypted_password)
+                decrypted_passwords.append(decrypted)
+            except Exception as e:
+                logger.error(f"Failed to decrypt password: {e}")
+                decrypted_passwords.append("Decryption Failed")
 
         return decrypted_passwords
 
@@ -513,8 +531,8 @@ class PasswordManager(QMainWindow):
             dialog_text = (
                 "<p>Enter a master password. It must contain lowercase, uppercase, number, "
                 "special character and be at least 8 characters long.</p>"
-                "<p>Hint: use a unique passphrase like ILoveMyDog!2024.</p>"
-                "<p>Or make it whatever you want. You do you! Just make sure it is unique to this program and very easy for you to remember because it cannot be recovered if forgotten or lost.</p>"
+                "<p>Hint: Use a unique passphrase like <strong>ILoveMyDog!2024</strong>.</p>"
+                "<p>Make sure it is unique to this program and easy for you to remember because it cannot be recovered if forgotten or lost.</p>"
             )
 
             dialog = CustomInputDialog(
@@ -561,12 +579,11 @@ class PasswordManager(QMainWindow):
                     "Master password is required to proceed.",
                     QMessageBox.Warning,
                 ).show_message()
-                break
+                sys.exit(1)  # Exit if master password setup is cancelled
+        logger.info("Master password set successfully.")
 
-    def validate_master_password(self, password):
+    def validate_master_password(self, password: str) -> bool:
         """Validate the master password against security criteria."""
-        import re
-
         if len(password) < 8:
             return False
         if not re.search(r"[a-z]", password):
@@ -579,10 +596,8 @@ class PasswordManager(QMainWindow):
             return False
         return True
 
-    def verify_master_password(self):
+    def verify_master_password(self) -> bool:
         """Verify the entered master password using a custom input dialog."""
-        from backend.database import verify_master_password
-
         while True:
             dialog = VerifyMasterPasswordDialog(self)
             if dialog.exec() == QDialog.Accepted:
@@ -607,10 +622,8 @@ class PasswordManager(QMainWindow):
                 ).show_message()
                 return False
 
-    def store_master_password(self, password):
+    def store_master_password(self, password: str):
         """Store the master password in the database."""
-        from backend.database import set_master_password
-
         try:
             set_master_password(self.conn, password)
             # Store the master password in the session manager
@@ -624,27 +637,31 @@ class PasswordManager(QMainWindow):
             CustomMessageBox(
                 "Warning", f"Password validation failed: {ve}", QMessageBox.Warning
             ).show_message()
+            logger.error(f"Password validation failed: {ve}")
 
     def closeEvent(self, event):
         """Handle the application close event to clear sensitive data."""
         session = SessionManager()
         session.clear_master_password()
         logger.info("Application closed. Master password cleared from memory.")
+        if self.conn:
+            self.conn.close()
+            logger.info("Database connection closed.")
         event.accept()
 
-    def show_info(self, message):
+    def show_info(self, message: str):
         """Show an informational message."""
         CustomMessageBox("Info", message, QMessageBox.Information).show_message()
 
-    def show_warning(self, message):
+    def show_warning(self, message: str):
         """Show a warning message."""
         CustomMessageBox("Warning", message, QMessageBox.Warning).show_message()
 
-    def show_copied_message(self, message="Text copied to clipboard!"):
+    def show_copied_message(self, message: str = "Text copied to clipboard!"):
         """Show a message indicating that text was copied to the clipboard."""
         CustomMessageBox("Copied", message, QMessageBox.Information).show_message()
 
-    def show_success_message(self, message="Operation completed successfully!"):
+    def show_success_message(self, message: str = "Operation completed successfully!"):
         """Show a success message."""
         CustomMessageBox("Success", message, QMessageBox.Information).show_message()
 
@@ -677,10 +694,10 @@ def main():
             font_families = QFontDatabase.applicationFontFamilies(font_id)
             if font_families:
                 font_family = font_families[0]
-                app_font = QFont(font_family, 20)  # Set font size to 20
+                app_font = QFont(font_family, 10)  # Set a reasonable default font size
                 app.setFont(app_font)
                 logger.info(
-                    f"Custom font '{font_family}' loaded successfully with size 20."
+                    f"Custom font '{font_family}' loaded successfully with size {app_font.pointSize()}."
                 )
             else:
                 logger.warning(
@@ -691,9 +708,11 @@ def main():
     else:
         logger.warning(f"Font file not found at {font_path}. Using default font.")
 
+    # Display the welcome dialog
     welcome_dialog = WelcomeDialog()
     welcome_dialog.exec()
 
+    # Initialize and display the main application window
     window = PasswordManager()
     window.show()
     logger.info("Fortalice application started.")
