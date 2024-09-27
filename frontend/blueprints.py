@@ -1,6 +1,7 @@
 # blueprints.py
 
 import os
+from functools import partial
 from typing import Callable, List, Optional, Tuple
 
 from PySide6.QtCore import QSize
@@ -9,11 +10,16 @@ from PySide6.QtWidgets import (
     QDialog,
     QFrame,
     QHBoxLayout,
+    QHeaderView,
     QLabel,
+    QLineEdit,
     QMessageBox,
     QPushButton,
+    QScrollArea,
     QStyle,
+    QTableWidget,
     QVBoxLayout,
+    QWidget,
 )
 
 
@@ -189,3 +195,198 @@ class PasswordHealthReportDialog(QDialog):
 
         # Set the main layout
         self.setLayout(layout)
+
+
+def display_password_health_table(password_health_data, parent=None):
+    """
+    Create a scrollable table to display all passwords (whether compromised, weak, or strong),
+    with columns: Password, Compromised, Health, Status Report.
+    """
+    # Create a table widget to display the results
+    table_widget = QTableWidget()
+    table_widget.setRowCount(len(password_health_data))
+    table_widget.setColumnCount(4)
+    table_widget.setHorizontalHeaderLabels(
+        ["Password", "Compromised", "Health", "Status Report"]
+    )
+
+    # Load the icons (ensure paths are correct)
+    safe_icon = QIcon("frontend/icons/safe.png")
+    danger_icon = QIcon("frontend/icons/danger.png")
+
+    # Helper function to toggle password visibility
+    def toggle_password_visibility(button, password_input):
+        if password_input.echoMode() == QLineEdit.Password:
+            password_input.setEchoMode(QLineEdit.Normal)
+            button.setText("Hide")
+        else:
+            password_input.setEchoMode(QLineEdit.Password)
+            button.setText("Show")
+
+    # Helper function to show the details popup with compromised count and feedback
+    def show_status_report_dialog(password, compromised_count, feedback, parent=None):
+        # Create a message box to show the details
+        details_message = f"Password: {password}\n"
+        details_message += (
+            f"Compromised {compromised_count} times.\n"
+            if compromised_count > 0
+            else "Password has not been compromised.\n"
+        )
+        details_message += "\nFeedback:\n" + "\n".join(feedback)
+
+        # Display the pop-up with feedback and compromised count
+        QMessageBox.information(parent, "Password Details", details_message)
+
+    # Populate the table with password health data
+    for row, data in enumerate(password_health_data):
+        password = data["password"]
+        compromised_count = data["compromised_count"]
+        is_compromised = data["is_compromised"]
+        is_strong = data["is_strong"]
+        feedback = data["feedback"]
+
+        # Password column with hidden password and "Show" button
+        password_input = QLineEdit(password)
+        password_input.setEchoMode(QLineEdit.Password)  # Initially hidden
+
+        show_button = QPushButton("Show")
+        show_button.setStyleSheet("padding: 5px; margin-left: 5px;")  # Adjust spacing
+
+        # Use `partial` to ensure each button references its own password_input field
+        show_button.clicked.connect(
+            partial(toggle_password_visibility, show_button, password_input)
+        )
+
+        # Create a layout to hold the password and the button side by side
+        password_layout = QWidget()
+        layout = QHBoxLayout(password_layout)
+        layout.addWidget(password_input)
+        layout.addWidget(show_button)
+        layout.setContentsMargins(
+            0, 0, 0, 0
+        )  # Remove margins around the layout to fit in the cell
+        layout.setSpacing(0)
+
+        table_widget.setCellWidget(row, 0, password_layout)
+
+        # Compromised column: display safe or danger icon based on whether the password is compromised
+        compromised_icon_widget = QLabel()
+        if is_compromised:
+            compromised_icon_widget.setPixmap(
+                danger_icon.pixmap(24, 24)
+            )  # Show danger icon
+        else:
+            compromised_icon_widget.setPixmap(
+                safe_icon.pixmap(24, 24)
+            )  # Show safe icon
+        table_widget.setCellWidget(row, 1, compromised_icon_widget)
+
+        # Health column: display safe or danger icon based on password strength
+        health_icon_widget = QLabel()
+        if is_strong:
+            health_icon_widget.setPixmap(
+                safe_icon.pixmap(24, 24)
+            )  # Show safe icon if password is strong
+        else:
+            health_icon_widget.setPixmap(
+                danger_icon.pixmap(24, 24)
+            )  # Show danger icon if password is weak
+        table_widget.setCellWidget(row, 2, health_icon_widget)
+
+        # Status Report column with a button to show detailed feedback
+        report_button = QPushButton("Details")
+        report_button.setStyleSheet("padding: 5px; margin: 5px;")  # Add spacing
+        report_button.clicked.connect(
+            partial(
+                show_status_report_dialog, password, compromised_count, feedback, parent
+            )
+        )
+        table_widget.setCellWidget(row, 3, report_button)
+
+        # Set row height to accommodate buttons and icons plus spacing
+        table_widget.setRowHeight(
+            row, 50
+        )  # Adjust this value as needed to prevent overlap
+
+    # Set the header view to stretch to fill the table width
+    header = table_widget.horizontalHeader()
+
+    # Set fixed widths for the Compromised and Health columns (e.g., 100px each)
+    header.setSectionResizeMode(
+        0, QHeaderView.Stretch
+    )  # Password column stretches to fill remaining space
+    header.setSectionResizeMode(1, QHeaderView.Fixed)  # Compromised column fixed width
+    header.setSectionResizeMode(2, QHeaderView.Fixed)  # Health column fixed width
+    header.setSectionResizeMode(3, QHeaderView.Fixed)  # Status report button fixed size
+
+    # Set the width for Compromised and Health columns (adjust as necessary)
+    table_widget.setColumnWidth(1, 100)  # Compromised column width
+    table_widget.setColumnWidth(2, 100)  # Health column width
+    table_widget.setColumnWidth(3, 120)  # Status Report column width
+
+    # Create a scrollable area for the table
+    scroll_area = QScrollArea()
+    scroll_area.setWidget(table_widget)
+    scroll_area.setWidgetResizable(True)
+
+    # Create a layout to hold the scroll area
+    layout = QVBoxLayout()
+    layout.addWidget(scroll_area)
+
+    # Create a QWidget to hold the layout
+    results_widget = QWidget()
+    results_widget.setLayout(layout)
+
+    return results_widget
+
+
+def toggle_password_visibility(button, password):
+    """
+    Toggle the visibility of the password.
+    """
+    if button.text() == "Show":
+        button.setText(password)
+    else:
+        button.setText("Show")
+
+
+def show_status_report_dialog(password, data, parent=None):
+    """
+    Show a dialog that provides a detailed status report for the password.
+
+    :param password: The password being reviewed.
+    :param data: A dictionary containing the status of the password (compromised and health).
+    :param parent: The parent window or widget.
+    """
+    dialog = QDialog(parent)
+    dialog.setWindowTitle("Password Status Report")
+
+    compromised_status = (
+        f"Compromised {data['compromised_count']} times."
+        if data["compromised"]
+        else "Not compromised."
+    )
+    health_status = (
+        "Password meets all health requirements."
+        if data["health"]
+        else f"Weaknesses: {' '.join(data['feedback'])}"
+    )
+
+    # Create labels for displaying password status
+    compromised_label = QLabel(
+        f"Password: {password}\nCompromise Status: {compromised_status}"
+    )
+    health_label = QLabel(f"Health Status: {health_status}")
+
+    # Create the layout for the dialog
+    layout = QVBoxLayout()
+    layout.addWidget(compromised_label)
+    layout.addWidget(health_label)
+
+    # Add OK button to close the dialog
+    ok_button = QPushButton("OK")
+    ok_button.clicked.connect(dialog.accept)
+    layout.addWidget(ok_button)
+
+    dialog.setLayout(layout)
+    dialog.exec()

@@ -28,7 +28,11 @@ from backend.password_health import (
     get_password_feedback,
 )
 from backend.settings import SettingsTab
-from frontend.blueprints import ButtonFactory, CustomMessageBox
+from frontend.blueprints import (
+    ButtonFactory,
+    CustomMessageBox,
+    display_password_health_table,
+)
 from frontend.passkey_manager_tab import PasskeyManagerTab
 from frontend.password_generation import PasswordGenerationTab
 from frontend.password_management import PasswordManagementTab
@@ -216,9 +220,9 @@ class PasswordManager(QMainWindow):
         self.main_widget = QWidget(self)
         self.setCentralWidget(self.main_widget)
 
-        main_layout = QHBoxLayout(self.main_widget)
-        main_layout.setContentsMargins(20, 20, 20, 20)
-        main_layout.setSpacing(20)
+        self.main_layout = QHBoxLayout(self.main_widget)
+        self.main_layout.setContentsMargins(20, 20, 20, 20)
+        self.main_layout.setSpacing(20)
 
         # Left Column for Navigation Buttons
         left_column = QVBoxLayout()
@@ -233,8 +237,10 @@ class PasswordManager(QMainWindow):
         # Right Column for Content
         self.stacked_widget = QStackedWidget()
 
-        main_layout.addLayout(left_column, 1)  # Left column takes less space
-        main_layout.addWidget(self.stacked_widget, 4)  # Right column takes more space
+        self.main_layout.addLayout(left_column, 1)  # Left column takes less space
+        self.main_layout.addWidget(
+            self.stacked_widget, 4
+        )  # Right column takes more space
 
         self.initialize_app()
         self.showMaximized()
@@ -417,42 +423,49 @@ class PasswordManager(QMainWindow):
             QMessageBox.critical(self, "Error", str(e))
 
     def _check_all_passwords_in_database(self):
-        # Fetch passwords from the database
+        """
+        Check all passwords in the database for compromise and strength.
+        Display the results in a scrollable table with two sections:
+        - Compromised passwords
+        - Weak passwords
+        - Strong and uncompromised passwords are also displayed.
+        """
+        # Fetch all passwords from the database
         passwords = self._fetch_passwords_from_database()
 
-        compromised_passwords = []
-        weak_passwords = []
+        password_health_data = []
 
         for password in passwords:
             # Check if the password has been compromised
             compromised_count = check_password_pwned(password)
-            if compromised_count > 0:
-                compromised_passwords.append((password, compromised_count))
+            is_compromised = compromised_count > 0
 
             # Check if the password meets the strength requirements
             is_strong, rules = check_password_strength(password)
             if not is_strong:
                 feedback = get_password_feedback(is_strong, rules)
-                weak_passwords.append((password, feedback))
+            else:
+                feedback = ["Password is strong."]
 
-        # Show results in a message box
-        message = "Password Health Report:\n\n"
+            # Append the data for each password (whether compromised, weak, or strong)
+            password_health_data.append(
+                {
+                    "password": password,
+                    "compromised_count": compromised_count if is_compromised else 0,
+                    "is_compromised": is_compromised,
+                    "is_strong": is_strong,
+                    "feedback": feedback,
+                }
+            )
 
-        if compromised_passwords:
-            message += "Compromised Passwords:\n"
-            for password, count in compromised_passwords:
-                message += f"Password - {password}: has been compromised {count} times. You should change it.\n"
-        else:
-            message += "No compromised passwords found.\n"
+        # Corrected: Pass parent only once
+        results_widget = display_password_health_table(
+            password_health_data, parent=self
+        )
 
-        if weak_passwords:
-            message += "\nWeak Passwords:\n"
-            for password, feedback in weak_passwords:
-                message += f"- {password}: {' '.join(feedback)}\n"
-        else:
-            message += "\nAll passwords meet strength requirements.\n"
-
-        QMessageBox.information(self, "Password Health Report", message)
+        # Add the results widget to the main layout (right-hand side)
+        self.stacked_widget.addWidget(results_widget)
+        self.stacked_widget.setCurrentWidget(results_widget)
 
     # Helper method to fetch passwords from the database
     def _fetch_passwords_from_database(self):
