@@ -31,7 +31,7 @@ from backend.database import (
     store_password,
     update_password,
 )
-from frontend.blueprints import ButtonFactory, CustomMessageBox
+from frontend.blueprints import ButtonFactory, CustomMessageBox, add_title_and_description
 from session_manager import SessionManager
 
 logger = logging.getLogger(__name__)
@@ -52,14 +52,13 @@ class PasswordManagementTab(QWidget):
         self.create_ui()
 
     def create_ui(self):
-        # Title Label
-        title_label = QLabel("Fortalice Password Manager")
-        title_label.setStyleSheet(
-            "font-size: 30px; font-weight: bold; margin-bottom: 15px;"
+         # Add title and description using the helper function
+        add_title_and_description(
+            self.layout,
+            "Fortalice Secure Password Vault",
+            "Secure storage of your usernames and passwords."
         )
-        title_label.setAlignment(Qt.AlignCenter)
-        self.layout.addWidget(title_label)
-        self.layout.addWidget(self.button_factory.create_horizontal_line())
+
 
         # Input Fields using QFormLayout
         form_layout = QFormLayout()

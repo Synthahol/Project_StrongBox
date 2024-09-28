@@ -412,3 +412,21 @@ def toggle_password_visibility(button, password):
         button.setText(password)
     else:
         button.setText("Show")
+
+def add_title_and_description(layout, title, description):
+    # Title
+    title_label = QLabel(title)
+    title_label.setStyleSheet(
+        "font-size: 30px; font-weight: bold; margin-bottom: 20px;"
+    )
+    title_label.setAlignment(Qt.AlignCenter)
+    layout.addWidget(title_label)
+
+    # Info Label
+    info_label = QLabel(description)
+    info_label.setWordWrap(True)
+    info_label.setStyleSheet(
+        "font-size: 14px; color: #555555; margin-bottom: 15px;"
+    )
+    info_label.setAlignment(Qt.AlignCenter)
+    layout.addWidget(info_label)

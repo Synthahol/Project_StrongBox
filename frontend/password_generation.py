@@ -1,5 +1,3 @@
-# password_generation_tab.py
-
 import logging
 import math
 import random
@@ -18,7 +16,7 @@ from PySide6.QtWidgets import (
 )
 
 from backend.password_generator import generate_password
-from frontend.blueprints import CustomMessageBox
+from frontend.blueprints import CustomMessageBox, add_title_and_description
 
 logger = logging.getLogger(__name__)
 
@@ -30,24 +28,11 @@ class PasswordGenerationTab(QWidget):
         self.create_ui()
 
     def create_ui(self):
-        # Title
-        title_label = QLabel("E.Z.P.Z. Secure Password Generator")
-        title_label.setStyleSheet(
-            "font-size: 30px; font-weight: bold; margin-bottom: 20px;"
+        add_title_and_description(
+            self.layout,  # Pass the correct layout here
+            "E.Z.P.Z. Secure Password Generator",
+            "Passwords generated with 256 bits of entropy for absolute security.",
         )
-        title_label.setAlignment(Qt.AlignCenter)
-        self.layout.addWidget(title_label)
-
-        # Info Label
-        info_label = QLabel(
-            "Each generated password will have a minimum of 256 bits of entropy for absolute security."
-        )
-        info_label.setWordWrap(True)
-        info_label.setStyleSheet(
-            "font-size: 14px; color: #555555; margin-bottom: 15px;"
-        )
-        info_label.setAlignment(Qt.AlignCenter)
-        self.layout.addWidget(info_label)
 
         # Generate Button
         generate_btn = QPushButton("Generate Password")
@@ -168,7 +153,12 @@ class PasswordGenerationTab(QWidget):
             return "Comparison: N/A"
 
     def copy_to_clipboard(self):
-        QApplication.clipboard().setText(self.generated_output.text())
-        CustomMessageBox(
-            "Copied", "Password copied to clipboard!", QMessageBox.Information
-        ).show_message()
+        if self.generated_output.text():
+            QApplication.clipboard().setText(self.generated_output.text())
+            CustomMessageBox(
+                "Copied", "Password copied to clipboard!", QMessageBox.Information
+            ).show_message()
+        else:
+            CustomMessageBox(
+                "Error", "No password to copy!", QMessageBox.Warning
+            ).show_message()

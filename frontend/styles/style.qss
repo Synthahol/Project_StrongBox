@@ -2,7 +2,7 @@
 QWidget {
     background-color: #232430;
     color: #c1c1c1;
-    font-size: 20px;
+    font-size: 14px; /* Reduced from 20px for better readability */
     font-family: "Roboto", "Arial", sans-serif;
 }
 
@@ -21,7 +21,7 @@ QPushButton {
     border-radius: 5px;
     min-height: 40px; /* Increased min-height for better visibility */
     text-align: center;
-    spacing: 10px; /* Space between icon and text */
+    /* Removed invalid 'spacing' property */
 }
 
 /* QPushButton with objectName="tabButton" */
@@ -74,10 +74,17 @@ QLineEdit {
     color: #c1c1c1;
     border: 1px solid #4a4c68;
     padding: 4px;
+    border-radius: 5px; /* Added for consistency */
 }
 
 QLineEdit:focus {
-    border: 1px solid #00A36C;
+    border: 2px solid #00A36C; /* Enhanced focus indicator */
+}
+
+/* Placeholder text styling */
+QLineEdit::placeholder {
+    color: #a1a1a1;
+    font-style: italic;
 }
 
 /* QComboBox styles */
@@ -86,6 +93,7 @@ QComboBox {
     color: #c1c1c1;
     border: 1px solid #4a4c68;
     padding: 5px;
+    border-radius: 5px; /* Added for consistency */
 }
 
 QComboBox QAbstractItemView {
@@ -96,7 +104,7 @@ QComboBox QAbstractItemView {
 }
 
 QComboBox::down-arrow {
-    image: url("frontend/icons/arrow.png");
+    image: url(":/frontend/icons/arrow.png"); /* Updated to use resource path */
 }
 
 QComboBox::drop-down {
@@ -104,7 +112,7 @@ QComboBox::drop-down {
 }
 
 QComboBox:focus {
-    border: 1px solid #00A36C;
+    border: 2px solid #00A36C; /* Enhanced focus indicator */
 }
 
 /* QTableView and QTableWidget styles */
@@ -113,7 +121,8 @@ QTableWidget {
     background-color: #232430;
     color: #c1c1c1;
     border: none;
-    gridline-color: transparent;
+    gridline-color: #37384d; /* Subtle gridlines for readability */
+    border-radius: 5px; /* Added for consistency */
 }
 
 QTableView::item,
@@ -124,12 +133,16 @@ QTableWidget::item {
 QTableView::item:selected,
 QTableWidget::item:selected {
     background-color: #41424e;
+    color: #ffffff;
 }
 
 QHeaderView::section {
-    background-color: #232430;
+    background-color: #38394e; /* Updated for better contrast */
+    color: #ffffff; /* White text for headers */
     border: 1px solid #37384d;
     padding: 5px;
+    font-size: 14px; /* Consistent header font size */
+    font-weight: bold;
 }
 
 /* QTableView indicators */
@@ -139,11 +152,11 @@ QTableView::indicator {
 }
 
 QTableView::indicator:checked {
-    image: url("frontend/icons/check.png");
+    image: url(":/frontend/icons/check.png"); /* Updated to use resource path */
 }
 
 QTableView::indicator:unchecked {
-    image: url("frontend/icons/unchecked.png");
+    image: url(":/frontend/icons/unchecked.png"); /* Updated to use resource path */
 }
 
 /* QTabWidget and QTabBar styles */
@@ -154,10 +167,14 @@ QTabWidget::pane {
 QTabBar::tab {
     color: #c1c1c1;
     padding: 5px 10px;
+    border-radius: 3px; /* Added for smoother tab appearance */
+    margin: 2px; /* Added for spacing between tabs */
 }
 
 QTabBar::tab:selected {
     font-weight: bold;
+    background-color: #38394e; /* Highlight selected tab */
+    border-bottom: 2px solid #00A36C; /* Underline for selected tab */
 }
 
 QTabBar::tab:hover {
@@ -182,6 +199,17 @@ QScrollBar::handle:horizontal,
 QScrollBar::handle:vertical {
     background-color: #56576c;
     border: none;
+    border-radius: 4px; /* Added for rounded handles */
+}
+
+QScrollBar::handle:horizontal:hover,
+QScrollBar::handle:vertical:hover {
+    background-color: #71718c;
+}
+
+QScrollBar::handle:horizontal:pressed,
+QScrollBar::handle:vertical:pressed {
+    background-color: #5a5b7a;
 }
 
 QScrollBar::handle:horizontal {
@@ -216,10 +244,109 @@ QRadioButton::indicator {
 
 QCheckBox::indicator:checked,
 QRadioButton::indicator:checked {
-    image: url("frontend/icons/checked.png");
+    image: url(":/frontend/icons/checked.png"); /* Updated to use resource path */
 }
 
 QCheckBox::indicator:unchecked,
 QRadioButton::indicator:unchecked {
-    image: url("frontend/icons/unchecked.png");
+    image: url(":/frontend/icons/unchecked.png"); /* Updated to use resource path */
+}
+
+/* --- Password Health Tab Styles --- */
+
+/* Title Label */
+QLabel#passwordHealthTitle {
+    color: #ffffff; /* Ensure high contrast against dark background */
+    font-size: 34px; /* Large font size for prominence */
+    font-weight: bold; /* Bold text */
+    font-family: "Roboto", "Arial", sans-serif;
+    padding: 10px 0; /* Vertical padding */
+}
+
+/* Input Label */
+QLabel#passwordHealthInputLabel {
+    color: #c1c1c1;
+    font-size: 16px;
+    font-weight: normal;
+    margin-top: 20px;
+}
+
+/* Password Input Field */
+QLineEdit#passwordHealthInput {
+    background-color: #38394e;
+    color: #c1c1c1;
+    border: 1px solid #4a4c68;
+    padding: 8px;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+QLineEdit#passwordHealthInput:focus {
+    border: 2px solid #00A36C;
+}
+
+/* Check Health Button */
+QPushButton#checkHealthButton {
+    background-color: #28a745; /* Green background */
+    color: #ffffff; /* White text */
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+QPushButton#checkHealthButton:hover {
+    background-color: #218838;
+}
+
+QPushButton#checkHealthButton:pressed {
+    background-color: #1e7e34;
+}
+
+/* Check All Passwords Button - Adjusted to match general QPushButton styles */
+QPushButton#checkAllPasswordsButton {
+    background-color: transparent; /* Match general QPushButton */
+    color: #c1c1c1; /* Match general QPushButton */
+    border: 2px solid #00A36C; /* Match general QPushButton */
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 5px;
+    min-height: 40px;
+    text-align: center;
+    margin-top: 20px; /* Retain margin if needed */
+}
+
+QPushButton#checkAllPasswordsButton:hover {
+    background-color: #00A36C; /* Green background on hover */
+    color: #ffffff;
+}
+
+QPushButton#checkAllPasswordsButton:pressed {
+    background-color: #00915A;
+    border-color: #00915A;
+    color: #ffffff;
+}
+
+/* Optional: Results Widget (e.g., QTableWidget) */
+QTableWidget#passwordHealthResults {
+    background-color: #232430;
+    color: #c1c1c1;
+    border: 1px solid #4a4c68;
+    border-radius: 5px;
+}
+
+QTableWidget#passwordHealthResults::item:selected {
+    background-color: #41424e;
+    color: #ffffff;
+}
+
+QHeaderView#passwordHealthResultsHeader::section {
+    background-color: #38394e;
+    color: #ffffff;
+    padding: 5px;
+    border: 1px solid #37384d;
+    font-size: 14px;
+    font-weight: bold;
 }

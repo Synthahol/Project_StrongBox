@@ -5,7 +5,7 @@ import os
 import re
 import sys
 import uuid
-from typing import Callable, List, Optional
+from typing import Callable, Optional
 
 from PySide6.QtCore import QEasingCurve, QPropertyAnimation, QSize, Qt
 from PySide6.QtGui import QFont, QFontDatabase, QGuiApplication, QIcon
@@ -25,25 +25,19 @@ from PySide6.QtWidgets import (
 
 from backend.database import (
     create_connection,
-    decrypt_data,
     initialize_db,
     is_master_password_set,
     set_master_password,
     verify_master_password,
 )
-from backend.password_health import (
-    check_password_pwned,
-    check_password_strength,
-    get_password_feedback,
-)
-from backend.settings import SettingsTab
+from frontend.visual_settings import SettingsTab
 from frontend.blueprints import (
     ButtonFactory,
     CustomMessageBox,
-    display_password_health_table,
 )
 from frontend.passkey_manager_tab import PasskeyManagerTab
 from frontend.password_generation import PasswordGenerationTab
+from frontend.password_health_check_tab import PasswordHealthTab
 from frontend.password_management import PasswordManagementTab
 from frontend.secure_notes_tab import SecureNotesTab
 from session_manager import SessionManager
@@ -368,11 +362,8 @@ class PasswordManager(QMainWindow):
         self.password_management_tab = PasswordManagementTab()
         self.passkey_manager_tab = PasskeyManagerTab()
         self.secure_notes_tab = SecureNotesTab(self.conn)
+        self.password_health_tab = PasswordHealthTab(self.conn)
         self.settings_tab = SettingsTab(main_window=self)
-
-        # Password Health Tab
-        self.password_health_tab = QWidget()
-        self._setup_password_health_tab()
 
         # Add the tabs to the stacked widget
         self.stacked_widget.addWidget(self.password_generation_tab)
@@ -383,123 +374,6 @@ class PasswordManager(QMainWindow):
         self.stacked_widget.addWidget(self.password_health_tab)
 
         self.show_password_generator()
-
-    def _setup_password_health_tab(self):
-        """Set up the password health tab layout."""
-        layout = QVBoxLayout()
-
-        # Create label and input field for manual password check
-        self.password_input_label = QLabel("Enter Password to Check Health:")
-        self.password_input = QLineEdit()
-
-        # Create button to check password health manually
-        self.check_health_button = QPushButton("Check Password Health")
-        self.check_health_button.clicked.connect(self._check_password_health)
-
-        # Add widgets to layout
-        layout.addWidget(self.password_input_label)
-        layout.addWidget(self.password_input)
-        layout.addWidget(self.check_health_button)
-
-        # Create button to check all passwords in the database
-        self.check_all_passwords_button = QPushButton("Check All Passwords in Database")
-        self.check_all_passwords_button.clicked.connect(
-            self._check_all_passwords_in_database
-        )
-
-        # Add the new button to the layout
-        layout.addWidget(self.check_all_passwords_button)
-
-        # Set layout to password health tab
-        self.password_health_tab.setLayout(layout)
-
-    def _check_password_health(self):
-        """Check the health of a single password entered by the user."""
-        password = self.password_input.text()
-        if not password:
-            QMessageBox.warning(self, "Error", "Please enter a password")
-            return
-
-        try:
-            compromised_count = check_password_pwned(password)
-            if compromised_count > 0:
-                QMessageBox.information(
-                    self,
-                    "Password Health",
-                    f"Password has been compromised {compromised_count} times.",
-                )
-            else:
-                QMessageBox.information(
-                    self, "Password Health", "Password is safe and not compromised."
-                )
-        except Exception as e:
-            logger.error(f"Error checking password health: {e}")
-            QMessageBox.critical(
-                self, "Error", "An error occurred while checking password health."
-            )
-
-    def _check_all_passwords_in_database(self):
-        """
-        Check all passwords in the database for compromise and strength.
-        Display the results in a scrollable table.
-        """
-        # Fetch all passwords from the database
-        passwords = self._fetch_passwords_from_database()
-
-        password_health_data = []
-
-        for password in passwords:
-            # Check if the password has been compromised
-            compromised_count = check_password_pwned(password)
-            is_compromised = compromised_count > 0
-
-            # Check if the password meets the strength requirements
-            is_strong, rules = check_password_strength(password)
-            if not is_strong:
-                feedback = get_password_feedback(is_strong, rules)
-            else:
-                feedback = ["Password is strong."]
-
-            # Append the data for each password (whether compromised, weak, or strong)
-            password_health_data.append(
-                {
-                    "password": password,
-                    "compromised_count": compromised_count if is_compromised else 0,
-                    "is_compromised": is_compromised,
-                    "is_strong": is_strong,
-                    "feedback": feedback,
-                }
-            )
-
-        # Display the password health data using the class-based dialog
-        results_widget = display_password_health_table(
-            password_health_data, parent=self
-        )
-
-        # Add the results widget to the stacked widget and display it
-        self.stacked_widget.addWidget(results_widget)
-        self.stacked_widget.setCurrentWidget(results_widget)
-
-    def _fetch_passwords_from_database(self) -> List[str]:
-        """Fetch and decrypt passwords from the database."""
-        cursor = self.conn.cursor()
-        cursor.execute(
-            "SELECT password FROM passwords"
-        )  # Ensure the table name is correct
-
-        encrypted_passwords = [row[0] for row in cursor.fetchall()]
-
-        # Decrypt each password
-        decrypted_passwords = []
-        for encrypted_password in encrypted_passwords:
-            try:
-                decrypted = decrypt_data(encrypted_password)
-                decrypted_passwords.append(decrypted)
-            except Exception as e:
-                logger.error(f"Failed to decrypt password: {e}")
-                decrypted_passwords.append("Decryption Failed")
-
-        return decrypted_passwords
 
     def show_password_generator(self):
         """Show the password generation tab."""

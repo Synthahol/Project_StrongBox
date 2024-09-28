@@ -146,7 +146,9 @@ def get_password_feedback(is_strong: bool, rules: dict) -> List[str]:
     if is_strong:
         feedback.append("Your password is strong.")
     else:
-        feedback.append("This password is weak. Consider the following improvements:")
+        feedback.append(
+            "This password should be stronger. Consider the following improvements:"
+        )
         if not rules.get("length", False):
             feedback.append("- Use at least 12 characters.")
         if not rules.get("uppercase", False):

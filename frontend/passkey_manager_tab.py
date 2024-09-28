@@ -1,3 +1,5 @@
+import logging
+
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QDialog,
@@ -11,11 +13,9 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
-from PySide6.QtGui import QIcon
 
 from backend import passkey_manager
-import logging
-
+from frontend.blueprints import add_title_and_description
 
 # Initialize the logger for this module
 logger = logging.getLogger(__name__)
@@ -26,6 +26,13 @@ class PasskeyManagerTab(QWidget):
         super().__init__(parent)
         self.layout = QVBoxLayout(self)
 
+        # Add title and description using the helper function
+        add_title_and_description(
+            self.layout,
+            "Fortalice Passkey Manager",
+            "Secure Passkey Storage.",
+        )
+
         # Set up the passkey table
         self.passkey_table = QTableWidget(self)
         self.passkey_table.setColumnCount(5)  # Added an extra column for 'Description'
@@ -33,7 +40,9 @@ class PasskeyManagerTab(QWidget):
             ["ID", "Passkey", "Description", "Created At", "Actions"]
         )
         self.passkey_table.horizontalHeader().setStretchLastSection(True)
-        self.passkey_table.setEditTriggers(QTableWidget.NoEditTriggers)  # Prevent editing
+        self.passkey_table.setEditTriggers(
+            QTableWidget.NoEditTriggers
+        )  # Prevent editing
         self.layout.addWidget(self.passkey_table)
 
         # Buttons layout
@@ -121,7 +130,9 @@ class PasskeyManagerTab(QWidget):
             except Exception as e:
                 logger.critical(f"Failed to add passkey: {e}")
                 QMessageBox.critical(
-                    self, "Error", "An unexpected error occurred while adding the passkey."
+                    self,
+                    "Error",
+                    "An unexpected error occurred while adding the passkey.",
                 )
 
     def toggle_passkey_visibility(self, row):
@@ -135,17 +146,23 @@ class PasskeyManagerTab(QWidget):
                 # Reveal the passkey
                 item.setText(actual_passkey)
                 action_button.setText("Hide")
-                logger.debug(f"Passkey ID {self.passkey_table.item(row, 0).text()} revealed.")
+                logger.debug(
+                    f"Passkey ID {self.passkey_table.item(row, 0).text()} revealed."
+                )
             else:
                 # Mask the passkey
                 item.setText("•" * 8)
                 action_button.setText("Show")
-                logger.debug(f"Passkey ID {self.passkey_table.item(row, 0).text()} hidden.")
+                logger.debug(
+                    f"Passkey ID {self.passkey_table.item(row, 0).text()} hidden."
+                )
 
         except Exception as e:
             logger.error(f"Error toggling passkey visibility: {e}")
             QMessageBox.critical(
-                self, "Error", "An unexpected error occurred while toggling passkey visibility."
+                self,
+                "Error",
+                "An unexpected error occurred while toggling passkey visibility.",
             )
 
 

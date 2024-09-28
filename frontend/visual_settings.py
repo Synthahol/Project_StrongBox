@@ -15,6 +15,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from frontend.blueprints import add_title_and_description
+
 logger = logging.getLogger(__name__)
 
 
@@ -38,6 +40,12 @@ class SettingsTab(QWidget):
         self.apply_settings_globally()
 
     def create_ui(self):
+        add_title_and_description(
+            self.layout,
+            "Visual Settings",
+            "Change the font, font size and color scheme to your liking.",
+        )
+
         # Font Size Slider
         font_size_label = QLabel("Font Size:")
         self.font_size_slider = QSlider(Qt.Horizontal)

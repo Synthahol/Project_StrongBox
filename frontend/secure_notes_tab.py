@@ -6,7 +6,6 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
-    QLineEdit,
     QListWidget,
     QListWidgetItem,
     QMessageBox,
@@ -23,7 +22,11 @@ from backend.secure_notes import (
     get_secure_note_by_id,
     update_secure_note,
 )
-from frontend.blueprints import ButtonFactory, CustomMessageBox
+from frontend.blueprints import (
+    ButtonFactory,
+    CustomMessageBox,
+    add_title_and_description,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -57,12 +60,12 @@ class SecureNotesTab(QWidget):
         # Note Details
         details_layout = QVBoxLayout()
 
-        # Title
-        title_layout = QHBoxLayout()
-        title_layout.addWidget(QLabel("Title:"))
-        self.title_input = QLineEdit()
-        title_layout.addWidget(self.title_input)
-        details_layout.addLayout(title_layout)
+        # Add title and description using the helper function
+        add_title_and_description(
+            details_layout,  # Pass the correct layout here
+            "Secure Notes",
+            "Manage your secure notes efficiently and safely.",
+        )
 
         # Content
         details_layout.addWidget(QLabel("Content:"))
