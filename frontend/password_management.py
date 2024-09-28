@@ -93,7 +93,11 @@ class PasswordManagementTab(QWidget):
         )
         buttons_layout.addWidget(store_button)
         self.layout.addLayout(buttons_layout)
-        self.layout.addWidget(self.button_factory.create_horizontal_line())
+
+        # Add some vertical space for clarity
+        spacer = QWidget()
+        spacer.setFixedHeight(20)  # Adjust the height of the spacer as needed
+        self.layout.addWidget(spacer)
 
         # Search bar for filtering passwords
         self.search_bar = QLineEdit()
