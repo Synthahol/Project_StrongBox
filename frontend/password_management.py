@@ -31,7 +31,11 @@ from backend.database import (
     store_password,
     update_password,
 )
-from frontend.blueprints import ButtonFactory, CustomMessageBox, add_title_and_description
+from frontend.blueprints import (
+    ButtonFactory,
+    CustomMessageBox,
+    add_title_and_description,
+)
 from session_manager import SessionManager
 
 logger = logging.getLogger(__name__)
@@ -49,16 +53,16 @@ class PasswordManagementTab(QWidget):
         self.setWindowIcon(QIcon(ICON_PATH))
         self.button_factory = ButtonFactory(self)
         self.layout = QVBoxLayout(self)
+        self.password_data = []  # Store all password data for filtering
         self.create_ui()
 
     def create_ui(self):
-         # Add title and description using the helper function
+        # Add title and description using the helper function
         add_title_and_description(
             self.layout,
             "Fortalice Secure Password Vault",
-            "Secure storage of your usernames and passwords."
+            "Secure storage of your usernames and passwords.",
         )
-
 
         # Input Fields using QFormLayout
         form_layout = QFormLayout()
@@ -91,9 +95,18 @@ class PasswordManagementTab(QWidget):
         self.layout.addLayout(buttons_layout)
         self.layout.addWidget(self.button_factory.create_horizontal_line())
 
+        # Search bar for filtering passwords
+        self.search_bar = QLineEdit()
+        self.search_bar.setPlaceholderText("Search by service or username...")
+        self.search_bar.textChanged.connect(
+            self.filter_passwords
+        )  # Connect the search input to filter method
+        self.layout.addWidget(self.search_bar)
+
         # Stored Passwords Section
         stored_label = QLabel("Stored Passwords")
         stored_label.setStyleSheet("font-size: 20px; font-weight: bold;")
+        stored_label.setAlignment(Qt.AlignCenter)
         self.layout.addWidget(stored_label)
 
         self.password_table = self.create_password_table()
@@ -144,8 +157,16 @@ class PasswordManagementTab(QWidget):
         msg_box.show_message()
 
     def load_passwords(self):
+        """Load passwords from the database and display them in the table."""
         self.password_table.setRowCount(0)
-        passwords = get_all_passwords(self.conn)
+        self.password_data = get_all_passwords(
+            self.conn
+        )  # Store all passwords for filtering
+        self.populate_table(self.password_data)
+
+    def populate_table(self, passwords):
+        """Populate the table with password data."""
+        self.password_table.setRowCount(0)  # Clear the table
         for row_num, (service, username, password) in enumerate(passwords):
             self.password_table.insertRow(row_num)
             self.add_password_row(row_num, service, username, password)
@@ -217,6 +238,16 @@ class PasswordManagementTab(QWidget):
         action_widget = QWidget()
         action_widget.setLayout(action_layout)
         return action_widget
+
+    def filter_passwords(self):
+        """Filter the table based on the search bar input."""
+        search_text = self.search_bar.text().lower()
+        filtered_data = [
+            (service, username, password)
+            for service, username, password in self.password_data
+            if search_text in service.lower() or search_text in username.lower()
+        ]
+        self.populate_table(filtered_data)
 
     def toggle_password_visibility(self, row):
         item = self.password_table.item(row, 2)
