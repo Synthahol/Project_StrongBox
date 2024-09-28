@@ -21,22 +21,23 @@ logger = logging.getLogger(__name__)
 
 
 class PasswordHealthTab(QWidget):
-    def __init__(self, conn, parent=None):
+    def __init__(self, conn, stacked_widget, parent=None):
         super().__init__(parent)
         self.conn = conn
+        self.stacked_widget = stacked_widget
         self.init_ui()
 
     def init_ui(self):
-        # Rename 'layout' to avoid conflicts with QWidget's layout method
-        main_layout = QVBoxLayout(self)
+        """Set up the UI for the password health tab."""
+        main_layout = QVBoxLayout(self)  # Avoid name conflicts with 'layout()' method
 
         add_title_and_description(
-            main_layout,  # Pass the correct layout here
+            main_layout,
             "Fortalice Password Health Check",
             "Monitor the strength and compromise status of your passwords.",
         )
 
-        # Create label and input field for manual password check
+        # Label and input for manual password check
         self.password_input_label = QLabel("Enter Password to Check Health:")
         self.password_input_label.setObjectName("passwordHealthInputLabel")
         main_layout.addWidget(self.password_input_label)
@@ -46,13 +47,13 @@ class PasswordHealthTab(QWidget):
         self.password_input.setPlaceholderText("Enter your password here")
         main_layout.addWidget(self.password_input)
 
-        # Create button to check password health manually
+        # Button to check password health manually
         self.check_health_button = QPushButton("Check Password Health")
         self.check_health_button.setObjectName("checkHealthButton")
         self.check_health_button.clicked.connect(self._check_password_health)
         main_layout.addWidget(self.check_health_button)
 
-        # Create button to check all passwords in the database
+        # Button to check all passwords in the database
         self.check_all_passwords_button = QPushButton("Check All Passwords in Database")
         self.check_all_passwords_button.setObjectName("checkAllPasswordsButton")
         self.check_all_passwords_button.clicked.connect(
@@ -60,12 +61,12 @@ class PasswordHealthTab(QWidget):
         )
         main_layout.addWidget(self.check_all_passwords_button)
 
-        # Optionally, add stretch at the end to push content to the top
+        # Stretch to push widgets to the top
         main_layout.addStretch()
 
     def _check_password_health(self):
         """Check the health of a single password entered by the user."""
-        password = self.password_input.text()
+        password = self.password_input.text().strip()
         if not password:
             QMessageBox.warning(self, "Error", "Please enter a password")
             return
@@ -82,6 +83,9 @@ class PasswordHealthTab(QWidget):
                 QMessageBox.information(
                     self, "Password Health", "Password is safe and not compromised."
                 )
+            logger.info(
+                f"Password checked: {password}, Compromised count: {compromised_count}"
+            )
         except Exception as e:
             logger.error(f"Error checking password health: {e}")
             QMessageBox.critical(
@@ -91,6 +95,13 @@ class PasswordHealthTab(QWidget):
     def _check_all_passwords_in_database(self):
         """Check all passwords in the database for compromise and strength."""
         passwords = self._fetch_passwords_from_database()
+
+        if not passwords:
+            QMessageBox.information(
+                self, "No Passwords", "No passwords found in the database."
+            )
+            return
+
         password_health_data = []
 
         for password in passwords:
@@ -109,9 +120,12 @@ class PasswordHealthTab(QWidget):
                 }
             )
 
+        # Display the password health data using a dialog/table
         results_widget = display_password_health_table(
             password_health_data, parent=self
         )
+
+        # Add and display the results in the stacked widget
         self.stacked_widget.addWidget(results_widget)
         self.stacked_widget.setCurrentWidget(results_widget)
 
@@ -130,5 +144,8 @@ class PasswordHealthTab(QWidget):
             except Exception as e:
                 logger.error(f"Failed to decrypt password: {e}")
                 decrypted_passwords.append("Decryption Failed")
+
+        if not decrypted_passwords:
+            logger.info("No passwords found in the database.")
 
         return decrypted_passwords

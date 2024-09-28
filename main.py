@@ -30,7 +30,6 @@ from backend.database import (
     set_master_password,
     verify_master_password,
 )
-from frontend.visual_settings import SettingsTab
 from frontend.blueprints import (
     ButtonFactory,
     CustomMessageBox,
@@ -40,6 +39,7 @@ from frontend.password_generation import PasswordGenerationTab
 from frontend.password_health_check_tab import PasswordHealthTab
 from frontend.password_management import PasswordManagementTab
 from frontend.secure_notes_tab import SecureNotesTab
+from frontend.visual_settings import SettingsTab
 from session_manager import SessionManager
 
 # Add the root directory to sys.path using a safer approach
@@ -362,7 +362,9 @@ class PasswordManager(QMainWindow):
         self.password_management_tab = PasswordManagementTab()
         self.passkey_manager_tab = PasskeyManagerTab()
         self.secure_notes_tab = SecureNotesTab(self.conn)
-        self.password_health_tab = PasswordHealthTab(self.conn)
+        self.password_health_tab = PasswordHealthTab(
+            self.conn, self.stacked_widget
+        )  # Pass stacked_widget here
         self.settings_tab = SettingsTab(main_window=self)
 
         # Add the tabs to the stacked widget
