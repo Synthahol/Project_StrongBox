@@ -36,7 +36,7 @@ Fortalice
 │   │   └── style.qss
 │   ├── blueprints.py
 │   ├── passkey_manager_tab.py
-│   ├── password_generation.py
+│   ├── password_generation_tab.py
 │   ├── password_management.py
 │   ├── secure_notes_tab.py
 │   └── utils.py

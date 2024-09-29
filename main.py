@@ -35,7 +35,7 @@ from frontend.blueprints import (
     CustomMessageBox,
 )
 from frontend.passkey_manager_tab import PasskeyManagerTab
-from frontend.password_generation import PasswordGenerationTab
+from frontend.password_generation_tab import PasswordGenerationTab
 from frontend.password_health_check_tab import PasswordHealthTab
 from frontend.password_management import PasswordManagementTab
 from frontend.secure_notes_tab import SecureNotesTab
@@ -216,7 +216,7 @@ class PasswordManager(QMainWindow):
         super().__init__()
         self.conn: Optional[object] = None
         self.cipher_suite: Optional[object] = None  # Clarify type if possible
-        self.password_generation_tab: Optional[PasswordGenerationTab] = None
+        self.password_generation_tab_tab: Optional[PasswordGenerationTab] = None
         self.password_management_tab: Optional[PasswordManagementTab] = None
         self.passkey_manager_tab: Optional[PasskeyManagerTab] = None
         self.secure_notes_tab: Optional[SecureNotesTab] = None
@@ -358,7 +358,7 @@ class PasswordManager(QMainWindow):
 
     def _setup_tabs(self):
         """Set up the main tabs of the application."""
-        self.password_generation_tab = PasswordGenerationTab()
+        self.password_generation_tab_tab = PasswordGenerationTab()
         self.password_management_tab = PasswordManagementTab()
         self.passkey_manager_tab = PasskeyManagerTab()
         self.secure_notes_tab = SecureNotesTab(self.conn)
@@ -368,7 +368,7 @@ class PasswordManager(QMainWindow):
         self.settings_tab = SettingsTab(main_window=self)
 
         # Add the tabs to the stacked widget
-        self.stacked_widget.addWidget(self.password_generation_tab)
+        self.stacked_widget.addWidget(self.password_generation_tab_tab)
         self.stacked_widget.addWidget(self.password_management_tab)
         self.stacked_widget.addWidget(self.passkey_manager_tab)
         self.stacked_widget.addWidget(self.secure_notes_tab)
@@ -379,7 +379,7 @@ class PasswordManager(QMainWindow):
 
     def show_password_generator(self):
         """Show the password generation tab."""
-        self.stacked_widget.setCurrentWidget(self.password_generation_tab)
+        self.stacked_widget.setCurrentWidget(self.password_generation_tab_tab)
 
     def show_manage_passwords(self):
         """Show the manage passwords tab."""

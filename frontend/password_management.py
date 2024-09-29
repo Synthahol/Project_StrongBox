@@ -3,13 +3,14 @@
 import logging
 import os
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import QItemSelectionModel, Qt
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
     QApplication,
     QCompleter,
     QDialog,
     QFormLayout,
+    QFrame,
     QHBoxLayout,
     QHeaderView,
     QLabel,
@@ -63,6 +64,8 @@ class PasswordManagementTab(QWidget):
             "Fortalice Secure Password Vault",
             "Secure storage of your usernames and passwords.",
         )
+        # Assuming 'add_title_and_description' sets the objectName for the title label
+        # If not, you need to modify 'add_title_and_description' to set it.
 
         # Input Fields using QFormLayout
         form_layout = QFormLayout()
@@ -91,12 +94,13 @@ class PasswordManagementTab(QWidget):
             icon_path=os.path.join("frontend", "icons", "store.png"),
             tooltip="Click to store the entered password",
         )
+        store_button.setObjectName("storePasswordButton")  # Set objectName for QSS
         buttons_layout.addWidget(store_button)
         self.layout.addLayout(buttons_layout)
 
         # Add some vertical space for clarity
         spacer = QWidget()
-        spacer.setFixedHeight(20)  # Adjust the height of the spacer as needed
+        spacer.setFixedHeight(40)  # Adjust the height of the spacer as needed
         self.layout.addWidget(spacer)
 
         # Search bar for filtering passwords
@@ -109,6 +113,7 @@ class PasswordManagementTab(QWidget):
 
         # Stored Passwords Section
         stored_label = QLabel("Stored Passwords")
+        stored_label.setObjectName("passwordHealthTitle")  # Set objectName for QSS
         stored_label.setStyleSheet("font-size: 20px; font-weight: bold;")
         stored_label.setAlignment(Qt.AlignCenter)
         self.layout.addWidget(stored_label)
@@ -143,17 +148,39 @@ class PasswordManagementTab(QWidget):
 
     def create_password_table(self):
         table = QTableWidget()
+        table.setObjectName("passwordTable")  # Set objectName for QSS
         table.setColumnCount(4)
         table.setHorizontalHeaderLabels(["Service", "Username", "Password", "Action"])
-        table.setStyleSheet(
-            "QTableWidget::item { padding: 0px; margin: 0px; } QTableWidget { gridline-color: #4a4c68; }"
-        )
+        table.setAlternatingRowColors(True)  # Enable alternating row colors
+        table.setFrameShape(
+            QFrame.NoFrame
+        )  # Remove default frame to allow rounded corners
+        table.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        table.horizontalHeader().setObjectName(
+            "passwordTableHeader"
+        )  # Set objectName for QSS
 
         header = table.horizontalHeader()
         for i in range(3):
             header.setSectionResizeMode(i, QHeaderView.Stretch)
         header.setSectionResizeMode(3, QHeaderView.ResizeToContents)
         table.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+
+        # Set selection behavior and mode to allow selecting individual cells, rows, or columns
+        table.setSelectionBehavior(QTableWidget.SelectItems)
+        table.setSelectionMode(QTableWidget.ExtendedSelection)
+
+        # Connect doubleClicked signal for cells
+        table.doubleClicked.connect(self.handle_cell_double_click)
+
+        # Connect doubleClicked signals for headers
+        table.horizontalHeader().doubleClicked.connect(
+            self.handle_horizontal_header_double_click
+        )
+        table.verticalHeader().doubleClicked.connect(
+            self.handle_vertical_header_double_click
+        )
+
         return table
 
     def show_message(self, title, message, icon=QMessageBox.Information):
@@ -174,6 +201,7 @@ class PasswordManagementTab(QWidget):
         for row_num, (service, username, password) in enumerate(passwords):
             self.password_table.insertRow(row_num)
             self.add_password_row(row_num, service, username, password)
+            self.password_table.setRowHeight(row_num, 50)
         self.password_table.resizeRowsToContents()
 
     def add_password_row(self, row_num, service, username, password):
@@ -237,6 +265,8 @@ class PasswordManagementTab(QWidget):
                 icon_path=icon_path,
                 tooltip=tooltip,
             )
+            # Optionally set object names if you have specific styles
+            # button.setObjectName(f"{text.lower()}Button")
             action_layout.addWidget(button)
 
         action_widget = QWidget()
@@ -334,6 +364,40 @@ class PasswordManagementTab(QWidget):
             )
             self.show_message(
                 "Error", "Failed to store password.", QMessageBox.Critical
+            )
+
+    def handle_cell_double_click(self, index):
+        """Handle double-click events on cells to unhighlight them."""
+        if not index.isValid():
+            return
+
+        selection_model = self.password_table.selectionModel()
+
+        if selection_model.isSelected(index):
+            selection_model.select(
+                index, QItemSelectionModel.Deselect | QItemSelectionModel.Select
+            )
+
+    def handle_horizontal_header_double_click(self, logicalIndex):
+        """Handle double-click events on horizontal headers to unhighlight columns."""
+        selection_model = self.password_table.selectionModel()
+        if selection_model.isColumnSelected(logicalIndex):
+            selection_model.select(
+                self.password_table.model().index(0, logicalIndex),
+                QItemSelectionModel.Deselect
+                | QItemSelectionModel.Select
+                | QItemSelectionModel.Columns,
+            )
+
+    def handle_vertical_header_double_click(self, logicalIndex):
+        """Handle double-click events on vertical headers to unhighlight rows."""
+        selection_model = self.password_table.selectionModel()
+        if selection_model.isRowSelected(logicalIndex):
+            selection_model.select(
+                self.password_table.model().index(logicalIndex, 0),
+                QItemSelectionModel.Deselect
+                | QItemSelectionModel.Select
+                | QItemSelectionModel.Rows,
             )
 
 

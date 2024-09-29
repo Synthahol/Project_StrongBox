@@ -28,18 +28,18 @@ def generate_password(length: int, charset: str) -> str:
         raise ValueError("Character set must not be empty.")
 
     bits_per_char = math.log2(len(charset))
-    required_entropy = 256
+    #required_entropy = 256
     actual_entropy = length * bits_per_char
 
-    if actual_entropy < required_entropy:
-        logger.error(
-            f"Provided length {length} with charset size {len(charset)} "
-            f"only provides {actual_entropy:.2f} bits of entropy, "
-            f"which is less than the required {required_entropy} bits."
-        )
-        raise ValueError(
-            f"Password length of {length} is insufficient for {required_entropy} bits of entropy with the given character set."
-        )
+    #if actual_entropy < required_entropy:
+        #logger.error(
+            #f"Provided length {length} with charset size {len(charset)} "
+            #f"only provides {actual_entropy:.2f} bits of entropy, "
+            #f"which is less than the required {required_entropy} bits."
+        #)
+        #raise ValueError(
+            #f"Password length of {length} is insufficient for {required_entropy} bits of #entropy with the given character set."
+        #)
 
     # Define character categories based on the charset
     lowercase = string.ascii_lowercase
