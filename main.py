@@ -13,6 +13,7 @@ from PySide6.QtWidgets import (
     QApplication,
     QDialog,
     QHBoxLayout,
+    QInputDialog,
     QLabel,
     QLineEdit,
     QMainWindow,
@@ -30,10 +31,8 @@ from backend.database import (
     set_master_password,
     verify_master_password,
 )
-from frontend.blueprints import (
-    ButtonFactory,
-    CustomMessageBox,
-)
+from backend.two_factor_auth import TwoFactorAuthentication
+from frontend.blueprints import ButtonFactory, CustomMessageBox
 from frontend.passkey_manager_tab import PasskeyManagerTab
 from frontend.password_generation_tab import PasswordGenerationTab
 from frontend.password_health_check_tab import PasswordHealthTab
@@ -47,7 +46,6 @@ from session_manager import SessionManager
 PACKAGE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 if PACKAGE_DIR not in sys.path:
     sys.path.insert(0, PACKAGE_DIR)
-
 
 try:
     from backend.config import DATABASE_DIR, LOG_FILE
@@ -215,13 +213,14 @@ class PasswordManager(QMainWindow):
     def __init__(self):
         super().__init__()
         self.conn: Optional[object] = None
-        self.cipher_suite: Optional[object] = None  # Clarify type if possible
+        self._cipher_suite: Optional[object] = None  # Clarify type if possible
         self.password_generation_tab_tab: Optional[PasswordGenerationTab] = None
         self.password_management_tab: Optional[PasswordManagementTab] = None
         self.passkey_manager_tab: Optional[PasskeyManagerTab] = None
         self.secure_notes_tab: Optional[SecureNotesTab] = None
         self.settings_tab: Optional[SettingsTab] = None
         self.password_health_tab: Optional[QWidget] = None
+        self.user_identifier: Optional[str] = None
 
         self.setWindowTitle("Fortalice")
         self.setGeometry(
@@ -333,10 +332,8 @@ class PasswordManager(QMainWindow):
             initialize_db(self.conn, key_id)
             logger.info("Database connection successful.")
 
-            # Ensure the secure_notes table is created
-            # Assuming `SecureNotesTab` handles its own table creation
-            # Else, uncomment the following line if necessary:
-            # create_secure_notes_table(self.conn)
+            # Prompt for user identifier
+            self.prompt_user_identifier()
 
             if not is_master_password_set(self.conn):
                 self.set_master_password()
@@ -355,6 +352,28 @@ class PasswordManager(QMainWindow):
             ).show_message()
             logger.error("Failed to connect to the database.")
             sys.exit(1)
+
+    def prompt_user_identifier(self):
+        """Prompt the user to enter a unique identifier for 2FA."""
+        while True:
+            dialog = CustomInputDialog(
+                "User Setup",
+                "Enter your email address to be used for 2FA:",
+                QLineEdit.Normal,
+                self,
+            )
+            if dialog.exec() == QDialog.Accepted:
+                user_identifier = dialog.get_input().strip()
+                # Validate email format
+                if re.match(r"[^@]+@[^@]+\.[^@]+", user_identifier):
+                    self.user_identifier = user_identifier
+                    logger.info(f"User identifier set: {user_identifier}")
+                    return
+                else:
+                    self.show_warning("Invalid email address. Please try again.")
+            else:
+                self.show_warning("User identifier is required to proceed.")
+                sys.exit(1)
 
     def _setup_tabs(self):
         """Set up the main tabs of the application."""
@@ -400,6 +419,43 @@ class PasswordManager(QMainWindow):
     def show_settings(self):
         """Show the settings tab."""
         self.stacked_widget.setCurrentWidget(self.settings_tab)
+
+    def verify_two_factor_authentication(self) -> bool:
+        """Verify the user's 2FA token."""
+        two_fa = TwoFactorAuthentication(self.user_identifier, self.conn)
+        # Check if 2FA is enabled for the user
+        secret = two_fa.get_secret()
+        if not secret:
+            # 2FA is not set up; proceed without verification
+            return True
+
+        # Prompt user to enter 2FA token
+        for _ in range(3):  # Allow up to 3 attempts
+            token, ok = QInputDialog.getText(
+                self,
+                "Two-Factor Authentication",
+                "Enter your 2FA token:",
+                QLineEdit.Normal,
+            )
+            if ok:
+                if two_fa.verify_token(token):
+                    logger.info("2FA verification successful.")
+                    return True
+                else:
+                    self.show_warning("Invalid 2FA token. Please try again.")
+            else:
+                # User canceled the input dialog
+                reply = QMessageBox.question(
+                    self,
+                    "Cancel Verification",
+                    "Are you sure you want to cancel 2FA verification?",
+                    QMessageBox.Yes | QMessageBox.No,
+                    QMessageBox.No,
+                )
+                if reply == QMessageBox.Yes:
+                    return False
+        self.show_warning("Maximum attempts reached. Exiting application.")
+        return False
 
     def set_master_password(self):
         """Prompt the user to set the master password using a custom input dialog."""
@@ -474,7 +530,7 @@ class PasswordManager(QMainWindow):
 
     def verify_master_password(self) -> bool:
         """Verify the entered master password using a custom input dialog."""
-        while True:
+        for _ in range(3):  # Allow up to 3 attempts
             dialog = VerifyMasterPasswordDialog(self)
             if dialog.exec() == QDialog.Accepted:
                 password = dialog.get_password()
@@ -483,6 +539,14 @@ class PasswordManager(QMainWindow):
                     # Store the master password in the session manager
                     session = SessionManager()
                     session.set_master_password(password)
+                    # Initiate 2FA verification
+                    if not self.verify_two_factor_authentication():
+                        CustomMessageBox(
+                            "Error",
+                            "2FA verification failed.",
+                            QMessageBox.Critical,
+                        ).show_message()
+                        sys.exit(1)  # Exit if 2FA verification fails
                     return True
                 else:
                     CustomMessageBox(
@@ -491,12 +555,21 @@ class PasswordManager(QMainWindow):
                         QMessageBox.Warning,
                     ).show_message()
             else:
-                CustomMessageBox(
-                    "Warning",
-                    "Master password is required to proceed.",
-                    QMessageBox.Warning,
-                ).show_message()
-                return False
+                reply = QMessageBox.question(
+                    self,
+                    "Cancel Verification",
+                    "Are you sure you want to cancel master password verification?",
+                    QMessageBox.Yes | QMessageBox.No,
+                    QMessageBox.No,
+                )
+                if reply == QMessageBox.Yes:
+                    sys.exit(1)
+        CustomMessageBox(
+            "Warning",
+            "Maximum attempts reached. Exiting application.",
+            QMessageBox.Warning,
+        ).show_message()
+        sys.exit(1)
 
     def store_master_password(self, password: str):
         """Store the master password in the database."""

@@ -1,23 +1,32 @@
-# settings.py
+# visual_settings.py
 
 import json
 import logging
 import os
 
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import (
     QColorDialog,
     QComboBox,
+    QDialog,
     QLabel,
+    QMessageBox,
     QPushButton,
     QSlider,
     QVBoxLayout,
     QWidget,
 )
 
+from backend.database import delete_2fa_secret
+from backend.two_factor_auth import TwoFactorAuthentication
 from frontend.blueprints import add_title_and_description
 
 logger = logging.getLogger(__name__)
+
+SETTINGS_DIR = os.path.join(os.path.expanduser("~"), ".fortalice")
+os.makedirs(SETTINGS_DIR, exist_ok=True)
+SETTINGS_FILE = os.path.join(SETTINGS_DIR, "settings.json")
 
 
 class SettingsTab(QWidget):
@@ -25,6 +34,7 @@ class SettingsTab(QWidget):
         super().__init__()
         self.main_window = main_window
         self.layout = QVBoxLayout(self)
+        self.setup_two_factor_auth_section()
 
         # Default and current settings
         self.default_settings = {
@@ -43,7 +53,7 @@ class SettingsTab(QWidget):
         add_title_and_description(
             self.layout,
             "Visual Settings",
-            "Change the font, font size and color scheme to your liking.",
+            "Change the font, font size, and color scheme to your liking.",
         )
 
         # Font Size Slider
@@ -192,16 +202,16 @@ class SettingsTab(QWidget):
 
     def save_settings(self):
         try:
-            with open("settings.json", "w") as file:
+            with open(SETTINGS_FILE, "w") as file:
                 json.dump(self.current_settings, file)
             logger.info("Settings saved successfully.")
         except IOError as e:
             logger.error(f"Failed to save settings: {e}")
 
     def load_settings(self):
-        if os.path.exists("settings.json"):
+        if os.path.exists(SETTINGS_FILE):
             try:
-                with open("settings.json", "r") as file:
+                with open(SETTINGS_FILE, "r") as file:
                     return json.load(file)
             except (IOError, json.JSONDecodeError) as e:
                 logger.error(f"Failed to load settings: {e}")
@@ -226,3 +236,88 @@ class SettingsTab(QWidget):
         if color.isValid():
             self.local_settings["background_color"] = color.name()
             self.apply_settings({"colors"})
+
+    def setup_two_factor_auth_section(self):
+        from PySide6.QtWidgets import QGroupBox
+
+        group_box = QGroupBox("Two-Factor Authentication")
+        layout = QVBoxLayout()
+
+        two_fa = TwoFactorAuthentication(
+            self.main_window.user_identifier, self.main_window.conn
+        )
+        secret = two_fa.get_secret()
+
+        if secret:
+            self.two_fa_status_label = QLabel("Two-Factor Authentication is enabled.")
+            self.disable_two_fa_button = QPushButton("Disable 2FA")
+            self.disable_two_fa_button.clicked.connect(self.disable_two_factor_auth)
+            layout.addWidget(self.two_fa_status_label)
+            layout.addWidget(self.disable_two_fa_button)
+        else:
+            self.two_fa_status_label = QLabel(
+                "Two-Factor Authentication is not enabled."
+            )
+            self.enable_two_fa_button = QPushButton("Enable 2FA")
+            self.enable_two_fa_button.clicked.connect(self.enable_two_factor_auth)
+            layout.addWidget(self.two_fa_status_label)
+            layout.addWidget(self.enable_two_fa_button)
+
+        group_box.setLayout(layout)
+        self.layout.addWidget(group_box)
+
+    def enable_two_factor_auth(self):
+        two_fa = TwoFactorAuthentication(
+            self.main_window.user_identifier, self.main_window.conn
+        )
+        try:
+            two_fa.generate_secret()
+            qr_code_image = two_fa.generate_qr_code()
+            # Display the QR code to the user
+            self.show_qr_code(qr_code_image)
+            self.two_fa_status_label.setText("Two-Factor Authentication is enabled.")
+            self.disable_two_fa_button = QPushButton("Disable 2FA")
+            self.disable_two_fa_button.clicked.connect(self.disable_two_factor_auth)
+            self.layout().addWidget(self.disable_two_fa_button)
+            logger.info("2FA enabled for user.")
+        except Exception as e:
+            self.main_window.show_warning(f"Failed to enable 2FA: {str(e)}")
+            logger.error(f"Failed to enable 2FA: {str(e)}")
+
+    def disable_two_factor_auth(self):
+        reply = QMessageBox.question(
+            self,
+            "Disable 2FA",
+            "Are you sure you want to disable Two-Factor Authentication?",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No,
+        )
+        if reply == QMessageBox.Yes:
+            try:
+                delete_2fa_secret(
+                    self.main_window.conn, self.main_window.user_identifier
+                )
+                self.two_fa_status_label.setText(
+                    "Two-Factor Authentication is disabled."
+                )
+                self.enable_two_fa_button = QPushButton("Enable 2FA")
+                self.enable_two_fa_button.clicked.connect(self.enable_two_factor_auth)
+                self.layout().addWidget(self.enable_two_fa_button)
+                logger.info("2FA disabled for user.")
+            except Exception as e:
+                self.main_window.show_warning(f"Failed to disable 2FA: {str(e)}")
+                logger.error(f"Failed to disable 2FA: {str(e)}")
+
+    def show_qr_code(self, qr_code_image_data: bytes):
+        qr_dialog = QDialog(self)
+        qr_dialog.setWindowTitle("Scan QR Code with Authenticator App")
+        layout = QVBoxLayout()
+        instructions = QLabel("Scan this QR code with your authenticator app.")
+        layout.addWidget(instructions)
+        qr_label = QLabel()
+        qr_pixmap = QPixmap()
+        qr_pixmap.loadFromData(qr_code_image_data)
+        qr_label.setPixmap(qr_pixmap)
+        layout.addWidget(qr_label)
+        qr_dialog.setLayout(layout)
+        qr_dialog.exec()

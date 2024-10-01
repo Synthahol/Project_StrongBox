@@ -1,3 +1,7 @@
+# backend.config.py
+
+"""This module contains the configuration settings for the application."""
+
 import os
 
 # Define the directory for storing user databases

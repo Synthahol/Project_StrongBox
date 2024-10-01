@@ -1,5 +1,8 @@
-# database.py
+# backend.database.py
 
+"""This module contains functions for managing the SQLite database."""
+
+import hashlib
 import logging
 import os
 import sqlite3
@@ -7,31 +10,32 @@ import sqlite3
 import bcrypt
 import keyring
 from cryptography.fernet import Fernet
-from dotenv import load_dotenv
 
 from backend.config import DATABASE_DIR
 
 # Configure logging
 logger = logging.getLogger(__name__)
 
-# Load environment variables from the .env file
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-env_path = os.path.join(project_root, ".env")
-load_dotenv(dotenv_path=env_path)
 
 # Constants
 SERVICE_ID = "my_fortalice_app"
 DATABASE_NAME = "UserDatabase"
 DATABASE_PATH = os.path.join(DATABASE_DIR, f"{DATABASE_NAME}.db")
-cipher_suite = None
+_cipher_suite = None
 
 
-def get_cipher_suite():
-    global cipher_suite
-    if cipher_suite is None:
+def get__cipher_suite():
+    """Define the cipher suite for encrypting and decrypting data."""
+    global _cipher_suite
+    if _cipher_suite is None:
         key = manage_encryption_key(DATABASE_NAME)
-        cipher_suite = Fernet(key)
-    return cipher_suite
+        _cipher_suite = Fernet(key)
+    return _cipher_suite
+
+
+def hash_identifier(identifier: str) -> str:
+    """Compute a hash of the identifier for consistent lookup."""
+    return hashlib.sha256(identifier.encode("utf-8")).hexdigest()
 
 
 def manage_encryption_key(database_name):
@@ -50,8 +54,8 @@ def manage_encryption_key(database_name):
 def encrypt_data(data: str) -> str:
     """Encrypt data using the cipher suite."""
     try:
-        cipher_suite = get_cipher_suite()
-        return cipher_suite.encrypt(data.encode()).decode()
+        _cipher_suite = get__cipher_suite()
+        return _cipher_suite.encrypt(data.encode()).decode()
     except Exception:
         logger.error("Error encrypting data.")
         raise Exception("Encryption failed.")
@@ -60,8 +64,8 @@ def encrypt_data(data: str) -> str:
 def decrypt_data(encrypted_data: str) -> str:
     """Decrypt data using the cipher suite."""
     try:
-        cipher_suite = get_cipher_suite()
-        return cipher_suite.decrypt(encrypted_data.encode()).decode()
+        _cipher_suite = get__cipher_suite()
+        return _cipher_suite.decrypt(encrypted_data.encode()).decode()
     except Exception:
         logger.error("Error decrypting data.")
         raise Exception("Decryption failed.")
@@ -110,6 +114,12 @@ def initialize_db(conn: sqlite3.Connection, key_id: str):
             )
             conn.execute(
                 "INSERT OR IGNORE INTO metadata (key_id) VALUES (?)", (key_id,)
+            )
+            conn.execute(
+                """CREATE TABLE IF NOT EXISTS two_factor_auth (
+                user_identifier TEXT PRIMARY KEY,
+                secret TEXT NOT NULL
+            );"""
             )
         logger.info("Initialized database.")
     except sqlite3.Error as e:
@@ -366,3 +376,56 @@ def fetch_all(conn: sqlite3.Connection, query: str, params: tuple = None) -> lis
     except sqlite3.Error as e:
         logger.error(f"Error executing query: {e} | Query: {query}")
         return []
+
+
+def store_2fa_secret(conn: sqlite3.Connection, user_identifier: str, secret: str):
+    """Store the 2FA secret for a user in the database."""
+    try:
+        hashed_user_identifier = hash_identifier(user_identifier)
+        encrypted_secret = encrypt_data(secret)
+        with conn:
+            conn.execute(
+                "INSERT OR REPLACE INTO two_factor_auth (user_identifier, secret) VALUES (?, ?)",
+                (hashed_user_identifier, encrypted_secret),
+            )
+        logger.info("Stored 2FA secret for user.")
+    except sqlite3.Error as e:
+        logger.error(f"Failed to store 2FA secret: {e}")
+        raise Exception("Failed to store 2FA secret.")
+
+
+def get_2fa_secret(conn: sqlite3.Connection, user_identifier: str) -> str:
+    """Retrieve the decrypted 2FA secret for a user."""
+    hashed_user_identifier = hash_identifier(user_identifier)
+    try:
+        cursor = conn.execute(
+            "SELECT secret FROM two_factor_auth WHERE user_identifier = ?",
+            (hashed_user_identifier,),
+        )
+        row = cursor.fetchone()
+        if row:
+            encrypted_secret = row[0]
+            secret = decrypt_data(encrypted_secret)
+            logger.info("Retrieved 2FA secret for user.")
+            return secret
+        else:
+            logger.info("No 2FA secret found for the specified user.")
+            return None
+    except Exception as e:
+        logger.error(f"Error retrieving 2FA secret: {e}")
+        raise Exception("Failed to retrieve 2FA secret.")
+
+
+def delete_2fa_secret(conn: sqlite3.Connection, user_identifier: str):
+    """Delete the 2FA secret for a user."""
+    try:
+        hashed_user_identifier = hash_identifier(user_identifier)
+        with conn:
+            conn.execute(
+                "DELETE FROM two_factor_auth WHERE user_identifier = ?",
+                (hashed_user_identifier,),
+            )
+        logger.info("Deleted 2FA secret for user.")
+    except sqlite3.Error as e:
+        logger.error(f"Failed to delete 2FA secret: {e}")
+        raise Exception("Failed to delete 2FA secret.")
