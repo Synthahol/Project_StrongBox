@@ -3,12 +3,13 @@
 import logging
 import os
 import re
+import sqlite3
 import sys
 import uuid
 from typing import Callable, Optional
 
 from PySide6.QtCore import QEasingCurve, QPropertyAnimation, QSize, Qt
-from PySide6.QtGui import QFont, QFontDatabase, QGuiApplication, QIcon
+from PySide6.QtGui import QFont, QFontDatabase, QGuiApplication, QIcon, QPixmap
 from PySide6.QtWidgets import (
     QApplication,
     QDialog,
@@ -31,6 +32,7 @@ from backend.database import (
     set_master_password,
     verify_master_password,
 )
+from backend.exceptions import SecretAlreadyExistsError
 from backend.two_factor_auth import TwoFactorAuthentication
 from frontend.blueprints import ButtonFactory, CustomMessageBox
 from frontend.passkey_manager_tab import PasskeyManagerTab
@@ -38,7 +40,7 @@ from frontend.password_generation_tab import PasswordGenerationTab
 from frontend.password_health_check_tab import PasswordHealthTab
 from frontend.password_management import PasswordManagementTab
 from frontend.secure_notes_tab import SecureNotesTab
-from frontend.visual_settings import SettingsTab
+from frontend.settings import SettingsTab
 from session_manager import SessionManager
 
 # Add the root directory to sys.path using a safer approach
@@ -81,6 +83,8 @@ class CustomInputDialog(QDialog):
         super().__init__(parent)
         self.setWindowTitle(title)
         self.setWindowIcon(QIcon(r"frontend/icons/encryption.png"))
+        self.setMinimumSize(400, 150)
+
         layout = QVBoxLayout(self)
 
         # Add the label and input field
@@ -212,14 +216,13 @@ class PasswordManager(QMainWindow):
 
     def __init__(self):
         super().__init__()
-        self.conn: Optional[object] = None
-        self._cipher_suite: Optional[object] = None  # Clarify type if possible
-        self.password_generation_tab_tab: Optional[PasswordGenerationTab] = None
+        self.conn: Optional[sqlite3.Connection] = None
+        self.password_generation_tab: Optional[PasswordGenerationTab] = None
         self.password_management_tab: Optional[PasswordManagementTab] = None
         self.passkey_manager_tab: Optional[PasskeyManagerTab] = None
         self.secure_notes_tab: Optional[SecureNotesTab] = None
         self.settings_tab: Optional[SettingsTab] = None
-        self.password_health_tab: Optional[QWidget] = None
+        self.password_health_tab: Optional[PasswordHealthTab] = None
         self.user_identifier: Optional[str] = None
 
         self.setWindowTitle("Fortalice")
@@ -298,9 +301,9 @@ class PasswordManager(QMainWindow):
         )
         layout.addWidget(self.health_button)
 
-        # Visual Settings Button
+        # Settings Button
         self.settings_button = self._create_navigation_button(
-            "Visual Settings", r"frontend/icons/settings.png", self.show_settings
+            "Settings", r"frontend/icons/settings.png", self.show_settings
         )
         layout.addWidget(self.settings_button)
 
@@ -345,6 +348,19 @@ class PasswordManager(QMainWindow):
                 ).show_message()
                 sys.exit(1)  # Exit if verification fails
 
+            # Require 2FA setup after master password is set or verified
+            if not self.is_two_factor_setup():
+                self.setup_two_factor_authentication()
+            else:
+                # Verify 2FA if already set up
+                if not self.verify_two_factor_authentication():
+                    CustomMessageBox(
+                        "Error",
+                        "2FA verification failed.",
+                        QMessageBox.Critical,
+                    ).show_message()
+                    sys.exit(1)
+
             self._setup_tabs()
         else:
             CustomMessageBox(
@@ -352,6 +368,60 @@ class PasswordManager(QMainWindow):
             ).show_message()
             logger.error("Failed to connect to the database.")
             sys.exit(1)
+
+    def is_two_factor_setup(self) -> bool:
+        """Check if 2FA is already set up for the user."""
+        two_fa = TwoFactorAuthentication(self.user_identifier, self.conn)
+        secret = two_fa.get_secret()
+        return secret is not None
+
+    def setup_two_factor_authentication(self):
+        """Prompt the user to set up Two-Factor Authentication."""
+        two_fa = TwoFactorAuthentication(self.user_identifier, self.conn)
+        try:
+            two_fa.generate_secret()
+            logger.info("2FA secret generated successfully.")
+            qr_code_image = two_fa.generate_qr_code()
+            self.show_qr_code(qr_code_image)
+            # Verify the 2FA code entered by the user
+            if not self.verify_two_factor_authentication():
+                CustomMessageBox(
+                    "Error",
+                    "2FA verification failed.",
+                    QMessageBox.Critical,
+                ).show_message()
+                sys.exit(1)
+            else:
+                CustomMessageBox(
+                    "Info",
+                    "Two-Factor Authentication set up successfully!",
+                    QMessageBox.Information,
+                ).show_message()
+                logger.info("2FA set up successfully.")
+        except SecretAlreadyExistsError:
+            logger.info("2FA is already set up for this user.")
+            pass
+        except Exception as e:
+            logger.error(f"Failed to set up 2FA: {e}")
+            self.show_warning(f"Failed to set up 2FA: {e}")
+            sys.exit(1)
+
+    def show_qr_code(self, qr_code_image_data: bytes):
+        """Display the QR code for 2FA setup."""
+        qr_dialog = QDialog(self)
+        qr_dialog.setWindowTitle("Scan QR Code with Authenticator App")
+        layout = QVBoxLayout()
+        instructions = QLabel("Scan this QR code with your authenticator app.")
+        instructions.setAlignment(Qt.AlignCenter)
+        layout.addWidget(instructions)
+        qr_label = QLabel()
+        qr_pixmap = QPixmap()
+        qr_pixmap.loadFromData(qr_code_image_data)
+        qr_label.setPixmap(qr_pixmap)
+        qr_label.setAlignment(Qt.AlignCenter)
+        layout.addWidget(qr_label)
+        qr_dialog.setLayout(layout)
+        qr_dialog.exec()
 
     def prompt_user_identifier(self):
         """Prompt the user to enter a unique identifier for 2FA."""
@@ -363,7 +433,7 @@ class PasswordManager(QMainWindow):
                 self,
             )
             if dialog.exec() == QDialog.Accepted:
-                user_identifier = dialog.get_input().strip()
+                user_identifier = dialog.get_input().strip().lower()
                 # Validate email format
                 if re.match(r"[^@]+@[^@]+\.[^@]+", user_identifier):
                     self.user_identifier = user_identifier
@@ -377,7 +447,7 @@ class PasswordManager(QMainWindow):
 
     def _setup_tabs(self):
         """Set up the main tabs of the application."""
-        self.password_generation_tab_tab = PasswordGenerationTab()
+        self.password_generation_tab = PasswordGenerationTab()
         self.password_management_tab = PasswordManagementTab()
         self.passkey_manager_tab = PasskeyManagerTab()
         self.secure_notes_tab = SecureNotesTab(self.conn)
@@ -387,7 +457,7 @@ class PasswordManager(QMainWindow):
         self.settings_tab = SettingsTab(main_window=self)
 
         # Add the tabs to the stacked widget
-        self.stacked_widget.addWidget(self.password_generation_tab_tab)
+        self.stacked_widget.addWidget(self.password_generation_tab)
         self.stacked_widget.addWidget(self.password_management_tab)
         self.stacked_widget.addWidget(self.passkey_manager_tab)
         self.stacked_widget.addWidget(self.secure_notes_tab)
@@ -398,7 +468,7 @@ class PasswordManager(QMainWindow):
 
     def show_password_generator(self):
         """Show the password generation tab."""
-        self.stacked_widget.setCurrentWidget(self.password_generation_tab_tab)
+        self.stacked_widget.setCurrentWidget(self.password_generation_tab)
 
     def show_manage_passwords(self):
         """Show the manage passwords tab."""
@@ -584,9 +654,18 @@ class PasswordManager(QMainWindow):
             logger.info("Master password set successfully.")
         except ValueError as ve:
             CustomMessageBox(
-                "Warning", f"Password validation failed: {ve}", QMessageBox.Warning
+                "Warning",
+                f"Password validation failed: {ve}",
+                QMessageBox.Warning,
             ).show_message()
             logger.error(f"Password validation failed: {ve}")
+        except Exception as e:
+            CustomMessageBox(
+                "Error",
+                f"Failed to set master password: {str(e)}",
+                QMessageBox.Critical,
+            ).show_message()
+            logger.error(f"Failed to set master password: {str(e)}")
 
     def closeEvent(self, event):
         """Handle the application close event to clear sensitive data."""

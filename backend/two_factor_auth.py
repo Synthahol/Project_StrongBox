@@ -29,10 +29,18 @@ class TwoFactorAuthentication:
 
     def generate_secret(self) -> str:
         """Generates a new secret for the user and stores it."""
-        # Check if a secret already exists
         existing_secret = self.get_secret()
         if existing_secret:
+            logger.warning(
+                "Attempted to generate a secret for a user who already has one."
+            )
             raise SecretAlreadyExistsError("2FA is already set up for this user.")
+
+        secret = pyotp.random_base32()
+        logger.debug("Generated new secret, now storing it.")
+        store_2fa_secret(self.conn, self.user_identifier, secret)
+        logger.info("Generated and stored new 2FA secret for the user.")
+        return secret
 
         secret = pyotp.random_base32()
         # Store the secret in the database
