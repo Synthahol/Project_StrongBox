@@ -14,12 +14,15 @@ from PySide6.QtWidgets import (
     QComboBox,
     QDialog,
     QHBoxLayout,
+    QHeaderView,
     QLabel,
     QLineEdit,
     QMessageBox,
     QPushButton,
     QSlider,
     QStackedWidget,
+    QTableWidget,
+    QTableWidgetItem,
     QVBoxLayout,
     QWidget,
 )
@@ -251,6 +254,29 @@ class SettingsTab(QWidget):
         # Two-Factor Authentication Section
         self.setup_two_factor_auth_section(user_layout)
 
+        # --- Trusted Devices Section ---
+        add_title_and_description(
+            user_layout,
+            "Trusted Devices",
+            "Manage your trusted devices. You can revoke access to any device below.",
+        )
+
+        # Table to display trusted devices
+        self.trusted_devices_table = QTableWidget()
+        self.trusted_devices_table.setColumnCount(2)
+        self.trusted_devices_table.setHorizontalHeaderLabels(["Device ID", "Added On"])
+        self.trusted_devices_table.horizontalHeader().setSectionResizeMode(
+            QHeaderView.Stretch
+        )
+        self.trusted_devices_table.setSelectionBehavior(QTableWidget.SelectRows)
+        self.trusted_devices_table.setEditTriggers(QTableWidget.NoEditTriggers)
+        user_layout.addWidget(self.trusted_devices_table)
+
+        # Revoke Button
+        self.revoke_button = QPushButton("Revoke Selected Device(s)")
+        self.revoke_button.clicked.connect(self.revoke_selected_devices)
+        user_layout.addWidget(self.revoke_button)
+
         user_layout.addStretch()
         self.stacked_widget.addWidget(self.user_settings_page)
 
@@ -309,6 +335,9 @@ class SettingsTab(QWidget):
 
         # Set initial view to User Settings
         self.show_user_settings()
+
+        # Load and display trusted devices
+        self.load_trusted_devices()
 
     def get_available_fonts(self):
         """Returns a list of available fonts for the font dropdown."""
@@ -370,6 +399,60 @@ class SettingsTab(QWidget):
             group_layout.addWidget(self.enable_two_fa_button)
 
         layout.addWidget(group_box)
+
+    def load_trusted_devices(self):
+        """Load and display the list of trusted devices."""
+        trusted_devices = self.main_window.get_trusted_devices()
+        self.trusted_devices_table.setRowCount(0)  # Clear existing rows
+
+        for device in trusted_devices:
+            row_position = self.trusted_devices_table.rowCount()
+            self.trusted_devices_table.insertRow(row_position)
+            device_id_item = QTableWidgetItem(device.get("device_id", "Unknown"))
+            added_on_item = QTableWidgetItem(device.get("added_on", "Unknown"))
+
+            self.trusted_devices_table.setItem(row_position, 0, device_id_item)
+            self.trusted_devices_table.setItem(row_position, 1, added_on_item)
+
+    def revoke_selected_devices(self):
+        """Revoke (remove) the selected trusted devices."""
+        selected_rows = self.trusted_devices_table.selectionModel().selectedRows()
+
+        if not selected_rows:
+            QMessageBox.warning(
+                self,
+                "No Selection",
+                "Please select at least one device to revoke.",
+                QMessageBox.Warning,
+            )
+            return
+
+        confirm = QMessageBox.question(
+            self,
+            "Confirm Revocation",
+            f"Are you sure you want to revoke {len(selected_rows)} device(s)?",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No,
+        )
+
+        if confirm != QMessageBox.Yes:
+            return
+
+        for selected_row in selected_rows:
+            device_id_item = self.trusted_devices_table.item(selected_row.row(), 0)
+            device_id = device_id_item.text() if device_id_item else None
+
+            if device_id:
+                self.main_window.remove_trusted_device(device_id)
+                self.trusted_devices_table.removeRow(selected_row.row())
+                logger.info(f"Revoked trusted device: {device_id}")
+
+        QMessageBox.information(
+            self,
+            "Success",
+            "Selected device(s) have been revoked successfully.",
+            QMessageBox.Information,
+        )
 
     def change_master_password(self):
         """Open the Change Master Password dialog."""

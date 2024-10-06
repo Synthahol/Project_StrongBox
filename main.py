@@ -1,5 +1,6 @@
 # main.py
 
+import datetime
 import json
 import logging
 import os
@@ -10,12 +11,12 @@ import uuid
 from typing import Callable, Optional
 
 from PySide6.QtCore import QEasingCurve, QEvent, QPropertyAnimation, QSize, Qt, QTimer
-from PySide6.QtGui import QFont, QFontDatabase, QGuiApplication, QIcon, QPixmap
+from PySide6.QtGui import QGuiApplication, QIcon, QPixmap
 from PySide6.QtWidgets import (
     QApplication,
     QDialog,
     QHBoxLayout,
-    QInputDialog,
+    QInputDialog,  # Ensure QInputDialog is imported
     QLabel,
     QLineEdit,
     QMainWindow,
@@ -38,7 +39,7 @@ from backend.database import (
 from backend.exceptions import SecretAlreadyExistsError
 from backend.two_factor_auth import TwoFactorAuthentication
 from frontend.blueprints import ButtonFactory, CustomMessageBox
-from frontend.login_dialog import LoginDialog  # Import the new LoginDialog
+from frontend.login_dialog import LoginDialog
 from frontend.passkey_manager_tab import PasskeyManagerTab
 from frontend.password_generation_tab import PasswordGenerationTab
 from frontend.password_health_check_tab import PasswordHealthTab
@@ -48,7 +49,6 @@ from frontend.settings import SettingsTab
 from session_manager import SessionManager
 
 # Add the root directory to sys.path using a safer approach
-# Assuming this script is part of a package, adjust accordingly
 PACKAGE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 if PACKAGE_DIR not in sys.path:
     sys.path.insert(0, PACKAGE_DIR)
@@ -72,59 +72,6 @@ logging.basicConfig(
     ],
 )
 logger = logging.getLogger(__name__)
-
-
-class CustomInputDialog(QDialog):
-    """Custom input dialog for user input with customizable title and label."""
-
-    def __init__(
-        self,
-        title: str,
-        label: str,
-        echo_mode: QLineEdit.EchoMode = QLineEdit.Normal,
-        parent: Optional[QWidget] = None,
-    ):
-        super().__init__(parent)
-        self.setWindowTitle(title)
-        self.setWindowIcon(QIcon(r"frontend/icons/encryption.png"))
-        self.setMinimumSize(400, 150)
-
-        layout = QVBoxLayout(self)
-
-        # Add the label and input field
-        self.label = QLabel(label)
-        self.label.setWordWrap(True)
-        layout.addWidget(self.label)
-
-        self.input_field = QLineEdit()
-        self.input_field.setEchoMode(echo_mode)
-        layout.addWidget(self.input_field)
-
-        # Use ButtonFactory to create consistent button layout
-        button_factory = ButtonFactory(self)
-        buttons = [("OK", 100, self.accept), ("Cancel", 100, self.reject)]
-        button_layout = button_factory.create_buttons_with_spacing(buttons)
-
-        # Ensure the button layout is horizontal
-        layout.addLayout(button_layout)
-
-        # Set fixed size to prevent resizing issues
-        self.setFixedSize(self.sizeHint())
-
-        # Center the dialog
-        self.center()
-
-    def get_input(self) -> str:
-        """Return the input from the line edit."""
-        return self.input_field.text()
-
-    def center(self):
-        """Center the dialog on the screen."""
-        screen = QGuiApplication.primaryScreen()
-        screen_geometry = screen.availableGeometry()
-        x = (screen_geometry.width() - self.width()) // 2
-        y = (screen_geometry.height() - self.height()) // 2
-        self.move(x, y)
 
 
 class WelcomeDialog(QDialog):
@@ -185,6 +132,7 @@ class PasswordManager(QMainWindow):
         self.settings_tab: Optional[SettingsTab] = None
         self.password_health_tab: Optional[PasswordHealthTab] = None
         self.user_identifier: Optional[str] = None
+        self.device_id: Optional[str] = None
 
         self.setWindowTitle("Fortalice")
         self.setGeometry(
@@ -222,6 +170,15 @@ class PasswordManager(QMainWindow):
 
         # Setup session timeout
         self.setup_session_timeout()
+
+    def get_current_timestamp(self, format: str = "%Y-%m-%d %H:%M:%S") -> str:
+        """
+        Returns the current timestamp as a formatted string.
+
+        :param format: The format string for the timestamp.
+        :return: Formatted timestamp string.
+        """
+        return datetime.datetime.now().strftime(format)
 
     def _setup_buttons(self, layout: QVBoxLayout):
         """Set up the buttons for navigating different tabs."""
@@ -299,6 +256,9 @@ class PasswordManager(QMainWindow):
             initialize_db(self.conn, key_id)
             logger.info("Database connection successful.")
 
+            # Generate or retrieve device ID
+            self.device_id = self.get_or_create_device_id()
+
             # Show the consolidated login dialog
             if not self.show_login_dialog():
                 CustomMessageBox(
@@ -316,6 +276,45 @@ class PasswordManager(QMainWindow):
             logger.error("Failed to connect to the database.")
             sys.exit(1)
 
+    def get_or_create_device_id(self) -> str:
+        """Retrieve the existing device ID or create a new one if it doesn't exist."""
+        device_id_path = os.path.join(DATABASE_DIR, "device_id.txt")
+
+        if os.path.exists(device_id_path):
+            try:
+                with open(device_id_path, "r") as file:
+                    device_id = file.read().strip()
+                    if self.validate_uuid(device_id):
+                        logger.info(f"Existing device ID found: {device_id}")
+                        return device_id
+                    else:
+                        logger.warning(
+                            "Invalid device ID format. Generating a new one."
+                        )
+            except Exception as e:
+                logger.error(f"Failed to read device ID: {e}")
+
+        # Generate a new device ID
+        device_id = str(uuid.uuid4())
+        try:
+            with open(device_id_path, "w") as file:
+                file.write(device_id)
+            logger.info(f"New device ID generated and stored: {device_id}")
+        except Exception as e:
+            logger.error(f"Failed to store device ID: {e}")
+            # Handle as per your security requirements
+
+        return device_id
+
+    @staticmethod
+    def validate_uuid(uuid_to_test: str, version: int = 4) -> bool:
+        """Validate that a UUID string is in fact a valid UUID."""
+        try:
+            uuid_obj = uuid.UUID(uuid_to_test, version=version)
+        except ValueError:
+            return False
+        return str(uuid_obj) == uuid_to_test
+
     def show_login_dialog(self) -> bool:
         """Display the consolidated login dialog and handle authentication."""
         # Instantiate the SessionManager
@@ -332,7 +331,7 @@ class PasswordManager(QMainWindow):
 
             # Set the user identifier
             self.user_identifier = email
-            logger.info(f"User identifier set: {self.user_identifier}")
+            logger.info("User identifier set.")
 
             # Check if master password is set
             if not is_master_password_set(self.conn):
@@ -401,74 +400,6 @@ class PasswordManager(QMainWindow):
                 "Password does not meet the required criteria. Please try again."
             )
             self.set_master_password_from_dialog(password, session)  # Retry
-
-    def is_two_factor_setup(self) -> bool:
-        """Check if 2FA is already set up for the user."""
-        two_fa = TwoFactorAuthentication(self.user_identifier, self.conn)
-        secret = two_fa.get_secret()
-        return secret is not None
-
-    def setup_two_factor_authentication(self):
-        """Prompt the user to set up Two-Factor Authentication."""
-        two_fa = TwoFactorAuthentication(self.user_identifier, self.conn)
-        try:
-            two_fa.generate_secret()
-            logger.info("2FA secret generated successfully.")
-            qr_code_image = two_fa.generate_qr_code()
-            self.show_qr_code(qr_code_image)
-            # Verify the 2FA code entered by the user
-            for _ in range(3):  # Allow up to 3 attempts
-                token, ok = QInputDialog.getText(
-                    self,
-                    "Two-Factor Authentication",
-                    "Enter the 2FA token from your authenticator app:",
-                    QLineEdit.Normal,
-                )
-                if ok:
-                    if two_fa.verify_token(token):
-                        logger.info("2FA setup verification successful.")
-                        CustomMessageBox(
-                            "Info",
-                            "Two-Factor Authentication set up successfully!",
-                            QMessageBox.Information,
-                        ).show_message()
-                        return
-                    else:
-                        self.show_warning("Invalid 2FA token. Please try again.")
-                else:
-                    self.show_warning("2FA setup is required to proceed.")
-                    sys.exit(1)
-            self.show_warning("Maximum attempts reached. Exiting application.")
-            sys.exit(1)
-        except SecretAlreadyExistsError:
-            logger.info("2FA is already set up for this user.")
-            pass
-        except Exception as e:
-            logger.error(f"Failed to set up 2FA: {e}")
-            self.show_warning(f"Failed to set up 2FA: {e}")
-            sys.exit(1)
-
-    def show_qr_code(self, qr_code_image_data: bytes):
-        """Display the QR code for 2FA setup."""
-        qr_dialog = QDialog(self)
-        qr_dialog.setWindowTitle("Scan QR Code with Authenticator App")
-        layout = QVBoxLayout()
-        instructions = QLabel("Scan this QR code with your authenticator app.")
-        instructions.setAlignment(Qt.AlignCenter)
-        layout.addWidget(instructions)
-        qr_label = QLabel()
-        qr_pixmap = QPixmap()
-        qr_pixmap.loadFromData(qr_code_image_data)
-        qr_label.setPixmap(qr_pixmap)
-        qr_label.setAlignment(Qt.AlignCenter)
-        layout.addWidget(qr_label)
-        qr_dialog.setLayout(layout)
-        qr_dialog.exec()
-
-    def prompt_user_identifier(self):
-        """Prompt the user to enter a unique identifier for 2FA."""
-        # This method is no longer needed as the LoginDialog handles email input
-        pass
 
     def _setup_tabs(self):
         """Set up the main tabs of the application."""
@@ -566,10 +497,182 @@ class PasswordManager(QMainWindow):
             return False
         return True
 
-    def store_master_password(self, password: str):
-        """Store the master password in the database."""
-        # This method is no longer needed as master password is handled in the login dialog
-        pass
+    def mark_device_as_trusted(self):
+        """Mark the current device as trusted by storing its device_id and timestamp."""
+        trusted_devices_path = os.path.join(
+            DATABASE_DIR, "trusted_devices.json.enc"
+        )  # Encrypted file
+
+        trusted_devices = {}
+        if os.path.exists(trusted_devices_path):
+            try:
+                with open(trusted_devices_path, "rb") as file:
+                    encrypted_data = file.read()
+                    decrypted_data = decrypt_data(encrypted_data.decode())
+                    trusted_devices = json.loads(decrypted_data)
+            except Exception as e:
+                logger.warning(f"Failed to decrypt trusted devices file: {e}")
+                trusted_devices = {}
+
+        # Initialize the list for the user if not present
+        if self.user_identifier not in trusted_devices:
+            trusted_devices[self.user_identifier] = []
+
+        # Add the device_id with timestamp if not already trusted
+        if not any(
+            device["device_id"] == self.device_id
+            for device in trusted_devices[self.user_identifier]
+        ):
+            trusted_devices[self.user_identifier].append(
+                {
+                    "device_id": self.device_id,
+                    "added_on": self.get_current_timestamp(),  # Adds timestamp
+                }
+            )
+            logger.info(
+                f"Device {self.device_id} marked as trusted for user: {self.user_identifier}"
+            )
+        else:
+            logger.info(
+                f"Device {self.device_id} is already trusted for user: {self.user_identifier}"
+            )
+
+        try:
+            encrypted_data = encrypt_data(json.dumps(trusted_devices))
+            with open(trusted_devices_path, "w") as file:
+                file.write(encrypted_data)
+            logger.info(f"Trusted devices updated for user: {self.user_identifier}")
+        except Exception as e:
+            logger.error(f"Failed to encrypt and store trusted devices: {e}")
+            self.show_warning("Failed to mark device as trusted.")
+
+    def is_device_trusted(self) -> bool:
+        """Check if the current device is marked as trusted for the user."""
+        trusted_devices_path = os.path.join(
+            DATABASE_DIR, "trusted_devices.json.enc"
+        )  # Encrypted file
+        if os.path.exists(trusted_devices_path):
+            try:
+                with open(trusted_devices_path, "rb") as file:
+                    encrypted_data = file.read()
+                    decrypted_data = decrypt_data(encrypted_data.decode())
+                    trusted_devices = json.loads(decrypted_data)
+                    return any(
+                        device["device_id"] == self.device_id
+                        for device in trusted_devices.get(self.user_identifier, [])
+                    )
+            except Exception as e:
+                logger.warning(f"Failed to decrypt trusted devices file: {e}")
+        return False
+
+    def setup_two_factor_authentication(self):
+        """Prompt the user to set up Two-Factor Authentication."""
+        two_fa = TwoFactorAuthentication(self.user_identifier, self.conn)
+        try:
+            two_fa.generate_secret()
+            logger.info("2FA secret generated successfully.")
+            qr_code_image = two_fa.generate_qr_code()
+            self.show_qr_code(qr_code_image)
+            # Verify the 2FA code entered by the user
+            for _ in range(3):  # Allow up to 3 attempts
+                token, ok = QInputDialog.getText(
+                    self,
+                    "Two-Factor Authentication",
+                    "Enter the 2FA token from your authenticator app:",
+                    QLineEdit.Normal,
+                )
+                if ok:
+                    if two_fa.verify_token(token):
+                        logger.info("2FA setup verification successful.")
+                        CustomMessageBox(
+                            "Info",
+                            "Two-Factor Authentication set up successfully!",
+                            QMessageBox.Information,
+                        ).show_message()
+                        return
+                    else:
+                        self.show_warning("Invalid 2FA token. Please try again.")
+                else:
+                    self.show_warning("2FA setup is required to proceed.")
+                    sys.exit(1)
+            self.show_warning("Maximum attempts reached. Exiting application.")
+            sys.exit(1)
+        except SecretAlreadyExistsError:
+            logger.info("2FA is already set up for this user.")
+            pass
+        except Exception as e:
+            logger.error(f"Failed to set up 2FA: {e}")
+            self.show_warning(f"Failed to set up 2FA: {e}")
+            sys.exit(1)
+
+    def get_trusted_devices(self) -> list:
+        """Retrieve the list of trusted devices for the current user."""
+        trusted_devices_path = os.path.join(
+            DATABASE_DIR, "trusted_devices.json.enc"
+        )  # Encrypted file
+        trusted_devices = []
+        if os.path.exists(trusted_devices_path):
+            try:
+                with open(trusted_devices_path, "rb") as file:
+                    encrypted_data = file.read()
+                    decrypted_data = decrypt_data(encrypted_data.decode())
+                    trusted_devices_data = json.loads(decrypted_data)
+                    trusted_devices = trusted_devices_data.get(self.user_identifier, [])
+            except Exception as e:
+                logger.warning(f"Failed to decrypt trusted devices file: {e}")
+        return trusted_devices
+
+    def remove_trusted_device(self, device_id: str):
+        """Remove a device from the trusted devices list."""
+        trusted_devices_path = os.path.join(
+            DATABASE_DIR, "trusted_devices.json.enc"
+        )  # Encrypted file
+
+        trusted_devices = {}
+        if os.path.exists(trusted_devices_path):
+            try:
+                with open(trusted_devices_path, "rb") as file:
+                    encrypted_data = file.read()
+                    decrypted_data = decrypt_data(encrypted_data.decode())
+                    trusted_devices = json.loads(decrypted_data)
+            except Exception as e:
+                logger.warning(f"Failed to decrypt trusted devices file: {e}")
+                return
+
+        if (
+            self.user_identifier in trusted_devices
+            and device_id in trusted_devices[self.user_identifier]
+        ):
+            trusted_devices[self.user_identifier].remove(device_id)
+            logger.info(
+                f"Device {device_id} removed from trusted devices for user: {self.user_identifier}"
+            )
+
+            try:
+                encrypted_data = encrypt_data(json.dumps(trusted_devices))
+                with open(trusted_devices_path, "w") as file:
+                    file.write(encrypted_data)
+                logger.info(f"Trusted devices updated for user: {self.user_identifier}")
+            except Exception as e:
+                logger.error(f"Failed to encrypt and store trusted devices: {e}")
+                self.show_warning("Failed to update trusted devices.")
+
+    def show_qr_code(self, qr_code_image_data: bytes):
+        """Display the QR code for 2FA setup."""
+        qr_dialog = QDialog(self)
+        qr_dialog.setWindowTitle("Scan QR Code with Authenticator App")
+        layout = QVBoxLayout()
+        instructions = QLabel("Scan this QR code with your authenticator app.")
+        instructions.setAlignment(Qt.AlignCenter)
+        layout.addWidget(instructions)
+        qr_label = QLabel()
+        qr_pixmap = QPixmap()
+        qr_pixmap.loadFromData(qr_code_image_data)
+        qr_label.setPixmap(qr_pixmap)
+        qr_label.setAlignment(Qt.AlignCenter)
+        layout.addWidget(qr_label)
+        qr_dialog.setLayout(layout)
+        qr_dialog.exec()
 
     def closeEvent(self, event):
         """Handle the application close event to clear sensitive data."""
@@ -596,52 +699,6 @@ class PasswordManager(QMainWindow):
     def show_success_message(self, message: str = "Operation completed successfully!"):
         """Show a success message."""
         CustomMessageBox("Success", message, QMessageBox.Information).show_message()
-
-    def mark_device_as_trusted(self):
-        """Mark the current device as trusted by storing a unique identifier."""
-        device_id = str(uuid.uuid4())
-        trusted_devices_path = os.path.join(
-            DATABASE_DIR, "trusted_devices.json.enc"
-        )  # Encrypted file
-
-        trusted_devices = {}
-        if os.path.exists(trusted_devices_path):
-            try:
-                with open(trusted_devices_path, "rb") as file:
-                    encrypted_data = file.read()
-                    decrypted_data = decrypt_data(encrypted_data.decode())
-                    trusted_devices = json.loads(decrypted_data)
-            except Exception as e:
-                logger.warning(f"Failed to decrypt trusted devices file: {e}")
-                trusted_devices = {}
-
-        # Add or update the trusted device
-        trusted_devices[self.user_identifier] = device_id
-
-        try:
-            encrypted_data = encrypt_data(json.dumps(trusted_devices))
-            with open(trusted_devices_path, "w") as file:
-                file.write(encrypted_data)
-            logger.info(f"Device marked as trusted for user: {self.user_identifier}")
-        except Exception as e:
-            logger.error(f"Failed to encrypt and store trusted devices: {e}")
-            self.show_warning("Failed to mark device as trusted.")
-
-    def is_device_trusted(self) -> bool:
-        """Check if the current device is marked as trusted for the user."""
-        trusted_devices_path = os.path.join(
-            DATABASE_DIR, "trusted_devices.json.enc"
-        )  # Encrypted file
-        if os.path.exists(trusted_devices_path):
-            try:
-                with open(trusted_devices_path, "rb") as file:
-                    encrypted_data = file.read()
-                    decrypted_data = decrypt_data(encrypted_data.decode())
-                    trusted_devices = json.loads(decrypted_data)
-                    return self.user_identifier in trusted_devices
-            except Exception as e:
-                logger.warning(f"Failed to decrypt trusted devices file: {e}")
-        return False
 
     def setup_session_timeout(self):
         """Set up a session timeout mechanism to log out users after inactivity."""
@@ -709,30 +766,6 @@ def main():
         logger.error(
             f"Stylesheet not found at {stylesheet_path}. Proceeding without styling."
         )
-
-    # Load custom fonts after applying stylesheet to ensure QFont isn't overridden
-    font_path = os.path.join(
-        os.path.dirname(__file__), "frontend", "fonts", "Roboto-Regular.ttf"
-    )
-    if os.path.exists(font_path):
-        font_id = QFontDatabase.addApplicationFont(font_path)
-        if font_id != -1:
-            font_families = QFontDatabase.applicationFontFamilies(font_id)
-            if font_families:
-                font_family = font_families[0]
-                app_font = QFont(font_family, 10)  # Set a reasonable default font size
-                app.setFont(app_font)
-                logger.info(
-                    f"Custom font '{font_family}' loaded successfully with size {app_font.pointSize()}."
-                )
-            else:
-                logger.warning(
-                    "No font families found in the custom font. Using default font."
-                )
-        else:
-            logger.warning("Failed to load custom font. Using default font.")
-    else:
-        logger.warning(f"Font file not found at {font_path}. Using default font.")
 
     # Display the welcome dialog
     welcome_dialog = WelcomeDialog()

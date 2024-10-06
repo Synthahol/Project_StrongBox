@@ -242,14 +242,26 @@ QRadioButton::indicator {
     height: 16px;
 }
 
-QCheckBox::indicator:checked,
-QRadioButton::indicator:checked {
-    image: url(":/frontend/icons/checked.png"); /* Updated to use resource path */
+/* Enhanced default QCheckBox indicators */
+QCheckBox::indicator:checked {
+    background-color: #00A36C; /* Green background when checked */
+    border: 1px solid #00A36C;
+    border-radius: 3px;
 }
 
-QCheckBox::indicator:unchecked,
-QRadioButton::indicator:unchecked {
-    image: url(":/frontend/icons/unchecked.png"); /* Updated to use resource path */
+QCheckBox::indicator:unchecked {
+    background-color: #38394e; /* Match QLineEdit background */
+    border: 1px solid #4a4c68;
+    border-radius: 3px;
+}
+
+QCheckBox::indicator:hover {
+    background-color: #00A36C; /* Optional hover effect */
+}
+
+QCheckBox::indicator:pressed {
+    background-color: #00915A; /* Darker green when pressed */
+    border-color: #00915A;
 }
 
 /* --- Password Health Tab Styles --- */
