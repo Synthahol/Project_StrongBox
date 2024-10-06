@@ -124,6 +124,9 @@ class PasswordManager(QMainWindow):
 
     def __init__(self):
         super().__init__()
+        # Initialize SessionManager first
+        self.session = SessionManager()
+
         self.conn: Optional[sqlite3.Connection] = None
         self.password_generation_tab: Optional[PasswordGenerationTab] = None
         self.password_management_tab: Optional[PasswordManagementTab] = None
@@ -259,14 +262,51 @@ class PasswordManager(QMainWindow):
             # Generate or retrieve device ID
             self.device_id = self.get_or_create_device_id()
 
-            # Show the consolidated login dialog
-            if not self.show_login_dialog():
-                CustomMessageBox(
-                    "Error",
-                    "Authentication failed. Exiting application.",
-                    QMessageBox.Critical,
-                ).show_message()
-                sys.exit(1)
+            # Check if device is trusted and retrieve user identifier
+            trusted_user = self.get_trusted_user_identifier()
+            if trusted_user:
+                self.user_identifier = trusted_user
+                logger.info(f"Device is trusted for user: {self.user_identifier}")
+
+                # Retrieve master password from session
+                master_password = self.session.get_master_password()
+                if master_password:
+                    # Verify master password using session manager
+                    master_password_verified = self.session.verify_master_password(
+                        master_password, self.conn
+                    )
+                    if master_password_verified:
+                        logger.info("Master password verified successfully.")
+                    else:
+                        logger.warning(
+                            "Failed to verify master password for trusted device."
+                        )
+                        # Prompt the user to enter the master password
+                        if not self.prompt_master_password():
+                            CustomMessageBox(
+                                "Error",
+                                "Authentication failed. Exiting application.",
+                                QMessageBox.Critical,
+                            ).show_message()
+                            sys.exit(1)
+                else:
+                    # No master password in session, prompt the user
+                    if not self.prompt_master_password():
+                        CustomMessageBox(
+                            "Error",
+                            "Authentication failed. Exiting application.",
+                            QMessageBox.Critical,
+                        ).show_message()
+                        sys.exit(1)
+            else:
+                # Show the login dialog
+                if not self.show_login_dialog():
+                    CustomMessageBox(
+                        "Error",
+                        "Authentication failed. Exiting application.",
+                        QMessageBox.Critical,
+                    ).show_message()
+                    sys.exit(1)
 
             self._setup_tabs()
         else:
@@ -275,6 +315,25 @@ class PasswordManager(QMainWindow):
             ).show_message()
             logger.error("Failed to connect to the database.")
             sys.exit(1)
+
+    def prompt_master_password(self) -> bool:
+        """Prompt the user to enter the master password and verify it."""
+        password, ok = QInputDialog.getText(
+            self,
+            "Master Password Required",
+            "Enter your master password to continue:",
+            QLineEdit.Password,
+        )
+        if ok and password:
+            if self.session.verify_master_password(password, self.conn):
+                logger.info("Master password verified and stored securely.")
+                return True
+            else:
+                self.show_warning("Incorrect master password.")
+                return False
+        else:
+            self.show_warning("Master password is required to proceed.")
+            return False
 
     def get_or_create_device_id(self) -> str:
         """Retrieve the existing device ID or create a new one if it doesn't exist."""
@@ -315,11 +374,48 @@ class PasswordManager(QMainWindow):
             return False
         return str(uuid_obj) == uuid_to_test
 
+    def retrieve_master_password(self) -> Optional[str]:
+        """Retrieve the master password from the session manager."""
+        master_password = self.session.get_master_password()
+        if master_password:
+            logger.info("Master password retrieved from session manager.")
+        else:
+            logger.warning("No master password found in session manager.")
+        return master_password
+
+    def get_trusted_user_identifier(self) -> Optional[str]:
+        """
+        Retrieve the user identifier associated with the current device ID.
+
+        :return: User identifier if the device is trusted, else None.
+        """
+        trusted_devices_path = os.path.join(DATABASE_DIR, "trusted_devices.json.enc")
+
+        if not os.path.exists(trusted_devices_path):
+            logger.info("No trusted devices file found.")
+            return None
+
+        try:
+            with open(trusted_devices_path, "rb") as file:
+                encrypted_data = file.read()
+                decrypted_data = decrypt_data(encrypted_data.decode())
+                trusted_devices = json.loads(decrypted_data)
+
+                for user, devices in trusted_devices.items():
+                    for device in devices:
+                        if device.get("device_id") == self.device_id:
+                            logger.info(
+                                f"Device {self.device_id} is trusted for user: {user}"
+                            )
+                            return user
+        except Exception as e:
+            logger.error(f"Error retrieving trusted user identifier: {e}")
+
+        logger.info(f"Device {self.device_id} is not trusted.")
+        return None
+
     def show_login_dialog(self) -> bool:
         """Display the consolidated login dialog and handle authentication."""
-        # Instantiate the SessionManager
-        session = SessionManager()
-
         # Show the login dialog
         login_dialog = LoginDialog(self)
         if login_dialog.exec() == QDialog.Accepted:
@@ -335,14 +431,14 @@ class PasswordManager(QMainWindow):
 
             # Check if master password is set
             if not is_master_password_set(self.conn):
-                self.set_master_password_from_dialog(password, session)
+                self.set_master_password_from_dialog(password)
             else:
                 if not verify_master_password(self.conn, password):
                     self.show_warning("Incorrect master password.")
                     return False
                 else:
                     # Store the master password in the session manager
-                    session.set_master_password(password)
+                    self.session.set_master_password(password)
                     logger.info("Master password verified successfully.")
 
             # Handle 2FA verification
@@ -373,7 +469,7 @@ class PasswordManager(QMainWindow):
         else:
             return False
 
-    def set_master_password_from_dialog(self, password: str, session: SessionManager):
+    def set_master_password_from_dialog(self, password: str):
         """Set the master password using the provided password from the dialog."""
         if self.validate_master_password(password):
             confirm_password, ok = QInputDialog.getText(
@@ -385,7 +481,7 @@ class PasswordManager(QMainWindow):
             if ok and password == confirm_password:
                 set_master_password(self.conn, password)
                 # Store the master password in the session manager
-                session.set_master_password(password)
+                self.session.set_master_password(password)
                 CustomMessageBox(
                     "Info",
                     "Master password set successfully!",
@@ -394,12 +490,12 @@ class PasswordManager(QMainWindow):
                 logger.info("Master password set successfully.")
             else:
                 self.show_warning("Passwords do not match. Please try again.")
-                self.set_master_password_from_dialog(password, session)  # Retry
+                self.set_master_password_from_dialog(password)  # Retry
         else:
             self.show_warning(
                 "Password does not meet the required criteria. Please try again."
             )
-            self.set_master_password_from_dialog(password, session)  # Retry
+            self.set_master_password_from_dialog(password)  # Retry
 
     def _setup_tabs(self):
         """Set up the main tabs of the application."""
@@ -443,45 +539,40 @@ class PasswordManager(QMainWindow):
         self.stacked_widget.setCurrentWidget(self.password_health_tab)
 
     def show_settings(self):
-        """Show the settings tab."""
-        self.stacked_widget.setCurrentWidget(self.settings_tab)
-
-    def verify_two_factor_authentication(self) -> bool:
-        """Verify the user's 2FA token."""
-        two_fa = TwoFactorAuthentication(self.user_identifier, self.conn)
-        # Check if 2FA is enabled for the user
-        secret = two_fa.get_secret()
-        if not secret:
-            # 2FA is not set up; proceed without verification
-            return True
-
-        # Prompt user to enter 2FA token
-        for _ in range(3):  # Allow up to 3 attempts
-            token, ok = QInputDialog.getText(
-                self,
-                "Two-Factor Authentication",
-                "Enter your 2FA token:",
-                QLineEdit.Normal,
-            )
-            if ok:
-                if two_fa.verify_token(token):
-                    logger.info("2FA verification successful.")
-                    return True
-                else:
-                    self.show_warning("Invalid 2FA token. Please try again.")
-            else:
-                # User canceled the input dialog
-                reply = QMessageBox.question(
+        """Show the settings tab after verifying 2FA if necessary."""
+        # Check if device is trusted; if not, prompt for 2FA
+        if not self.is_device_trusted():
+            two_fa = TwoFactorAuthentication(self.user_identifier, self.conn)
+            for _ in range(3):  # Allow up to 3 attempts
+                token, ok = QInputDialog.getText(
                     self,
-                    "Cancel Verification",
-                    "Are you sure you want to cancel 2FA verification?",
-                    QMessageBox.Yes | QMessageBox.No,
-                    QMessageBox.No,
+                    "Two-Factor Authentication",
+                    "Enter your 2FA token to access Settings:",
+                    QLineEdit.Normal,
                 )
-                if reply == QMessageBox.Yes:
-                    return False
-        self.show_warning("Maximum attempts reached. Exiting application.")
-        return False
+                if ok:
+                    if two_fa.verify_token(token):
+                        logger.info("2FA verification successful.")
+                        self.stacked_widget.setCurrentWidget(self.settings_tab)
+                        return  # Exit the method after successful verification
+                    else:
+                        self.show_warning("Invalid 2FA token. Please try again.")
+                else:
+                    # User canceled the input dialog
+                    reply = QMessageBox.question(
+                        self,
+                        "Cancel Verification",
+                        "Are you sure you want to cancel accessing Settings?",
+                        QMessageBox.Yes | QMessageBox.No,
+                        QMessageBox.No,
+                    )
+                    if reply == QMessageBox.Yes:
+                        return  # Exit the method if the user chooses to cancel
+            self.show_warning("Maximum attempts reached. Returning to previous screen.")
+        else:
+            # Device is trusted; directly show Settings tab
+            self.stacked_widget.setCurrentWidget(self.settings_tab)
+            logger.info("Accessing Settings without 2FA as the device is trusted.")
 
     def validate_master_password(self, password: str) -> bool:
         """Validate the master password against security criteria."""
@@ -616,10 +707,10 @@ class PasswordManager(QMainWindow):
                 with open(trusted_devices_path, "rb") as file:
                     encrypted_data = file.read()
                     decrypted_data = decrypt_data(encrypted_data.decode())
-                    trusted_devices_data = json.loads(decrypted_data)
+                    trusted_devices_data = json.loads(decrypted_data)  # Parse JSON
                     trusted_devices = trusted_devices_data.get(self.user_identifier, [])
             except Exception as e:
-                logger.warning(f"Failed to decrypt trusted devices file: {e}")
+                logger.warning(f"Failed to decrypt or parse trusted devices file: {e}")
         return trusted_devices
 
     def remove_trusted_device(self, device_id: str):
@@ -639,23 +730,38 @@ class PasswordManager(QMainWindow):
                 logger.warning(f"Failed to decrypt trusted devices file: {e}")
                 return
 
-        if (
-            self.user_identifier in trusted_devices
-            and device_id in trusted_devices[self.user_identifier]
-        ):
-            trusted_devices[self.user_identifier].remove(device_id)
-            logger.info(
-                f"Device {device_id} removed from trusted devices for user: {self.user_identifier}"
-            )
+        if self.user_identifier in trusted_devices:
+            # Find the device dict to remove
+            device_to_remove = None
+            for device in trusted_devices[self.user_identifier]:
+                if device.get("device_id") == device_id:
+                    device_to_remove = device
+                    break
 
-            try:
-                encrypted_data = encrypt_data(json.dumps(trusted_devices))
-                with open(trusted_devices_path, "w") as file:
-                    file.write(encrypted_data)
-                logger.info(f"Trusted devices updated for user: {self.user_identifier}")
-            except Exception as e:
-                logger.error(f"Failed to encrypt and store trusted devices: {e}")
-                self.show_warning("Failed to update trusted devices.")
+            if device_to_remove:
+                trusted_devices[self.user_identifier].remove(device_to_remove)
+                logger.info(
+                    f"Device {device_id} removed from trusted devices for user: {self.user_identifier}"
+                )
+
+                try:
+                    encrypted_data = encrypt_data(json.dumps(trusted_devices))
+                    with open(trusted_devices_path, "w") as file:
+                        file.write(encrypted_data)
+                    logger.info(
+                        f"Trusted devices updated for user: {self.user_identifier}"
+                    )
+                    self.show_info("Trusted device revoked successfully.")
+                except Exception as e:
+                    logger.error(f"Failed to encrypt and store trusted devices: {e}")
+                    self.show_warning("Failed to revoke trusted device.")
+            else:
+                logger.info(
+                    f"Device {device_id} not found in trusted devices for user: {self.user_identifier}"
+                )
+                self.show_warning("Selected device not found among trusted devices.")
+        else:
+            logger.info(f"No trusted devices found for user: {self.user_identifier}")
 
     def show_qr_code(self, qr_code_image_data: bytes):
         """Display the QR code for 2FA setup."""
@@ -676,9 +782,8 @@ class PasswordManager(QMainWindow):
 
     def closeEvent(self, event):
         """Handle the application close event to clear sensitive data."""
-        session = SessionManager()
-        session.clear_master_password()
-        logger.info("Application closed. Master password cleared from memory.")
+        self.session.clear_master_password()
+        logger.info("Application closed. Master password cleared from session.")
         if self.conn:
             self.conn.close()
             logger.info("Database connection closed.")
@@ -723,9 +828,8 @@ class PasswordManager(QMainWindow):
 
     def logout(self):
         """Log out the user by clearing the session and showing the login dialog again."""
-        session = SessionManager()
-        session.clear_master_password()
-        logger.info("User logged out due to session timeout.")
+        self.session.clear_master_password()
+        logger.info("User logged out and master password cleared from session.")
 
         # Optionally, clear other sensitive data here
 

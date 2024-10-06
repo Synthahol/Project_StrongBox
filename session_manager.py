@@ -1,6 +1,13 @@
 # session_manager.py
 
+import logging
+import sqlite3
 import threading
+from typing import Optional
+
+import bcrypt
+
+logger = logging.getLogger(__name__)
 
 
 class SessionManager:
@@ -41,22 +48,47 @@ class SessionManager:
         self.__master_password = None
         self.__session_active = False
 
-    def verify_master_password(self, input_password: str) -> bool:
+    def verify_master_password(
+        self, input_password: Optional[str], conn: sqlite3.Connection
+    ) -> bool:
         """
-        Verifies the input password against the stored master password.
+        Verifies the input password against the hashed master password stored in the database.
 
         Args:
-            input_password (str): The password to verify.
+            input_password (Optional[str]): The password to verify.
+            conn (sqlite3.Connection): The database connection.
 
         Returns:
-            bool: True if the passwords match, False otherwise.
+            bool: True if the password is correct, False otherwise.
         """
-        is_verified = self.__master_password == input_password
-        if is_verified:
-            self.__session_active = (
-                True  # Reactivate session upon successful verification
-            )
-        return is_verified
+        if input_password is None:
+            logger.error("No input password provided for verification.")
+            return False
+
+        try:
+            cursor = conn.execute("SELECT password FROM master_password WHERE id = 1")
+            row = cursor.fetchone()
+            if row:
+                stored_hashed_password = row[0]
+                # Ensure stored_hashed_password is bytes
+                if isinstance(stored_hashed_password, str):
+                    stored_hashed_password = stored_hashed_password.encode("utf-8")
+                is_verified = bcrypt.checkpw(
+                    input_password.encode("utf-8"), stored_hashed_password
+                )
+                if is_verified:
+                    self.set_master_password(input_password)  # Store in session
+                    logger.info("Master password verified and stored in session.")
+                    return True
+                else:
+                    logger.warning("Master password verification failed.")
+                    return False
+            else:
+                logger.warning("Master password not set in the database.")
+                return False
+        except sqlite3.Error as e:
+            logger.error(f"Error verifying master password: {e}")
+            return False
 
     def is_session_active(self) -> bool:
         """
@@ -67,12 +99,11 @@ class SessionManager:
         """
         return self.__session_active
 
-    # Optional: Remove the getter to enhance security
-    # def get_master_password(self) -> str:
-    #     """
-    #     Retrieves the master password stored in the session.
+    def get_master_password(self) -> Optional[str]:
+        """
+        Retrieves the master password stored in the session.
 
-    #     Returns:
-    #         str: The master password.
-    #     """
-    #     return self.__master_password
+        Returns:
+            Optional[str]: The master password if set, else None.
+        """
+        return self.__master_password
