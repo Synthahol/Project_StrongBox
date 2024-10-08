@@ -1,28 +1,31 @@
 Fortalice
 ├── backend
 │   ├── user_databases
+│   │   ├── device_id.txt
+│   │   ├── trusted_devices.json.enc
 │   │   └── UserDatabase.db
 │   ├── application.log
 │   ├── config.py
 │   ├── database.py
 │   ├── diceware_wordlist.txt
+│   ├── exceptions.py
 │   ├── master_password.py
 │   ├── passkey_manager.py
-│   ├── password_checker.py
 │   ├── password_generator.py
 │   ├── password_health.py
-│   ├── scheduler.py
 │   ├── secure_notes.py
 │   ├── settings.json
-│   └── settings.py
+│   └── two_factor_auth.py
 ├── frontend
 │   ├── icons
 │   │   ├── check.png
 │   │   ├── computer-keys.svg
+│   │   ├── danger.png
 │   │   ├── down-arrow.png
 │   │   ├── encryption.png
 │   │   ├── encryptionIcon.ico
 │   │   ├── files-and-folders.svg
+│   │   ├── health.png
 │   │   ├── locker.svg
 │   │   ├── magic-wand.png
 │   │   ├── magic-wand.svg
@@ -30,22 +33,29 @@ Fortalice
 │   │   ├── passkey.png
 │   │   ├── safe-box.png
 │   │   ├── safe-box_64x64.png
+│   │   ├── safe.png
 │   │   ├── settings.png
-│   │   └── settings.svg
+│   │   ├── settings.svg
+│   │   └── sort_indicator.png
 │   ├── styles
 │   │   └── style.qss
 │   ├── blueprints.py
+│   ├── login_dialog.py
 │   ├── passkey_manager_tab.py
 │   ├── password_generation_tab.py
+│   ├── password_health_check_tab.py
 │   ├── password_management.py
 │   ├── secure_notes_tab.py
+│   ├── settings.py
 │   └── utils.py
 ├── .gitignore
 ├── directory_structure.txt
 ├── Fortalice.spec
 ├── generate_tree.py
 ├── main.py
+├── password_checker.log
 ├── README.md
 ├── requirements.txt
 ├── session_manager.py
-└── settings.json
+├── settings.json
+└── test_2fa.py

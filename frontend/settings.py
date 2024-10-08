@@ -408,11 +408,16 @@ class SettingsTab(QWidget):
         for device in trusted_devices:
             row_position = self.trusted_devices_table.rowCount()
             self.trusted_devices_table.insertRow(row_position)
-            device_id_item = QTableWidgetItem(device.get("device_id", "Unknown"))
+
+            # Use 'alias' instead of 'device_id' for display
+            alias_item = QTableWidgetItem(device.get("alias", "Unnamed Device"))
             added_on_item = QTableWidgetItem(device.get("added_on", "Unknown"))
 
-            self.trusted_devices_table.setItem(row_position, 0, device_id_item)
+            self.trusted_devices_table.setItem(row_position, 0, alias_item)
             self.trusted_devices_table.setItem(row_position, 1, added_on_item)
+
+        # Adjust column headers if necessary
+        self.trusted_devices_table.setHorizontalHeaderLabels(["Alias", "Added On"])
 
     def revoke_selected_devices(self):
         """Revoke (remove) the selected trusted devices."""

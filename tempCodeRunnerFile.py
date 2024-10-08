@@ -1,0 +1,1 @@
+self.center_svg_items

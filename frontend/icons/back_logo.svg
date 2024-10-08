@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Calque_2" data-name="Calque 2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 281.42 513.68">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: url(#gradient1);
+      }
+
+      .cls-1, .cls-2, .cls-3, .cls-4 {
+        stroke-width: 0px;
+      }
+
+      .cls-2 {
+        fill: url(#gradient2);
+      }
+
+      .cls-3 {
+        fill: url(#gradient4);
+      }
+
+      .cls-4 {
+        fill: url(#gradient3);
+      }
+    </style>
+    <linearGradient id="gradient1" x1="50.65" y1="29.44" x2="151.21" y2="203.62" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#6590ff"/>
+      <stop offset=".1" stop-color="#6e95fa"/>
+      <stop offset=".27" stop-color="#86a3ef"/>
+      <stop offset=".48" stop-color="#aebbdc"/>
+      <stop offset=".62" stop-color="#cecece"/>
+      <stop offset="1" stop-color="#cecece" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="gradient2" x1="229.07" y1="0" x2="229.07" y2="188.34" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#6590ff"/>
+      <stop offset=".1" stop-color="#6e95fa"/>
+      <stop offset=".27" stop-color="#86a3ef"/>
+      <stop offset=".48" stop-color="#aebbdc"/>
+      <stop offset=".62" stop-color="#cecece"/>
+      <stop offset="1" stop-color="#cecece" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="gradient3" x1="230.73" y1="513.68" x2="230.73" y2="325.34" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#6590ff"/>
+      <stop offset=".1" stop-color="#6e95fa"/>
+      <stop offset=".27" stop-color="#86a3ef"/>
+      <stop offset=".48" stop-color="#aebbdc"/>
+      <stop offset=".62" stop-color="#cecece"/>
+      <stop offset="1" stop-color="#cecece" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="gradient4" x1="51.02" y1="484.28" x2="151.58" y2="310.1" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#6590ff"/>
+      <stop offset=".1" stop-color="#6e95fa"/>
+      <stop offset=".27" stop-color="#86a3ef"/>
+      <stop offset=".48" stop-color="#aebbdc"/>
+      <stop offset=".62" stop-color="#cecece"/>
+      <stop offset="1" stop-color="#cecece" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <g id="Calque_3_-_copie" data-name="Calque 3 - copie">
+    <g>
+      <path class="cls-1" d="M155.18,69.48c-4.1-1.91-10.49-2.78-14.69-2.78h-45.15c-7.9-17.18-25.27-29.14-45.39-29.14C22.41,37.56,0,59.97,0,87.51s22.41,49.94,49.95,49.94c19.59,0,36.58-11.34,44.76-27.79h43.63c.53,0,.95.43.95.95v71.77c0,3.32,2.69,6,6,6s6-2.68,6-6v-71.77c0-7.14-5.81-12.95-12.95-12.95h-39.49c.68-3.28,1.04-6.67,1.04-10.15,0-3.01-.27-5.95-.78-8.81h41.38c3.23,0,7.72.77,9.62,1.66,7.27,3.39,19.52,11.54,19.88,27.98v74.04c0,3.32,2.69,6,6,6s6-2.68,6-6v-74.23c-.34-16.78-10.11-30.88-26.81-38.67ZM49.95,125.45c-20.93,0-37.95-17.02-37.95-37.94s17.02-37.95,37.95-37.95,37.94,17.02,37.94,37.95-17.02,37.94-37.94,37.94Z"/>
+      <path class="cls-2" d="M229.07,0c-27.95,0-50.69,22.74-50.69,50.69,0,20.35,12.06,37.94,29.41,46v85.65c0,3.32,2.69,6,6,6s6-2.68,6-6v-81.82c3.01.56,6.11.85,9.28.85,3.77,0,7.44-.41,10.97-1.2v82.17c0,3.32,2.69,6,6,6s6-2.68,6-6v-86.47c16.44-8.39,27.72-25.49,27.72-45.18,0-27.95-22.74-50.69-50.69-50.69ZM243.7,86.5c-4.51,1.85-9.45,2.87-14.63,2.87-21.33,0-38.69-17.35-38.69-38.68s17.36-38.69,38.69-38.69,38.69,17.35,38.69,38.69c0,16.16-9.96,30.03-24.06,35.81Z"/>
+      <path class="cls-4" d="M230.73,513.68c27.95,0,50.69-22.74,50.69-50.69,0-20.35-12.06-37.94-29.41-46v-85.65c0-3.32-2.69-6-6-6s-6,2.68-6,6v81.82c-3.01-.56-6.11-.85-9.28-.85-3.77,0-7.44.41-10.97,1.2v-82.17c0-3.32-2.69-6-6-6s-6,2.68-6,6v86.47c-16.44,8.39-27.72,25.49-27.72,45.18,0,27.95,22.74,50.69,50.69,50.69ZM216.1,427.18c4.51-1.85,9.45-2.87,14.63-2.87,21.33,0,38.69,17.35,38.69,38.68s-17.36,38.69-38.69,38.69-38.69-17.35-38.69-38.69c0-16.16,9.96-30.03,24.06-35.81Z"/>
+      <path class="cls-3" d="M182.36,405.57v-74.23c0-3.32-2.68-6-6-6s-6,2.68-6,6v74.04c-.36,16.44-12.61,24.59-19.88,27.98-1.9.89-6.39,1.66-9.62,1.66h-41.38c.51-2.86.78-5.8.78-8.81,0-3.48-.36-6.87-1.04-10.15h39.49c7.14,0,12.95-5.81,12.95-12.95v-71.77c0-3.32-2.69-6-6-6s-6,2.68-6,6v71.77c0,.52-.42.95-.95.95h-43.63c-8.18-16.45-25.17-27.79-44.76-27.79-27.54,0-49.95,22.4-49.95,49.94,0,27.54,22.41,49.95,49.95,49.95,20.12,0,37.49-11.96,45.39-29.14h45.15c4.2,0,10.59-.87,14.69-2.78,16.7-7.79,26.47-21.89,26.81-38.67ZM88.26,426.21c0,20.93-17.02,37.95-37.94,37.95-20.93,0-37.95-17.02-37.95-37.95s17.02-37.94,37.95-37.94c20.92,0,37.94,17.02,37.94,37.94Z"/>
+    </g>
+  </g>
+</svg>

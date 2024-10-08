@@ -101,14 +101,17 @@ def initialize_db(conn: sqlite3.Connection, key_id: str) -> None:
     """
     try:
         with conn:
-            # Create master_password table
+            # Drop existing master_password table if it exists
+            conn.execute("DROP TABLE IF EXISTS master_password")
+
+            # Create master_password table without salt
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS master_password (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    salt BLOB NOT NULL,
                     password BLOB NOT NULL
                 )
             """)
+
             # Create two_factor_auth table
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS two_factor_auth (
@@ -117,6 +120,7 @@ def initialize_db(conn: sqlite3.Connection, key_id: str) -> None:
                     secret BLOB NOT NULL
                 )
             """)
+
             # Create user_data table
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS user_data (
@@ -124,6 +128,7 @@ def initialize_db(conn: sqlite3.Connection, key_id: str) -> None:
                     email TEXT NOT NULL
                 )
             """)
+
             # Create passwords table
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS passwords (
@@ -145,7 +150,7 @@ def is_master_password_set(conn: sqlite3.Connection) -> bool:
     try:
         cursor = conn.execute("SELECT 1 FROM master_password WHERE id = 1")
         is_set = cursor.fetchone() is not None
-        logger.info("Checked if master password is set.")
+        logger.info(f"Master password set: {is_set}")
         return is_set
     except sqlite3.Error as e:
         logger.error(f"Error checking master password: {e}")
@@ -184,11 +189,13 @@ def validate_master_password(master_password: str) -> bool:
 
 def set_master_password(conn: sqlite3.Connection, master_password: str) -> None:
     """Set the master password in the database."""
+    logger.debug("Attempting to set master password.")
     if not validate_master_password(master_password):
         logger.error("Master password validation failed.")
         raise ValueError("Master password does not meet security requirements.")
     try:
         hashed_password = hash_password(master_password)
+        logger.debug(f"Hashed password: {hashed_password}")
         with conn:
             conn.execute(
                 "INSERT INTO master_password (id, password) VALUES (1, ?)",
