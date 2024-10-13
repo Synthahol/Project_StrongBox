@@ -666,15 +666,14 @@ class PasswordManager(QMainWindow):
         """Set up the main tabs of the application."""
         self.password_generation_tab = PasswordGenerationTab()
 
-        # Pass the user_identifier (email) to PasswordManagementTab
-        self.password_management_tab = PasswordManagementTab(
-            self.conn, self.user_identifier
-        )
+        # Pass both conn and user_identifier (email) to PasswordManagementTab
+        self.password_management_tab = PasswordManagementTab(self.conn, self.user_identifier)
 
         # Pass both conn and email to SecureNotesTab
         self.secure_notes_tab = SecureNotesTab(self.conn, self.user_identifier)
 
         self.passkey_manager_tab = PasskeyManagerTab()
+        # Removed the second instantiation of SecureNotesTab
         self.password_health_tab = PasswordHealthTab(self.conn, self.stacked_widget)
         self.settings_tab = SettingsTab(main_window=self)
 
@@ -687,6 +686,7 @@ class PasswordManager(QMainWindow):
         self.stacked_widget.addWidget(self.password_health_tab)
 
         self.show_password_generator()
+
 
     def show_password_generator(self):
         """Show the password generation tab."""
@@ -840,46 +840,6 @@ class PasswordManager(QMainWindow):
                 logger.warning(f"Failed to decrypt trusted devices file: {e}")
         return False
 
-    def setup_two_factor_authentication(self):
-        """Prompt the user to set up Two-Factor Authentication."""
-        two_fa = TwoFactorAuthentication(self.user_identifier, self.conn)
-        try:
-            two_fa.generate_secret()
-            logger.info("2FA secret generated successfully.")
-            qr_code_image = two_fa.generate_qr_code()
-            self.show_qr_code(qr_code_image)
-            # Verify the 2FA code entered by the user
-            for _ in range(3):  # Allow up to 3 attempts
-                token, ok = QInputDialog.getText(
-                    self,
-                    "Two-Factor Authentication",
-                    "Enter the 2FA token from your authenticator app:",
-                    QLineEdit.Normal,
-                )
-                if ok:
-                    if two_fa.verify_token(token):
-                        logger.info("2FA setup verification successful.")
-                        CustomMessageBox(
-                            "Info",
-                            "Two-Factor Authentication set up successfully!",
-                            QMessageBox.Information,
-                        ).show_message()
-                        return
-                    else:
-                        self.show_warning("Invalid 2FA token. Please try again.")
-                else:
-                    # User canceled the input dialog
-                    self.show_warning("2FA setup is required to proceed.")
-                    sys.exit(1)
-            self.show_warning("Maximum attempts reached. Exiting application.")
-            sys.exit(1)
-        except SecretAlreadyExistsError:
-            logger.info("2FA is already set up for this user.")
-            pass
-        except Exception as e:
-            logger.error(f"Failed to set up 2FA: {e}")
-            self.show_warning(f"Failed to set up 2FA: {e}")
-            sys.exit(1)
 
     def get_trusted_devices(self) -> list:
         """Retrieve the list of trusted devices for the current user."""
