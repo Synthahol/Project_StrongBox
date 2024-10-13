@@ -29,7 +29,18 @@ class SessionManager:
         if not self.__class__._initialized:
             self.__master_password = None
             self.__session_active = False  # Track session status
+            self.__current_email = None  # Store current user's email
             self.__class__._initialized = True
+
+    def set_current_user(self, email: str):
+        """
+        Set the current user's email for session management.
+
+        Args:
+            email (str): The user's email address.
+        """
+        self.__current_email = email
+        logger.info(f"Current user set to: {email}")
 
     def set_master_password(self, master_password: str):
         """
@@ -65,8 +76,25 @@ class SessionManager:
             logger.error("No input password provided for verification.")
             return False
 
+        if not self.__current_email:
+            logger.error("No current user set for session.")
+            return False
+
         try:
-            cursor = conn.execute("SELECT password FROM master_password WHERE id = 1")
+            # Retrieve user_id based on current_email
+            cursor = conn.execute(
+                "SELECT id FROM users WHERE email = ?", (self.__current_email.lower(),)
+            )
+            row = cursor.fetchone()
+            if not row:
+                logger.error(f"No user found with email: {self.__current_email}")
+                return False
+            user_id = row[0]
+
+            # Retrieve hashed password for the user
+            cursor = conn.execute(
+                "SELECT password FROM master_password WHERE user_id = ?", (user_id,)
+            )
             row = cursor.fetchone()
             if row:
                 stored_hashed_password = row[0]

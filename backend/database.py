@@ -7,7 +7,7 @@ import logging
 import os
 import re
 import sqlite3
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 import bcrypt
 import keyring
@@ -80,11 +80,12 @@ def decrypt_data(encrypted_data: str) -> str:
         raise Exception("Decryption failed.") from e
 
 
-def create_connection() -> sqlite3.Connection:
+def create_connection() -> Optional[sqlite3.Connection]:
     """Create and return a connection to the SQLite database."""
     try:
         conn = sqlite3.connect(DATABASE_PATH)
-        logger.info("Created connection to database.")
+        conn.execute("PRAGMA foreign_keys = ON;")  # Enable foreign key constraints
+        logger.info("Created connection to database with foreign keys enabled.")
         return conn
     except sqlite3.Error as e:
         logger.error(f"Error creating database connection: {e}")
@@ -101,59 +102,119 @@ def initialize_db(conn: sqlite3.Connection, key_id: str) -> None:
     """
     try:
         with conn:
-            # Drop existing master_password table if it exists
+            # Drop existing tables if they exist
             conn.execute("DROP TABLE IF EXISTS master_password")
+            conn.execute("DROP TABLE IF EXISTS two_factor_auth")
+            conn.execute("DROP TABLE IF EXISTS users")
+            conn.execute("DROP TABLE IF EXISTS passwords")
+            conn.execute("DROP TABLE IF EXISTS secure_notes")
 
-            # Create master_password table without salt
+            # Create users table
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS users (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    email TEXT NOT NULL UNIQUE
+                )
+            """)
+
+            # Create master_password table with user_id foreign key
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS master_password (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    password BLOB NOT NULL
+                    password BLOB NOT NULL,
+                    user_id INTEGER NOT NULL,
+                    FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
+                    UNIQUE(user_id)
                 )
             """)
 
-            # Create two_factor_auth table
+            # Create two_factor_auth table with user_id foreign key
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS two_factor_auth (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    user_identifier TEXT NOT NULL,
-                    secret BLOB NOT NULL
+                    user_id INTEGER NOT NULL UNIQUE,
+                    secret BLOB NOT NULL,
+                    FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
                 )
             """)
 
-            # Create user_data table
-            conn.execute("""
-                CREATE TABLE IF NOT EXISTS user_data (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    email TEXT NOT NULL
-                )
-            """)
-
-            # Create passwords table
+            # Create passwords table with user_id foreign key
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS passwords (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     service TEXT NOT NULL,
                     username TEXT NOT NULL,
                     password TEXT NOT NULL,
-                    UNIQUE(service, username)
+                    user_id INTEGER NOT NULL,
+                    FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
+                    UNIQUE(service, username, user_id)
                 )
             """)
-        logger.info("Initialized database.")
+
+            # Create secure_notes table with title and content
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS secure_notes (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    title TEXT NOT NULL,
+                    content TEXT NOT NULL,
+                    user_id INTEGER NOT NULL,
+                    FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+                )
+            """)
+        logger.info("Initialized database with multi-user support.")
     except sqlite3.Error as e:
         logger.error(f"Error initializing database: {e}", exc_info=True)
         raise
 
 
-def is_master_password_set(conn: sqlite3.Connection) -> bool:
-    """Check if the master password has been set."""
+def get_user_id(conn: sqlite3.Connection, email: str) -> Optional[int]:
+    """
+    Retrieve the user ID for the given email address.
+
+    Args:
+        conn (sqlite3.Connection): The database connection.
+        email (str): The user's email address.
+
+    Returns:
+        Optional[int]: The user's ID if found, else None.
+    """
     try:
-        cursor = conn.execute("SELECT 1 FROM master_password WHERE id = 1")
+        cursor = conn.execute("SELECT id FROM users WHERE email = ?", (email.lower(),))
+        row = cursor.fetchone()
+        if row:
+            logger.info(f"Retrieved user ID {row[0]} for email: {email}")
+            return row[0]
+        else:
+            logger.warning(f"No user found with email: {email}")
+            return None
+    except sqlite3.Error as e:
+        logger.error(f"Error retrieving user ID for email {email}: {e}")
+        return None
+
+
+def is_master_password_set(conn: sqlite3.Connection, email: str) -> bool:
+    """
+    Check if the master password has been set for a specific user.
+
+    Args:
+        conn (sqlite3.Connection): The database connection.
+        email (str): The user's email address.
+
+    Returns:
+        bool: True if set, False otherwise.
+    """
+    try:
+        user_id = get_user_id(conn, email)
+        if user_id is None:
+            return False
+        cursor = conn.execute(
+            "SELECT 1 FROM master_password WHERE user_id = ?", (user_id,)
+        )
         is_set = cursor.fetchone() is not None
-        logger.info(f"Master password set: {is_set}")
+        logger.info(f"Master password set for user {email}: {is_set}")
         return is_set
     except sqlite3.Error as e:
-        logger.error(f"Error checking master password: {e}")
+        logger.error(f"Error checking master password for {email}: {e}")
         return False
 
 
@@ -187,54 +248,96 @@ def validate_master_password(master_password: str) -> bool:
     return True
 
 
-def set_master_password(conn: sqlite3.Connection, master_password: str) -> None:
-    """Set the master password in the database."""
+def set_master_password(
+    conn: sqlite3.Connection, email: str, master_password: str
+) -> None:
+    """
+    Set the master password for a specific user.
+
+    Args:
+        conn (sqlite3.Connection): The database connection.
+        email (str): The user's email address.
+        master_password (str): The master password to set.
+    """
     logger.debug("Attempting to set master password.")
     if not validate_master_password(master_password):
         logger.error("Master password validation failed.")
         raise ValueError("Master password does not meet security requirements.")
     try:
+        user_id = get_user_id(conn, email)
+        if user_id is None:
+            # Insert the user into users table
+            with conn:
+                conn.execute("INSERT INTO users (email) VALUES (?)", (email.lower(),))
+            user_id = get_user_id(conn, email)
+            logger.info(f"Created new user with ID {user_id} for email: {email}")
         hashed_password = hash_password(master_password)
         logger.debug(f"Hashed password: {hashed_password}")
         with conn:
             conn.execute(
-                "INSERT INTO master_password (id, password) VALUES (1, ?)",
-                (hashed_password,),
+                """
+                INSERT INTO master_password (password, user_id) 
+                VALUES (?, ?)
+                ON CONFLICT(user_id) DO UPDATE SET password = excluded.password
+                """,
+                (hashed_password, user_id),
             )
-        logger.info("Master password set in the database.")
+        logger.info(f"Master password set for user: {email}")
     except sqlite3.IntegrityError:
-        logger.error("Master password already set.")
-        raise Exception("Master password is already set.")
+        logger.error("Master password already set for this user.")
+        raise Exception("Master password is already set for this user.")
     except sqlite3.Error as e:
-        logger.error(f"Error setting master password: {e}")
+        logger.error(f"Error setting master password for {email}: {e}")
         raise Exception("Failed to set master password.") from e
 
 
-def verify_master_password(conn: sqlite3.Connection, master_password: str) -> bool:
-    """Verify the provided master password against the stored hash."""
+def verify_master_password(
+    conn: sqlite3.Connection, email: str, master_password: str
+) -> bool:
+    """
+    Verify the provided master password against the stored hash for a specific user.
+
+    Args:
+        conn (sqlite3.Connection): The database connection.
+        email (str): The user's email address.
+        master_password (str): The password to verify.
+
+    Returns:
+        bool: True if correct, False otherwise.
+    """
     try:
-        cursor = conn.execute("SELECT password FROM master_password WHERE id = 1")
+        user_id = get_user_id(conn, email)
+        if user_id is None:
+            logger.warning(f"No user found with email: {email}")
+            return False
+        cursor = conn.execute(
+            "SELECT password FROM master_password WHERE user_id = ?", (user_id,)
+        )
         row = cursor.fetchone()
         if row:
             stored_password = row[0]
+            if isinstance(stored_password, str):
+                stored_password = stored_password.encode("utf-8")
             is_verified = verify_password(stored_password, master_password)
-            logger.info("Verified master password.")
+            logger.info(f"Master password verification for {email}: {is_verified}")
             return is_verified
-        logger.warning("Master password not set.")
-        return False
+        else:
+            logger.warning(f"Master password not set for user: {email}")
+            return False
     except sqlite3.Error as e:
-        logger.error(f"Master password verification error: {e}")
+        logger.error(f"Error verifying master password for {email}: {e}")
         return False
 
 
 def update_master_password(
-    conn: sqlite3.Connection, current_password: str, new_password: str
+    conn: sqlite3.Connection, email: str, current_password: str, new_password: str
 ) -> Tuple[bool, str]:
     """
     Update the master password in the database after verifying the current password.
 
     Args:
         conn (sqlite3.Connection): The database connection.
+        email (str): The user's email address.
         current_password (str): The current master password.
         new_password (str): The new master password to set.
 
@@ -246,22 +349,33 @@ def update_master_password(
         return False, "New master password does not meet security requirements."
 
     try:
-        cursor = conn.execute("SELECT password FROM master_password WHERE id = 1")
+        user_id = get_user_id(conn, email)
+        if user_id is None:
+            logger.error(f"No user found with email: {email}")
+            return False, "User does not exist."
+
+        # Verify current master password
+        cursor = conn.execute(
+            "SELECT password FROM master_password WHERE user_id = ?", (user_id,)
+        )
         row = cursor.fetchone()
         if not row:
             logger.error("Master password not set.")
             return False, "Master password is not set."
 
         stored_password = row[0]
+        if isinstance(stored_password, str):
+            stored_password = stored_password.encode("utf-8")
         if not verify_password(stored_password, current_password):
             logger.error("Current master password is incorrect.")
             return False, "Current master password is incorrect."
 
+        # Hash new password and update
         hashed_new_password = hash_password(new_password)
         with conn:
             conn.execute(
-                "UPDATE master_password SET password = ? WHERE id = 1",
-                (hashed_new_password,),
+                "UPDATE master_password SET password = ? WHERE user_id = ?",
+                (hashed_new_password, user_id),
             )
         logger.info("Master password updated successfully.")
         return True, "Master password updated successfully."
@@ -270,15 +384,15 @@ def update_master_password(
         return False, "Failed to update master password."
 
 
-def get_current_email(conn: sqlite3.Connection) -> str:
-    """Retrieve the current email address from user_data table."""
+def get_current_email(conn: sqlite3.Connection) -> Optional[str]:
+    """Retrieve the current email address from users table."""
     try:
-        cursor = conn.execute("SELECT email FROM user_data WHERE id = 1")
+        cursor = conn.execute("SELECT email FROM users WHERE id = 1")
         row = cursor.fetchone()
         if row:
             logger.info("Retrieved current email address.")
             return row[0]
-        logger.info("No email address found for user.")
+        logger.info("No email address found for user with ID 1.")
         return None
     except sqlite3.Error as e:
         logger.error(f"Error retrieving current email: {e}")
@@ -286,13 +400,14 @@ def get_current_email(conn: sqlite3.Connection) -> str:
 
 
 def update_email(
-    conn: sqlite3.Connection, current_password: str, new_email: str
+    conn: sqlite3.Connection, email: str, current_password: str, new_email: str
 ) -> Tuple[bool, str]:
     """
-    Update the user's email address in the user_data table after verifying the current password.
+    Update the user's email address in the users table after verifying the current password.
 
     Args:
         conn (sqlite3.Connection): The database connection.
+        email (str): The user's current email address.
         current_password (str): The current master password.
         new_email (str): The new email address to set.
 
@@ -305,43 +420,58 @@ def update_email(
         return False, "Invalid email address format."
 
     try:
+        user_id = get_user_id(conn, email)
+        if user_id is None:
+            logger.error(f"No user found with email: {email}")
+            return False, "User does not exist."
+
         # Verify current master password
-        if not verify_master_password(conn, current_password):
+        cursor = conn.execute(
+            "SELECT password FROM master_password WHERE user_id = ?", (user_id,)
+        )
+        row = cursor.fetchone()
+        if not row:
+            logger.error("Master password not set.")
+            return False, "Master password is not set."
+
+        stored_password = row[0]
+        if isinstance(stored_password, str):
+            stored_password = stored_password.encode("utf-8")
+        if not verify_password(stored_password, current_password):
             logger.error("Current master password is incorrect.")
             return False, "Current master password is incorrect."
 
-        # Update email in user_data table
-        cursor = conn.execute("SELECT 1 FROM user_data WHERE id = 1")
-        if cursor.fetchone():
+        # Update email in users table
+        with conn:
             conn.execute(
-                "UPDATE user_data SET email = ? WHERE id = 1",
-                (new_email,),
+                "UPDATE users SET email = ? WHERE id = ?", (new_email.lower(), user_id)
             )
-        else:
-            conn.execute(
-                "INSERT INTO user_data (id, email) VALUES (1, ?)",
-                (new_email,),
-            )
-        conn.commit()
         logger.info("Email address updated successfully.")
         return True, "Email address updated successfully."
+    except sqlite3.IntegrityError:
+        logger.error("The new email address is already in use.")
+        return False, "The new email address is already in use."
     except sqlite3.Error as e:
         logger.error(f"Error updating email address: {e}")
         return False, "Failed to update email address."
 
 
 def store_password(
-    conn: sqlite3.Connection, service: str, username: str, password: str
+    conn: sqlite3.Connection, service: str, username: str, password: str, email: str
 ) -> None:
     """Store a new password entry in the database."""
     encrypted_service = encrypt_data(service)
     encrypted_username = encrypt_data(username)
     encrypted_password = encrypt_data(password)
     try:
+        user_id = get_user_id(conn, email)
+        if user_id is None:
+            logger.error(f"No user found with email: {email}")
+            raise Exception("User does not exist.")
         with conn:
             conn.execute(
-                "INSERT INTO passwords (service, username, password) VALUES (?, ?, ?)",
-                (encrypted_service, encrypted_username, encrypted_password),
+                "INSERT INTO passwords (service, username, password, user_id) VALUES (?, ?, ?, ?)",
+                (encrypted_service, encrypted_username, encrypted_password, user_id),
             )
         logger.info("Stored password for a service.")
     except sqlite3.IntegrityError:
@@ -352,14 +482,20 @@ def store_password(
         raise Exception("Failed to store password.") from e
 
 
-def retrieve_password(conn: sqlite3.Connection, service: str, username: str) -> str:
+def retrieve_password(
+    conn: sqlite3.Connection, service: str, username: str, email: str
+) -> Optional[str]:
     """Retrieve a specific password entry from the database."""
     encrypted_service = encrypt_data(service)
     encrypted_username = encrypt_data(username)
     try:
+        user_id = get_user_id(conn, email)
+        if user_id is None:
+            logger.error(f"No user found with email: {email}")
+            return None
         cursor = conn.execute(
-            "SELECT password FROM passwords WHERE service = ? AND username = ?",
-            (encrypted_service, encrypted_username),
+            "SELECT password FROM passwords WHERE service = ? AND username = ? AND user_id = ?",
+            (encrypted_service, encrypted_username, user_id),
         )
         row = cursor.fetchone()
         if row:
@@ -374,14 +510,20 @@ def retrieve_password(conn: sqlite3.Connection, service: str, username: str) -> 
         raise Exception("Failed to retrieve password.") from e
 
 
-def check_existing_entry(conn: sqlite3.Connection, service: str, username: str) -> bool:
+def check_existing_entry(
+    conn: sqlite3.Connection, service: str, username: str, email: str
+) -> bool:
     """Check if a password entry already exists for a given service and username."""
     encrypted_service = encrypt_data(service)
     encrypted_username = encrypt_data(username)
     try:
+        user_id = get_user_id(conn, email)
+        if user_id is None:
+            logger.error(f"No user found with email: {email}")
+            return False
         cursor = conn.execute(
-            "SELECT 1 FROM passwords WHERE service=? AND username=?",
-            (encrypted_service, encrypted_username),
+            "SELECT 1 FROM passwords WHERE service=? AND username=? AND user_id=?",
+            (encrypted_service, encrypted_username, user_id),
         )
         exists = cursor.fetchone() is not None
         logger.info("Checked existing entry for a service.")
@@ -391,10 +533,19 @@ def check_existing_entry(conn: sqlite3.Connection, service: str, username: str) 
         return False
 
 
-def get_all_passwords(conn: sqlite3.Connection) -> List[Tuple[str, str, str]]:
-    """Retrieve all password entries from the database."""
+def get_all_passwords(
+    conn: sqlite3.Connection, email: str
+) -> List[Tuple[str, str, str]]:
+    """Retrieve all password entries for a specific user from the database."""
     try:
-        cursor = conn.execute("SELECT service, username, password FROM passwords")
+        user_id = get_user_id(conn, email)
+        if user_id is None:
+            logger.error(f"No user found with email: {email}")
+            return []
+        cursor = conn.execute(
+            "SELECT service, username, password FROM passwords WHERE user_id = ?",
+            (user_id,),
+        )
         entries = []
         for (
             encrypted_service,
@@ -408,7 +559,7 @@ def get_all_passwords(conn: sqlite3.Connection) -> List[Tuple[str, str, str]]:
                 entries.append((service, username, password))
             except Exception as e:
                 logger.error(f"Error decrypting entry: {e}")
-        logger.info("Retrieved all passwords.")
+        logger.info("Retrieved all passwords for user.")
         return entries
     except sqlite3.Error as e:
         logger.error(f"Error retrieving all passwords: {e}")
@@ -417,6 +568,7 @@ def get_all_passwords(conn: sqlite3.Connection) -> List[Tuple[str, str, str]]:
 
 def update_password(
     conn: sqlite3.Connection,
+    email: str,
     old_service: str,
     old_username: str,
     new_service: str,
@@ -430,12 +582,16 @@ def update_password(
     encrypted_new_username = encrypt_data(new_username)
     encrypted_password = encrypt_data(new_password)
     try:
+        user_id = get_user_id(conn, email)
+        if user_id is None:
+            logger.error(f"No user found with email: {email}")
+            raise Exception("User does not exist.")
         with conn:
             conn.execute(
                 """
                 UPDATE passwords 
                 SET service = ?, username = ?, password = ? 
-                WHERE service = ? AND username = ?
+                WHERE service = ? AND username = ? AND user_id = ?
                 """,
                 (
                     encrypted_new_service,
@@ -443,6 +599,7 @@ def update_password(
                     encrypted_password,
                     encrypted_old_service,
                     encrypted_old_username,
+                    user_id,
                 ),
             )
         logger.info("Updated password for a service.")
@@ -451,15 +608,21 @@ def update_password(
         raise Exception("Failed to update password.") from e
 
 
-def delete_password(conn: sqlite3.Connection, service: str, username: str) -> None:
+def delete_password(
+    conn: sqlite3.Connection, email: str, service: str, username: str
+) -> None:
     """Delete a specific password entry from the database."""
     encrypted_service = encrypt_data(service)
     encrypted_username = encrypt_data(username)
     try:
+        user_id = get_user_id(conn, email)
+        if user_id is None:
+            logger.error(f"No user found with email: {email}")
+            raise Exception("User does not exist.")
         with conn:
             conn.execute(
-                "DELETE FROM passwords WHERE service = ? AND username = ?",
-                (encrypted_service, encrypted_username),
+                "DELETE FROM passwords WHERE service = ? AND username = ? AND user_id = ?",
+                (encrypted_service, encrypted_username, user_id),
             )
         logger.info("Deleted password for a service.")
     except sqlite3.Error as e:
@@ -467,82 +630,55 @@ def delete_password(conn: sqlite3.Connection, service: str, username: str) -> No
         raise Exception("Failed to delete password.") from e
 
 
-def execute_query(
-    conn: sqlite3.Connection, query: str, params: tuple = None
-) -> List[Tuple]:
-    """Execute a SQL query with optional parameters."""
+def store_2fa_secret(conn: sqlite3.Connection, email: str, secret: str) -> None:
+    """
+    Store or replace the 2FA secret for a user.
+
+    Args:
+        conn (sqlite3.Connection): The database connection.
+        email (str): The user's email address.
+        secret (str): The 2FA secret to store.
+    """
     try:
-        cursor = conn.cursor()
-        cursor.execute(query, params or ())
-        conn.commit()
-        results = cursor.fetchall()
-        logger.debug(f"Executed query: {query} | Params: {params}")
-        return results
-    except sqlite3.Error as e:
-        logger.error(f"Error executing query: {e} | Query: {query}")
-        return []
-
-
-def fetch_one(conn: sqlite3.Connection, query: str, params: tuple = None) -> Tuple:
-    """Execute a SQL query and fetch a single result."""
-    try:
-        cursor = conn.cursor()
-        cursor.execute(query, params or ())
-        conn.commit()
-        result = cursor.fetchone()
-        logger.debug(f"Executed query: {query} | Params: {params}")
-        return result if result else ()
-    except sqlite3.Error as e:
-        logger.error(f"Error executing query: {e} | Query: {query}")
-        return ()
-
-
-def fetch_all(
-    conn: sqlite3.Connection, query: str, params: tuple = None
-) -> List[Tuple]:
-    """Execute a SQL query and fetch all results."""
-    try:
-        cursor = conn.cursor()
-        cursor.execute(query, params or ())
-        conn.commit()
-        results = cursor.fetchall()
-        logger.debug(f"Executed query: {query} | Params: {params}")
-        return results
-    except sqlite3.Error as e:
-        logger.error(f"Error executing query: {e} | Query: {query}")
-        return []
-
-
-def store_2fa_secret(
-    conn: sqlite3.Connection, user_identifier: str, secret: str
-) -> None:
-    """Store or replace the 2FA secret for a user."""
-    try:
-        hashed_user_identifier = hash_identifier(user_identifier)
+        user_id = get_user_id(conn, email)
+        if user_id is None:
+            logger.error(f"No user found with email: {email}")
+            raise Exception("User does not exist.")
         encrypted_secret = encrypt_data(secret)
-        conn.execute(
-            "INSERT OR REPLACE INTO two_factor_auth (user_identifier, secret) VALUES (?, ?)",
-            (hashed_user_identifier, encrypted_secret),
-        )
-        conn.commit()
-        logger.info(
-            f"Stored 2FA secret for hashed_user_identifier: {hashed_user_identifier}"
-        )
+        with conn:
+            conn.execute(
+                """
+                INSERT INTO two_factor_auth (user_id, secret) 
+                VALUES (?, ?)
+                ON CONFLICT(user_id) DO UPDATE SET secret = excluded.secret
+                """,
+                (user_id, encrypted_secret),
+            )
+        logger.info(f"Stored 2FA secret for user: {email}")
     except sqlite3.Error as e:
         logger.error(f"Failed to store 2FA secret: {e}")
         raise Exception("Failed to store 2FA secret.") from e
 
 
-def get_2fa_secret(conn: sqlite3.Connection, user_identifier: str) -> str:
-    """Retrieve the decrypted 2FA secret for a user."""
-    hashed_user_identifier = hash_identifier(user_identifier)
-    logger.debug(
-        f"Retrieving 2FA secret for hashed_user_identifier: {hashed_user_identifier}"
-    )
+def get_2fa_secret(conn: sqlite3.Connection, email: str) -> Optional[str]:
+    """
+    Retrieve the decrypted 2FA secret for a user.
+
+    Args:
+        conn (sqlite3.Connection): The database connection.
+        email (str): The user's email address.
+
+    Returns:
+        Optional[str]: The decrypted 2FA secret if found, else None.
+    """
     try:
+        user_id = get_user_id(conn, email)
+        if user_id is None:
+            logger.error(f"No user found with email: {email}")
+            return None
         cursor = conn.execute(
-            "SELECT secret FROM two_factor_auth WHERE user_identifier = ?",
-            (hashed_user_identifier,),
+            "SELECT secret FROM two_factor_auth WHERE user_id = ?",
+            (user_id,),
         )
         row = cursor.fetchone()
         if row:
@@ -562,16 +698,180 @@ def get_2fa_secret(conn: sqlite3.Connection, user_identifier: str) -> str:
         raise Exception("Failed to retrieve 2FA secret.") from e
 
 
-def delete_2fa_secret(conn: sqlite3.Connection, user_identifier: str) -> None:
-    """Delete the 2FA secret for a user."""
+def delete_2fa_secret(conn: sqlite3.Connection, email: str) -> None:
+    """
+    Delete the 2FA secret for a user.
+
+    Args:
+        conn (sqlite3.Connection): The database connection.
+        email (str): The user's email address.
+    """
     try:
-        hashed_user_identifier = hash_identifier(user_identifier)
+        user_id = get_user_id(conn, email)
+        if user_id is None:
+            logger.error(f"No user found with email: {email}")
+            raise Exception("User does not exist.")
         with conn:
             conn.execute(
-                "DELETE FROM two_factor_auth WHERE user_identifier = ?",
-                (hashed_user_identifier,),
+                "DELETE FROM two_factor_auth WHERE user_id = ?",
+                (user_id,),
             )
         logger.info("Deleted 2FA secret for user.")
     except sqlite3.Error as e:
         logger.error(f"Failed to delete 2FA secret: {e}")
         raise Exception("Failed to delete 2FA secret.") from e
+
+
+def store_secure_note(
+    conn: sqlite3.Connection, email: str, title: str, content: str
+) -> None:
+    """
+    Store a secure note with title and content for a user.
+
+    Args:
+        conn (sqlite3.Connection): The database connection.
+        email (str): The user's email address.
+        title (str): The title of the secure note.
+        content (str): The content of the secure note.
+    """
+    encrypted_title = encrypt_data(title)
+    encrypted_content = encrypt_data(content)
+    try:
+        user_id = get_user_id(conn, email)
+        if user_id is None:
+            logger.error(f"No user found with email: {email}")
+            raise Exception("User does not exist.")
+        with conn:
+            conn.execute(
+                "INSERT INTO secure_notes (title, content, user_id) VALUES (?, ?, ?)",
+                (encrypted_title, encrypted_content, user_id),
+            )
+        logger.info("Stored secure note for user.")
+    except sqlite3.Error as e:
+        logger.error(f"Error storing secure note: {e}")
+        raise Exception("Failed to store secure note.") from e
+
+
+def retrieve_secure_notes(
+    conn: sqlite3.Connection, email: str
+) -> List[Tuple[int, str, str]]:
+    """
+    Retrieve all secure notes with titles and content for a user.
+
+    Args:
+        conn (sqlite3.Connection): The database connection.
+        email (str): The user's email address.
+
+    Returns:
+        List[Tuple[int, str, str]]: A list of tuples containing (id, title, content).
+    """
+    try:
+        user_id = get_user_id(conn, email)
+        if user_id is None:
+            logger.error(f"No user found with email: {email}")
+            return []
+        cursor = conn.execute(
+            "SELECT id, title, content FROM secure_notes WHERE user_id = ?",
+            (user_id,),
+        )
+        notes = []
+        for note_id, encrypted_title, encrypted_content in cursor.fetchall():
+            try:
+                title = decrypt_data(encrypted_title)
+                content = decrypt_data(encrypted_content)
+                notes.append((note_id, title, content))
+            except Exception as e:
+                logger.error(f"Error decrypting secure note: {e}")
+        logger.info("Retrieved all secure notes for user.")
+        return notes
+    except sqlite3.Error as e:
+        logger.error(f"Error retrieving secure notes: {e}")
+        return []
+
+
+def update_secure_note(
+    conn: sqlite3.Connection, email: str, note_id: int, title: str, content: str
+) -> None:
+    """
+    Update an existing secure note in the database.
+
+    Args:
+        conn (sqlite3.Connection): The database connection.
+        email (str): The user's email address.
+        note_id (int): The ID of the note to update.
+        title (str): The new title of the secure note.
+        content (str): The new content of the secure note.
+    """
+    encrypted_title = encrypt_data(title)
+    encrypted_content = encrypt_data(content)
+    try:
+        user_id = get_user_id(conn, email)
+        if user_id is None:
+            logger.error(f"No user found with email: {email}")
+            raise Exception("User does not exist.")
+        with conn:
+            conn.execute(
+                """
+                UPDATE secure_notes 
+                SET title = ?, content = ? 
+                WHERE id = ? AND user_id = ?
+                """,
+                (encrypted_title, encrypted_content, note_id, user_id),
+            )
+        logger.info(f"Updated secure note ID: {note_id}")
+    except sqlite3.Error as e:
+        logger.error(f"Failed to update secure note ID {note_id}: {e}")
+        raise Exception("Failed to update secure note.") from e
+
+
+def delete_secure_note(conn: sqlite3.Connection, email: str, note_id: int) -> None:
+    """
+    Delete a secure note from the database.
+
+    Args:
+        conn (sqlite3.Connection): The database connection.
+        email (str): The user's email address.
+        note_id (int): The ID of the note to delete.
+    """
+    try:
+        user_id = get_user_id(conn, email)
+        if user_id is None:
+            logger.error(f"No user found with email: {email}")
+            raise Exception("User does not exist.")
+        with conn:
+            conn.execute(
+                "DELETE FROM secure_notes WHERE id = ? AND user_id = ?",
+                (note_id, user_id),
+            )
+        logger.info(f"Deleted secure note ID: {note_id}")
+    except sqlite3.Error as e:
+        logger.error(f"Failed to delete secure note ID {note_id}: {e}")
+        raise Exception("Failed to delete secure note.") from e
+
+
+def wipe_user_data(conn: sqlite3.Connection, email: str) -> None:
+    """
+    Wipe all user data for a specific user.
+
+    Args:
+        conn (sqlite3.Connection): The database connection.
+        email (str): The user's email address.
+    """
+    try:
+        user_id = get_user_id(conn, email)
+        if user_id is None:
+            logger.warning(f"No user found with email: {email}")
+            return
+        with conn:
+            conn.execute("DELETE FROM passwords WHERE user_id = ?", (user_id,))
+            conn.execute("DELETE FROM secure_notes WHERE user_id = ?", (user_id,))
+            conn.execute("DELETE FROM two_factor_auth WHERE user_id = ?", (user_id,))
+            conn.execute("DELETE FROM master_password WHERE user_id = ?", (user_id,))
+            conn.execute("DELETE FROM users WHERE id = ?", (user_id,))
+        logger.info(f"User data wiped for user: {email}")
+    except sqlite3.Error as e:
+        logger.error(f"Error wiping user data for {email}: {e}")
+        raise Exception("Failed to wipe user data.") from e
+
+
+# Additional utility functions can be added here as needed.

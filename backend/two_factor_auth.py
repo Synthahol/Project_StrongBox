@@ -1,4 +1,4 @@
-# two_factor_auth.py
+# backend/two_factor_auth.py
 
 import logging
 from io import BytesIO
@@ -42,16 +42,30 @@ class TwoFactorAuthentication:
         logger.info("Generated and stored new 2FA secret for the user.")
         return secret
 
-        secret = pyotp.random_base32()
-        # Store the secret in the database
-        store_2fa_secret(self.conn, self.user_identifier, secret)
-        logger.info("Generated and stored new 2FA secret for the user.")
-        return secret
-
     def get_secret(self) -> Optional[str]:
         """Fetches the user's 2FA secret from the database."""
         secret = get_2fa_secret(self.conn, self.user_identifier)
         return secret
+
+    def store_secret(self, secret: str) -> bool:
+        """
+        Stores the 2FA secret in the database.
+
+        Args:
+            secret (str): The 2FA secret to store.
+
+        Returns:
+            bool: True if storage was successful, False otherwise.
+        """
+        try:
+            store_2fa_secret(self.conn, self.user_identifier, secret)
+            logger.info(f"Stored 2FA secret for user: {self.user_identifier}")
+            return True
+        except Exception as e:
+            logger.error(
+                f"Failed to store 2FA secret for user {self.user_identifier}: {e}"
+            )
+            return False
 
     def generate_qr_code(self) -> bytes:
         """Generates a QR code for the user to scan with an authenticator app.
@@ -64,7 +78,7 @@ class TwoFactorAuthentication:
                 "2FA secret not found for user. Please set up 2FA first."
             )
         totp_uri = pyotp.TOTP(secret).provisioning_uri(
-            self.user_identifier, issuer_name="PasswordManagerApp"
+            self.user_identifier, issuer_name="Fortalice"
         )
         # Generate the QR code
         qr_img = qrcode.make(totp_uri)
@@ -83,6 +97,11 @@ class TwoFactorAuthentication:
         if not secret:
             raise SecretNotFoundError("2FA secret not found for user.")
         totp = pyotp.TOTP(secret)
-        return totp.verify(
+        is_valid = totp.verify(
             token, valid_window=1
         )  # Allows for slight time discrepancies
+        if is_valid:
+            logger.info("2FA token verification successful.")
+        else:
+            logger.warning("2FA token verification failed.")
+        return is_valid

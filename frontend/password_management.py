@@ -2,6 +2,9 @@
 
 import logging
 import os
+import sqlite3
+import sys
+from typing import Optional
 
 from PySide6.QtCore import QItemSelectionModel, Qt
 from PySide6.QtGui import QIcon
@@ -29,6 +32,7 @@ from backend.database import (
     create_connection,
     delete_password,
     get_all_passwords,
+    get_user_id,
     store_password,
     update_password,
 )
@@ -46,14 +50,40 @@ ICON_PATH = os.path.join("frontend", "icons", "encryption.png")
 
 
 class PasswordManagementTab(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, conn: sqlite3.Connection, email: str, parent=None):
         super().__init__(parent)
         self.conn = create_connection()
+        if not self.conn:
+            logger.critical(
+                "Failed to establish database connection in PasswordManagementTab."
+            )
+            CustomMessageBox(
+                "Critical Error",
+                "Unable to connect to the database. The application will exit.",
+                QMessageBox.Critical,
+            ).show_message()
+            sys.exit(1)
+
         self.session = SessionManager()
 
         self.setWindowIcon(QIcon(ICON_PATH))
         self.button_factory = ButtonFactory(self)
         self.layout = QVBoxLayout(self)
+        self.user_email = email
+        self.user_id = self.get_user_id()
+        if self.user_id is None:
+            logger.error(f"User ID not found for email: {self.user_email}")
+            CustomMessageBox(
+                "Initialization Error",
+                "User not found. Please log in again.",
+                QMessageBox.Critical,
+            ).show_message()
+            # Optionally, you might want to disable functionalities or prompt re-login
+            return
+        else:
+            logger.info(
+                f"User ID {self.user_id} retrieved for email: {self.user_email}"
+            )
         self.password_data = []  # Store all password data for filtering
         self.create_ui()
 
@@ -124,29 +154,35 @@ class PasswordManagementTab(QWidget):
         self.load_passwords()
 
     def create_input_field(
-        self, label_text, placeholder_text, echo_mode=QLineEdit.Normal
-    ):
+        self,
+        label_text: str,
+        placeholder_text: str,
+        echo_mode: QLineEdit.EchoMode = QLineEdit.Normal,
+    ) -> QLineEdit:
         input_field = QLineEdit()
         input_field.setPlaceholderText(placeholder_text)
         input_field.setEchoMode(echo_mode)
         input_field.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
         return input_field
 
-    def add_autocomplete(self, line_edit, items):
+    def add_autocomplete(self, line_edit: QLineEdit, items: list):
         completer = QCompleter(items)
         completer.setCaseSensitivity(Qt.CaseInsensitive)
         line_edit.setCompleter(completer)
 
-    def get_distinct_values(self, column_name):
+    def get_distinct_values(self, column_name: str) -> list:
         try:
-            cursor = self.conn.execute(f"SELECT DISTINCT {column_name} FROM passwords")
-            values = [row[0] for row in cursor.fetchall()]
+            cursor = self.conn.execute(
+                f"SELECT DISTINCT {column_name} FROM passwords WHERE user_id = ?",
+                (self.user_id,),
+            )
+            values = [row[0] for row in cursor.fetchall() if row[0]]
             return values
         except Exception as e:
             logger.error(f"Error fetching {column_name} for autocomplete: {e}")
             return []
 
-    def create_password_table(self):
+    def create_password_table(self) -> QTableWidget:
         table = QTableWidget()
         table.setObjectName("passwordTable")  # Set objectName for QSS
         table.setColumnCount(4)
@@ -183,28 +219,41 @@ class PasswordManagementTab(QWidget):
 
         return table
 
-    def show_message(self, title, message, icon=QMessageBox.Information):
+    def show_message(
+        self, title: str, message: str, icon: QMessageBox.Icon = QMessageBox.Information
+    ):
         msg_box = CustomMessageBox(title=title, message=message, icon=icon)
         msg_box.show_message()
 
     def load_passwords(self):
         """Load passwords from the database and display them in the table."""
         self.password_table.setRowCount(0)
-        self.password_data = get_all_passwords(
-            self.conn
-        )  # Store all passwords for filtering
-        self.populate_table(self.password_data)
+        try:
+            self.password_data = get_all_passwords(
+                self.conn,
+                self.user_email,  # Pass both conn and email
+            )  # Store all passwords for filtering
+            self.populate_table(self.password_data)
+            logger.info(
+                f"Loaded {len(self.password_data)} passwords for user_email {self.user_email}."
+            )
+        except Exception as e:
+            logger.error(f"Error loading passwords: {e}")
+            self.show_warning("Failed to load passwords.")
 
-    def populate_table(self, passwords):
+    def populate_table(self, passwords: list):
         """Populate the table with password data."""
         self.password_table.setRowCount(0)  # Clear the table
-        for row_num, (service, username, password) in enumerate(passwords):
+        for row_num, password_entry in enumerate(passwords):
+            service, username, password = password_entry  # Unpack tuple
             self.password_table.insertRow(row_num)
             self.add_password_row(row_num, service, username, password)
             self.password_table.setRowHeight(row_num, 50)
         self.password_table.resizeRowsToContents()
 
-    def add_password_row(self, row_num, service, username, password):
+    def add_password_row(
+        self, row_num: int, service: str, username: str, password: str
+    ):
         # Service Item
         service_item = QTableWidgetItem(service)
         service_item.setFlags(service_item.flags() & ~Qt.ItemIsEditable)
@@ -226,7 +275,7 @@ class PasswordManagementTab(QWidget):
         action_widget = self.create_action_widget(row_num)
         self.password_table.setCellWidget(row_num, 3, action_widget)
 
-    def create_action_widget(self, row_num):
+    def create_action_widget(self, row_num: int) -> QWidget:
         action_layout = QHBoxLayout()
         action_layout.setAlignment(Qt.AlignCenter)
         action_layout.setContentsMargins(5, 5, 5, 5)
@@ -277,13 +326,21 @@ class PasswordManagementTab(QWidget):
         """Filter the table based on the search bar input."""
         search_text = self.search_bar.text().lower()
         filtered_data = [
-            (service, username, password)
-            for service, username, password in self.password_data
-            if search_text in service.lower() or search_text in username.lower()
+            {
+                "title": entry["title"],
+                "username": entry["username"],
+                "password": entry["password"],
+                "notes": entry.get("notes", ""),
+                "created_at": entry.get("created_at", ""),
+                "updated_at": entry.get("updated_at", ""),
+            }
+            for entry in self.password_data
+            if search_text in entry["title"].lower()
+            or search_text in entry["username"].lower()
         ]
         self.populate_table(filtered_data)
 
-    def toggle_password_visibility(self, row):
+    def toggle_password_visibility(self, row: int):
         item = self.password_table.item(row, 2)
         current_text = item.text()
         actual_password = item.data(Qt.UserRole)
@@ -294,7 +351,7 @@ class PasswordManagementTab(QWidget):
             item.setText("•" * 8)
             self.update_action_button_text(row, "Hide", "Reveal")
 
-    def update_action_button_text(self, row, current_text, new_text):
+    def update_action_button_text(self, row: int, current_text: str, new_text: str):
         action_widget = self.password_table.cellWidget(row, 3)
         buttons = action_widget.findChildren(QPushButton)
         for button in buttons:
@@ -302,7 +359,7 @@ class PasswordManagementTab(QWidget):
                 button.setText(new_text)
                 break
 
-    def copy_to_clipboard(self, row):
+    def copy_to_clipboard(self, row: int):
         item = self.password_table.item(row, 2)
         actual_password = item.data(Qt.UserRole)
         if actual_password:
@@ -318,12 +375,14 @@ class PasswordManagementTab(QWidget):
             self.show_message("Error", "Failed to copy password.", QMessageBox.Critical)
             logger.error(f"Failed to copy password for row: {row}")
 
-    def modify_password(self, row):
+    def modify_password(self, row: int):
         service = self.password_table.item(row, 0).text()
         username = self.password_table.item(row, 1).text()
         password = self.password_table.item(row, 2).data(Qt.UserRole)
 
-        modify_dialog = ModifyPasswordDialog(self.conn, service, username, password)
+        modify_dialog = ModifyPasswordDialog(
+            self.conn, self.user_email, service, username, password
+        )
         if modify_dialog.exec() == QDialog.Accepted:
             self.load_passwords()
 
@@ -341,7 +400,7 @@ class PasswordManagementTab(QWidget):
             return
 
         try:
-            if check_existing_entry(self.conn, service, username):
+            if check_existing_entry(self.conn, service, username, self.user_email):
                 self.show_message(
                     "Error",
                     "This service and username already exist.",
@@ -349,7 +408,7 @@ class PasswordManagementTab(QWidget):
                 )
                 return
 
-            store_password(self.conn, service, username, password)
+            store_password(self.conn, service, username, password, self.user_email)
             logger.info(f"Stored password for service: {service}, username: {username}")
             self.show_message(
                 "Success", "Password stored successfully.", QMessageBox.Information
@@ -378,7 +437,7 @@ class PasswordManagementTab(QWidget):
                 index, QItemSelectionModel.Deselect | QItemSelectionModel.Select
             )
 
-    def handle_horizontal_header_double_click(self, logicalIndex):
+    def handle_horizontal_header_double_click(self, logicalIndex: int):
         """Handle double-click events on horizontal headers to unhighlight columns."""
         selection_model = self.password_table.selectionModel()
         if selection_model.isColumnSelected(logicalIndex):
@@ -389,7 +448,7 @@ class PasswordManagementTab(QWidget):
                 | QItemSelectionModel.Columns,
             )
 
-    def handle_vertical_header_double_click(self, logicalIndex):
+    def handle_vertical_header_double_click(self, logicalIndex: int):
         """Handle double-click events on vertical headers to unhighlight rows."""
         selection_model = self.password_table.selectionModel()
         if selection_model.isRowSelected(logicalIndex):
@@ -400,11 +459,32 @@ class PasswordManagementTab(QWidget):
                 | QItemSelectionModel.Rows,
             )
 
+    def get_user_id(self) -> Optional[int]:
+        """Retrieve the user ID based on the email."""
+        try:
+            user_id = get_user_id(self.conn, self.user_email)
+            return user_id
+        except Exception as e:
+            logger.error(f"Error retrieving user ID: {e}")
+            return None
+
+    def show_warning(self, message: str):
+        """Show a warning message."""
+        CustomMessageBox("Warning", message, QMessageBox.Warning).show_message()
+
 
 class ModifyPasswordDialog(QDialog):
-    def __init__(self, conn, service, username, password):
+    def __init__(
+        self,
+        conn: sqlite3.Connection,
+        email: str,
+        service: str,
+        username: str,
+        password: str,
+    ):
         super().__init__()
         self.conn = conn
+        self.email = email  # Store the email
         self.service = service
         self.username = username
         self.password = password
@@ -450,13 +530,6 @@ class ModifyPasswordDialog(QDialog):
         self.adjustSize()
         self.center_on_screen()
 
-    def center_on_screen(self):
-        screen = QApplication.primaryScreen().geometry()
-        dialog_rect = self.geometry()
-        center_x = (screen.width() - dialog_rect.width()) // 2
-        center_y = (screen.height() - dialog_rect.height()) // 2
-        self.move(center_x, center_y)
-
     def save_password(self):
         new_service = self.service_input.text().strip()
         new_username = self.username_input.text().strip()
@@ -473,6 +546,7 @@ class ModifyPasswordDialog(QDialog):
         try:
             update_password(
                 self.conn,
+                self.email,  # Pass email instead of user_id
                 self.service,
                 self.username,
                 new_service,
@@ -504,7 +578,9 @@ class ModifyPasswordDialog(QDialog):
         )
         if reply == QMessageBox.Yes:
             try:
-                delete_password(self.conn, self.service, self.username)
+                delete_password(
+                    self.conn, self.email, self.service, self.username
+                )  # Pass email
                 logger.info(
                     f"Deleted password for service: {self.service}, username: {self.username}"
                 )

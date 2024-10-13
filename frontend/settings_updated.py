@@ -15,7 +15,6 @@ from PySide6.QtWidgets import (
     QDialog,
     QHBoxLayout,
     QHeaderView,
-    QInputDialog,
     QLabel,
     QLineEdit,
     QMessageBox,
@@ -26,10 +25,12 @@ from PySide6.QtWidgets import (
     QTableWidgetItem,
     QVBoxLayout,
     QWidget,
+    QInputDialog
 )
 
 from backend.database import (
     delete_2fa_secret,
+    update_email,  # Corrected import
     update_master_password,  # Corrected import
 )
 from backend.exceptions import SecretAlreadyExistsError  # Ensure this is defined
@@ -222,9 +223,7 @@ class ChangeEmailDialog(QDialog):
                     self.main_window.show_warning(f"Failed to update email: {str(e)}")
                     logger.error(f"Failed to update email: {str(e)}")
         else:
-            self.main_window.show_warning(
-                "Master password is required to change email."
-            )
+            self.main_window.show_warning("Master password is required to change email.")
             logger.warning("Email change canceled without entering master password.")
 
     def validate_email(self, email: str) -> bool:
@@ -235,10 +234,7 @@ class ChangeEmailDialog(QDialog):
     def update_email_in_database(self, new_email: str):
         """Update the user's email address in the database."""
         cursor = self.main_window.conn.cursor()
-        cursor.execute(
-            "UPDATE users SET email = ? WHERE identifier = ?",
-            (new_email, self.main_window.user_identifier),
-        )
+        cursor.execute("UPDATE users SET email = ? WHERE identifier = ?", (new_email, self.main_window.user_identifier))
         self.main_window.conn.commit()
 
 

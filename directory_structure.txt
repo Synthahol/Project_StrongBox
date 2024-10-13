@@ -18,6 +18,7 @@ Fortalice
 │   └── two_factor_auth.py
 ├── frontend
 │   ├── icons
+│   │   ├── back_logo.svg
 │   │   ├── check.png
 │   │   ├── computer-keys.svg
 │   │   ├── danger.png
@@ -25,7 +26,9 @@ Fortalice
 │   │   ├── encryption.png
 │   │   ├── encryptionIcon.ico
 │   │   ├── files-and-folders.svg
+│   │   ├── FortaliceLogo.svg
 │   │   ├── health.png
+│   │   ├── key_logo.svg
 │   │   ├── locker.svg
 │   │   ├── magic-wand.png
 │   │   ├── magic-wand.svg
@@ -47,10 +50,10 @@ Fortalice
 │   ├── password_management.py
 │   ├── secure_notes_tab.py
 │   ├── settings.py
+│   ├── settings_updated.py
 │   └── utils.py
 ├── .gitignore
 ├── directory_structure.txt
-├── Fortalice.spec
 ├── generate_tree.py
 ├── main.py
 ├── password_checker.log

@@ -36,8 +36,22 @@ class ButtonFactory:
         icon_path: Optional[str] = None,
         tooltip: Optional[str] = None,
         object_name: Optional[str] = None,
+        style: Optional[str] = None,  # Added 'style' parameter
     ) -> QPushButton:
-        """Create a QPushButton with specified properties."""
+        """Create a QPushButton with specified properties.
+
+        Args:
+            button_text (str): The text displayed on the button.
+            button_width (int): The fixed width of the button.
+            button_callback (Callable): The function to connect to the button's clicked signal.
+            icon_path (Optional[str], optional): Path to the icon image. Defaults to None.
+            tooltip (Optional[str], optional): Tooltip text for the button. Defaults to None.
+            object_name (Optional[str], optional): Object name for styling or identification. Defaults to None.
+            style (Optional[str], optional): StyleSheet string to style the button. Defaults to None.
+
+        Returns:
+            QPushButton: The configured QPushButton instance.
+        """
         button = QPushButton(button_text, parent=self.parent)
         button.setFixedWidth(button_width)
         if icon_path and os.path.exists(icon_path):
@@ -47,12 +61,25 @@ class ButtonFactory:
             button.setToolTip(tooltip)
         if object_name:
             button.setObjectName(object_name)
+        if style:
+            try:
+                button.setStyleSheet(style)  # Apply the provided style
+            except Exception as e:
+                # Log the error or handle it as needed
+                print(f"Error applying style to button '{button_text}': {e}")
         button.clicked.connect(button_callback)
-        button.setStyleSheet("QPushButton { text-align: center; padding: 5px; }")
         return button
 
     def create_buttons_with_spacing(self, action_buttons: List[Tuple]) -> QHBoxLayout:
-        """Create a horizontal layout with buttons spaced evenly."""
+        """Create a horizontal layout with buttons spaced evenly.
+
+        Args:
+            action_buttons (List[Tuple]): A list of tuples containing button properties:
+                (button_text, button_width, button_callback, icon_path, tooltip, object_name, style)
+
+        Returns:
+            QHBoxLayout: The horizontal layout containing the buttons.
+        """
         layout = QHBoxLayout()
         layout.setSpacing(20)
         for btn in action_buttons:
@@ -62,6 +89,7 @@ class ButtonFactory:
             icon_path = btn[3] if len(btn) > 3 else None
             tooltip = btn[4] if len(btn) > 4 else None
             object_name = btn[5] if len(btn) > 5 else None
+            style = btn[6] if len(btn) > 6 else None  # Handle 'style' if provided
             button = self.create_button(
                 button_text,
                 button_width,
@@ -69,13 +97,18 @@ class ButtonFactory:
                 icon_path,
                 tooltip,
                 object_name,
+                style,  # Pass 'style' to create_button
             )
             layout.addWidget(button)
         layout.addStretch()
         return layout
 
     def create_horizontal_line(self) -> QFrame:
-        """Create a horizontal line using QFrame."""
+        """Create a horizontal line using QFrame.
+
+        Returns:
+            QFrame: The configured horizontal line.
+        """
         line = QFrame()
         line.setFrameShape(QFrame.HLine)
         line.setFrameShadow(QFrame.Sunken)
@@ -88,13 +121,26 @@ class ButtonFactory:
         button_width: int,
         button_callback: Callable,
         icon_path: Optional[str] = None,
+        style: Optional[str] = None,  # Added 'style' parameter
     ) -> QHBoxLayout:
-        """Create a button within a QHBoxLayout with optional label and icon."""
+        """Create a button within a QHBoxLayout with optional label and icon.
+
+        Args:
+            label_text (str): The text for the label preceding the button.
+            button_text (str): The text displayed on the button.
+            button_width (int): The fixed width of the button.
+            button_callback (Callable): The function to connect to the button's clicked signal.
+            icon_path (Optional[str], optional): Path to the icon image. Defaults to None.
+            style (Optional[str], optional): StyleSheet string to style the button. Defaults to None.
+
+        Returns:
+            QHBoxLayout: The horizontal layout containing the label and button.
+        """
         layout = QHBoxLayout()
         if label_text:
             layout.addWidget(QLabel(label_text))
         button = self.create_button(
-            button_text, button_width, button_callback, icon_path
+            button_text, button_width, button_callback, icon_path, style=style
         )
         layout.addStretch()
         layout.addWidget(button)
@@ -111,7 +157,15 @@ class CustomMessageBox(QDialog):
         button_text: str = "OK",
         parent=None,
     ):
-        """Initialize a custom message box with a centered button."""
+        """Initialize a custom message box with a centered button.
+
+        Args:
+            title (str): The title of the message box.
+            message (str): The message displayed in the message box.
+            icon: The type of icon to display (e.g., QMessageBox.Information).
+            button_text (str, optional): The text for the confirmation button. Defaults to "OK".
+            parent: The parent widget. Defaults to None.
+        """
         super().__init__(parent)
         self.setWindowTitle(title)
         self.setWindowIcon(QIcon("frontend/icons/encryption.png"))
@@ -168,6 +222,12 @@ class CustomMessageBox(QDialog):
 
 class PasswordHealthReportDialog(QDialog):
     def __init__(self, report_text, parent=None):
+        """Initialize the Password Health Report dialog.
+
+        Args:
+            report_text (str): The text content of the report.
+            parent: The parent widget. Defaults to None.
+        """
         super().__init__(parent)
         self.setWindowTitle("Password Health Report")
         self.setMinimumSize(500, 400)  # You can adjust the size if needed
@@ -202,6 +262,13 @@ def display_password_health_table(password_health_data, parent=None):
     """
     Create a scrollable table to display all passwords (whether compromised, weak, or strong),
     with columns: Password, Compromised, Health, Status Report.
+
+    Args:
+        password_health_data (List[Dict]): A list of dictionaries containing password health information.
+        parent: The parent widget. Defaults to None.
+
+    Returns:
+        QWidget: The widget containing the password health table.
     """
 
     # Helper function to load icons with error handling
@@ -407,13 +474,28 @@ def display_password_health_table(password_health_data, parent=None):
 def toggle_password_visibility(button, password):
     """
     Toggle the visibility of the password.
+
+    Args:
+        button (QPushButton): The button that was clicked.
+        password (QLineEdit): The password input field to toggle.
     """
     if button.text() == "Show":
-        button.setText(password)
+        password.setEchoMode(QLineEdit.Normal)
+        button.setText("Hide")
     else:
+        password.setEchoMode(QLineEdit.Password)
         button.setText("Show")
 
+
 def add_title_and_description(layout, title, description):
+    """
+    Add a title and description to the given layout.
+
+    Args:
+        layout (QVBoxLayout): The layout to add the title and description to.
+        title (str): The title text.
+        description (str): The description text.
+    """
     # Title
     title_label = QLabel(title)
     title_label.setStyleSheet(
@@ -425,8 +507,6 @@ def add_title_and_description(layout, title, description):
     # Info Label
     info_label = QLabel(description)
     info_label.setWordWrap(True)
-    info_label.setStyleSheet(
-        "font-size: 14px; color: #555555; margin-bottom: 15px;"
-    )
+    info_label.setStyleSheet("font-size: 14px; color: #555555; margin-bottom: 15px;")
     info_label.setAlignment(Qt.AlignCenter)
     layout.addWidget(info_label)

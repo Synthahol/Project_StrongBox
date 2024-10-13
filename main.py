@@ -49,7 +49,6 @@ from backend.database import (
     initialize_db,
     is_master_password_set,
     set_master_password,
-    verify_master_password,
 )
 from backend.exceptions import SecretAlreadyExistsError
 from backend.two_factor_auth import TwoFactorAuthentication
@@ -604,52 +603,34 @@ class PasswordManager(QMainWindow):
         login_dialog = LoginDialog(self)
         if login_dialog.exec() == QDialog.Accepted:
             credentials = login_dialog.get_credentials()
-            email = credentials["email"]
-            password = credentials["password"]
-            two_fa_token = credentials["two_fa_token"]
-            remember_device = credentials["remember_device"]
+            if credentials:
+                email = credentials.get("email", "").strip().lower()
+                password = credentials.get("password", "")
+                remember_device = credentials.get("remember_device", False)
 
-            # Set the user identifier
-            self.user_identifier = email
-            logger.info("User identifier set.")
+                # Set the user identifier
+                self.user_identifier = email
+                logger.info("User identifier set.")
 
-            # Check if master password is set
-            if not is_master_password_set(self.conn):
-                self.set_master_password_from_dialog(password)
-            else:
-                if not verify_master_password(self.conn, password):
-                    self.show_warning("Incorrect master password.")
-                    return False
-                else:
-                    # Store the master password in the session manager
-                    self.session.set_master_password(password)
-                    logger.info("Master password verified successfully.")
-
-            # Handle 2FA verification
-            two_fa = TwoFactorAuthentication(self.user_identifier, self.conn)
-            if not two_fa.get_secret():
-                # 2FA not set up; prompt to set it up
-                self.setup_two_factor_authentication()
-            else:
-                # Check if device is trusted
-                if not self.is_device_trusted():
-                    # Verify the provided 2FA token
-                    if not two_fa.verify_token(two_fa_token):
-                        self.show_warning("Invalid 2FA token.")
+                # Check if master password is set for this email
+                if not is_master_password_set(self.conn, email):
+                    # Attempt to set the master password
+                    success = self.set_master_password_from_dialog(email, password)
+                    if not success:
+                        self.show_warning("Failed to set master password.")
                         return False
-                    else:
-                        logger.info("2FA verification successful.")
-                else:
-                    logger.info("Device is trusted. Skipping 2FA verification.")
 
-            # Handle "Remember this device" feature
-            if remember_device:
-                self.mark_device_as_trusted()
+                # Handle "Remember this device" feature
+                if remember_device:
+                    self.mark_device_as_trusted()
 
-            # Reset session timer on successful login
-            self.reset_session_timer()
+                # Reset session timer on successful login
+                self.reset_session_timer()
 
-            return True
+                return True
+            else:
+                self.show_warning("Failed to retrieve credentials.")
+                return False
         else:
             return False
 
@@ -684,12 +665,17 @@ class PasswordManager(QMainWindow):
     def _setup_tabs(self):
         """Set up the main tabs of the application."""
         self.password_generation_tab = PasswordGenerationTab()
-        self.password_management_tab = PasswordManagementTab()
+
+        # Pass the user_identifier (email) to PasswordManagementTab
+        self.password_management_tab = PasswordManagementTab(
+            self.conn, self.user_identifier
+        )
+
+        # Pass both conn and email to SecureNotesTab
+        self.secure_notes_tab = SecureNotesTab(self.conn, self.user_identifier)
+
         self.passkey_manager_tab = PasskeyManagerTab()
-        self.secure_notes_tab = SecureNotesTab(self.conn)
-        self.password_health_tab = PasswordHealthTab(
-            self.conn, self.stacked_widget
-        )  # Pass stacked_widget here
+        self.password_health_tab = PasswordHealthTab(self.conn, self.stacked_widget)
         self.settings_tab = SettingsTab(main_window=self)
 
         # Add the tabs to the stacked widget
